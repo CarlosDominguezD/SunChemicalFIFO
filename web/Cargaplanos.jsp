@@ -25,7 +25,7 @@
                         </div>
                         <div class="x_content">
                             <br />
-                            <form action="ProcesarFiFO" method="POST" enctype="multipart/form-data" id="IdCargarPlanoServlet">
+                            <form action="ProcesarFIFO" method="POST" enctype="multipart/form-data" id="IdProcesarFIFO">
                                 <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
                                     <label class="control-label col-md-3 col-sm-1 ">Formatos a Cargar</label>
                                     <div class="col-md-9 col-sm-12 col-xs-12">

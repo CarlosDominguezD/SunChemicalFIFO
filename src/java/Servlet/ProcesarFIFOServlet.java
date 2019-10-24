@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Carlos A Dominguez D
  */
-public class ProcesarFIFO extends HttpServlet {
+public class ProcesarFIFOServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -35,10 +35,10 @@ public class ProcesarFIFO extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ProcesarFIFO</title>");            
+            out.println("<title>Servlet ProcesarFIFOServlet</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ProcesarFIFO at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet ProcesarFIFOServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -70,10 +70,7 @@ public class ProcesarFIFO extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        long tamanorequies = request.getPart("archivo").getSize();
-        System.out.println(tamanorequies);
-        //processRequest(request, response);
+        processRequest(request, response);
     }
 
     /**

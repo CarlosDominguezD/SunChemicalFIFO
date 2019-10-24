@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
     <servlet>
-        <servlet-name>ProcesarFIFO</servlet-name>
-        <servlet-class>Servlet.ProcesarFIFO</servlet-class>
+        <servlet-name>ProcesarFIFOServlet</servlet-name>
+        <servlet-class>Servlet.ProcesarFIFOServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>ProcesarFIFO</servlet-name>
-        <url-pattern>/ProcesarFIFO</url-pattern>
+        <servlet-name>ProcesarFIFOServlet</servlet-name>
+        <url-pattern>/ProcesarFIFOServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
