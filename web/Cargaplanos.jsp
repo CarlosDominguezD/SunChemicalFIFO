@@ -27,6 +27,7 @@
                             <br />
                             <form action="ServletSunchemical" method="POST" enctype="multipart/form-data" id="IdCargarPlanoServlet">
                                 <input type="hidden" id="IdAccion" name="Accion" value="Planos">     
+                                <input type="hidden" id="IdNombrePlano" name="NombrePlano" value="">     
                                 <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
                                     <label class="control-label col-md-3 col-sm-1 ">Formatos a Cargar</label>
                                     <div class="col-md-9 col-sm-12 col-xs-12">
@@ -36,7 +37,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-                                    <input type="file" name="archivo" id="Idarchivo" accept="aplication/txt" autofocus class="btn btn-lg btn-primary">
+                                    <input type="file" name="archivo" id="Idarchivo" accept="aplication/txt" autofocus class="btn btn-lg btn-primary" onchange="nombre(this.value)">
                                 </div>
                                 <br>
                                 <br>
@@ -58,6 +59,17 @@
                                     window.onload = document.getElementById("botonCargar").style = "display: none"
                                     window.onload = document.getElementById("file").style = "display: none"
                                     window.onload = document.getElementById("tituloh3").style = "display: none"
+                                }
+                                
+                                function nombre(fic) 
+                                {
+                                    fic = fic.split('\\');
+                                    fic = fic[fic.length - 1].replace(".", ",")                                    
+                                    var separador = ","; // un espacio en blanco
+                                    var limite = 1;
+                                    var fic = fic.split(separador, limite);
+                                    //alert(fic[fic.length - 1].replace(".", ","));
+                                    $('#IdNombrePlano').val(fic);
                                 }
                             </script>
                         </div>

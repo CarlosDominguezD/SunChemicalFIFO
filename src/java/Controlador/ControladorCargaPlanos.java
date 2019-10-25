@@ -35,16 +35,13 @@ public class ControladorCargaPlanos
         try
         {
             long tamanorequies = request.getPart("archivo").getSize();
-            System.out.println(tamanorequies);
-
-            Part arch = request.getPart("archivo");
-            String nombre = arch.getName();
+            Part arch = request.getPart("archivo");            
             formato = request.getParameter("Formato");
             InputStream is = arch.getInputStream();
-            File detino = new File("SunChemical\\" + formato);
+            File detino = new File("SunChemical\\" + formato);            
             if (detino.exists() != true)
             {
-                detino.mkdirs();
+                detino.mkdirs();                
             }
             String RutaDispo = "SunChemical\\" + formato + "\\" + formato + " " + ObtenerFecha() + ".xlsx";
             File f = new File(RutaDispo);
@@ -61,12 +58,13 @@ public class ControladorCargaPlanos
             if (tamanorequies == RutaFinal.length())
             {
                 resultado = "true";
-            }
-
-            switch (RutaFinal.getName())
+            }            
+            String d = request.getParameter("NombrePlano");
+            System.out.println(d);
+            switch (request.getParameter("NombrePlano"))
             {
-                case "MRP Data.XLSX":
-                    resultado = ProcesarArchivo(RutaDispo, formato);
+                case "MRP Data":
+                    resultado = ProcesarArchivoMRP_DATA(RutaDispo, formato);
                     break;
             }
         } catch (IOException | ServletException e)
@@ -76,7 +74,7 @@ public class ControladorCargaPlanos
         return resultado;
     }
 
-    private String ProcesarArchivo(String RutaFinal, String formato)
+    private String ProcesarArchivoMRP_DATA(String RutaFinal, String formato)
     {
         try (FileInputStream file = new FileInputStream(new File(RutaFinal)))
         {
