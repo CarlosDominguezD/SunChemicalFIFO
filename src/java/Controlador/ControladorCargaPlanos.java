@@ -7,13 +7,19 @@ package Controlador;
 
 import static Servlet.ServletSunchemical.ObtenerFecha;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
  *
@@ -40,7 +46,7 @@ public class ControladorCargaPlanos
             {
                 detino.mkdirs();
             }
-            String RutaDispo = "SunChemical\\" + formato + "\\" + formato + " " + ObtenerFecha() + ".txt";
+            String RutaDispo = "SunChemical\\" + formato + "\\" + formato + " " + ObtenerFecha() + ".xlsx";
             File f = new File(RutaDispo);
             FileOutputStream ous = new FileOutputStream(f);
             int dato = is.read();
@@ -51,20 +57,52 @@ public class ControladorCargaPlanos
             }
             ous.close();
             is.close();
-            File fina = new File(RutaDispo);
-            if (tamanorequies == fina.length())
+            File RutaFinal = new File(RutaDispo);
+            if (tamanorequies == RutaFinal.length())
             {
                 resultado = "true";
             }
 
-            String total = "0";
-            String totalTrue = "0";
-            String totalFalse = "0";
+            switch (RutaFinal.getName())
+            {
+                case "MRP Data.XLSX":
+                    resultado = ProcesarArchivo(RutaDispo, formato);
+                    break;
+            }
         } catch (IOException | ServletException e)
         {
-            System.out.println("Error en la carga del plano "+formato+"  "+e);
+            System.out.println("Error en la carga del plano " + formato + "  " + e);
         }
         return resultado;
+    }
+
+    private String ProcesarArchivo(String RutaFinal, String formato)
+    {
+        try (FileInputStream file = new FileInputStream(new File(RutaFinal)))
+        {
+            XSSFWorkbook workbook = new XSSFWorkbook(file);
+            XSSFSheet sheet = workbook.getSheetAt(0);
+            Iterator<Row> rowIterator = sheet.iterator();
+            Row row;
+            while (rowIterator.hasNext())
+            {
+                row = rowIterator.next();
+                //se obtiene las celdas por fila
+                Iterator<Cell> cellIterator = row.cellIterator();
+                Cell cell;
+                //se recorre cada celda
+                while (cellIterator.hasNext())
+                {
+                    // se obtiene la celda en específico y se la imprime
+                    cell = cellIterator.next();
+                    System.out.print(cell.getStringCellValue() + " | ");
+                }
+                System.out.println();
+            }
+        } catch (Exception e)
+        {
+        }
+        return null;
     }
 
 }

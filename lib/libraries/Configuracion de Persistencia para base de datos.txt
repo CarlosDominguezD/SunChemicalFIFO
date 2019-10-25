@@ -1,0 +1,28 @@
+SQL
+
+
+
+
+		<properties>
+			<property name="eclipselink.jdbc.url" value="jdbc:sqlserver://localhost:1433;databaseName=passport"/>
+			<property name="eclipselink.jdbc.user" value="root"/>
+			<property name="eclipselink.jdbc.driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />
+			<property name="eclipselink.jdbc.password" value="root"/>
+		</properties>
+		
+		
+		
+		
+		
+-----------------------------------------------		
+
+
+MYSQL
+
+
+		<properties>
+			<property name="eclipselink.jdbc.url" value="jdbc:mysql://localhost/passport"/>
+			<property name="eclipselink.jdbc.user" value="root"/>
+			<property name="eclipselink.jdbc.driver" value="com.mysql.jdbc.Driver" />
+			<property name="eclipselink.jdbc.password" value="root"/>
+		</properties>
