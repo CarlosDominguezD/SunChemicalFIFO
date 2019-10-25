@@ -4,9 +4,17 @@
         <servlet-name>ServletSunchemical</servlet-name>
         <servlet-class>Servlet.ServletSunchemical</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>Pruebas</servlet-name>
+        <servlet-class>Servlet.Pruebas</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ServletSunchemical</servlet-name>
         <url-pattern>/ServletSunchemical</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Pruebas</servlet-name>
+        <url-pattern>/Pruebas</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

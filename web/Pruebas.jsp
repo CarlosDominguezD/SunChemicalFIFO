@@ -13,7 +13,7 @@
     </head>
     <body>
         <h1>Hello World!</h1>
-        <form action="ServletSunchemical" method="POST">
+        <form action="Pruebas" method="POST">
             <input type="text" name="prueba"/>
             <table border="1">
                 <thead>
