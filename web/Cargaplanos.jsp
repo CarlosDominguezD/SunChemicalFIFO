@@ -25,13 +25,11 @@
                         </div>
                         <div class="x_content">
                             <br />
-                            <form action="ProcesarFIFO" method="POST" enctype="multipart/form-data" id="IdProcesarFIFO">
+                            <form action="PruebaServlet" method="POST" enctype="multipart/form-data" id="IdProcesarFIFOServlet">
                                 <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
                                     <label class="control-label col-md-3 col-sm-1 ">Formatos a Cargar</label>
                                     <div class="col-md-9 col-sm-12 col-xs-12">
                                         <select class="form-control" id="IdFormato" name="Formato">
-                                            <!--<option>Personas</option>
-                                            <option>Poliza</option>-->
                                             <option>Compras</option>                                                                                        
                                         </select>
                                     </div>
@@ -46,21 +44,12 @@
                                 <br>
                                 <br>
                                 <div align="center" id="botonCargar">
-                                    <input type="submit" value="Cargar" class="btn btn-lg btn-primary" onclick = "enableGif()">       
+                                    <input type="submit" value="Cargar" class="btn btn-lg btn-primary">       
                                 </div>
                                 <div align="center" id="espera" style="display: none">
                                     <img src="Principal/images/loading.gif">
                                 </div>
-                            </form>
-                            <script type="text/javascript">
-                                function enableGif()
-                                {
-                                    window.onload = document.getElementById("espera").style = "display: block";
-                                    window.onload = document.getElementById("botonCargar").style = "display: none"
-                                    window.onload = document.getElementById("file").style = "display: none"
-                                    window.onload = document.getElementById("tituloh3").style = "display: none"
-                                }
-                            </script>
+                            </form>                           
                         </div>
                     </div>
                 </div>

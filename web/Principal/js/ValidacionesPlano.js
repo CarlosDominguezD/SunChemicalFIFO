@@ -11,8 +11,8 @@ $(function()
         if (InfoOK === "True")
         {
             $('#IdAccion').val('Guardar');
-            var data = $('#IdCargarPlanoServlet').serialize();
-            $.post("CargarPlanoServlet", data, function(res, est, jqHXR)
+            var data = $('#IdProcesarFIFOServlet').serialize();
+            $.post("ProcesarFIFOServlet", data, function(res, est, jqHXR)
             {
                 var dt = res;
                 if (dt === "true")

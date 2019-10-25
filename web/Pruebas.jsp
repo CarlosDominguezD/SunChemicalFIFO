@@ -1,6 +1,6 @@
 <%-- 
     Document   : Pruebas
-    Created on : 24-oct-2019, 16:26:41
+    Created on : 25-oct-2019, 9:24:18
     Author     : Carlos A Dominguez D
 --%>
 
@@ -9,15 +9,31 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <script src="https://rawgit.com/enyo/dropzone/master/dist/dropzone.js"></script>
-        <link rel="stylesheet" href="https://rawgit.com/enyo/dropzone/master/dist/dropzone.css">
         <title>JSP Page</title>
     </head>
     <body>
-        <!-- Change /upload-target to your upload address -->
-        <form action="ProcesarFIFO" method="post" enctype="multipart/form-data">
-            <input type="file" name="file" multiple id="archivos"/>
-            <input type="submit"/>
+        <h1>Hello World!</h1>
+        <form action="ServletSunchemical" method="POST">
+            <input type="text" name="prueba"/>
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>s</th>
+                        <th>s</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>d</td>
+                        <td>d</td>
+                    </tr>
+                    <tr>
+                        <td>f</td>
+                        <td>f</td>
+                    </tr>
+                </tbody>
+            </table>
+            <input type="submit" value="Guardar"/>
         </form>
     </body>
 </html>
