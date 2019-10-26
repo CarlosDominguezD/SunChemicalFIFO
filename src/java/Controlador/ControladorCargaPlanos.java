@@ -79,7 +79,7 @@ public class ControladorCargaPlanos {
             XSSFWorkbook workbook = new XSSFWorkbook(file);
             XSSFSheet sheet = workbook.getSheetAt(0);
             Iterator<Row> rowIterator = sheet.iterator();
-            Row row;
+            Row row;;
             while (rowIterator.hasNext()) {
                 row = rowIterator.next();
                 //se obtiene las celdas por fila
