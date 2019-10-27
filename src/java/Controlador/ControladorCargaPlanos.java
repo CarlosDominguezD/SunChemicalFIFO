@@ -38,62 +38,72 @@ public class ControladorCargaPlanos {
     public String Upload(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String resultado = "false";
         String formato = "";
-        try {
+        try
+        {
             long tamanorequies = request.getPart("archivo").getSize();
             Part arch = request.getPart("archivo");
             formato = request.getParameter("Formato");
             InputStream is = arch.getInputStream();
             File detino = new File("SunChemical\\" + formato);
-            if (detino.exists() != true) {
+            if (detino.exists() != true)
+            {
                 detino.mkdirs();
             }
             String RutaDispo = "SunChemical\\" + formato + "\\" + formato + " " + ObtenerFecha() + ".xlsx";
             File f = new File(RutaDispo);
             FileOutputStream ous = new FileOutputStream(f);
             int dato = is.read();
-            while (dato != -1) {
+            while (dato != -1)
+            {
                 ous.write(dato);
                 dato = is.read();
             }
             ous.close();
             is.close();
             File RutaFinal = new File(RutaDispo);
-            if (tamanorequies == RutaFinal.length()) {
+            if (tamanorequies == RutaFinal.length())
+            {
                 resultado = "true";
             }
             String d = request.getParameter("NombrePlano");
             System.out.println(d);
-            switch (request.getParameter("NombrePlano")) {
+            switch (request.getParameter("NombrePlano"))
+            {
                 case "MRP Data":
                     resultado = ProcesarArchivoMRP_DATA(RutaDispo, formato);
                     break;
             }
-        } catch (IOException | ServletException e) {
+        } catch (IOException | ServletException e)
+        {
             System.out.println("Error en la carga del plano " + formato + "  " + e);
         }
         return resultado;
     }
 
     private String ProcesarArchivoMRP_DATA(String RutaFinal, String formato) {
-        try (FileInputStream file = new FileInputStream(new File(RutaFinal))) {
+        try (FileInputStream file = new FileInputStream(new File(RutaFinal)))
+        {
             XSSFWorkbook workbook = new XSSFWorkbook(file);
             XSSFSheet sheet = workbook.getSheetAt(0);
             Iterator<Row> rowIterator = sheet.iterator();
             Row row;;
-            while (rowIterator.hasNext()) {
+            while (rowIterator.hasNext())
+            {
                 row = rowIterator.next();
                 //se obtiene las celdas por fila
                 Iterator<Cell> cellIterator = row.cellIterator();
                 Cell cell;
                 //se recorre cada celda
-                while (cellIterator.hasNext()) {
+                while (cellIterator.hasNext())
+                {
                     // se obtiene la celda en específico y se la imprime
                     cell = cellIterator.next();
                     System.out.print(cell.getStringCellValue() + " | ");
                 }
                 System.out.println();
             }
-        } catch (Exception e) {
+        } catch (Exception e)
+        {
         }
         return null;
     }
@@ -101,7 +111,8 @@ public class ControladorCargaPlanos {
     public String CargarXLS_Compras_MB51(String Ruta) {
         String Realizado = "False";
         String Errores = "";
-        try {
+        try
+        {
             FileInputStream inputStream = new FileInputStream(new File("C:\\Zred\\SunChemical\\DESCUENTOS.xlsx"));
             Workbook workbook = new XSSFWorkbook(inputStream);
             Sheet firstSheet = workbook.getSheetAt(0);
@@ -110,14 +121,17 @@ public class ControladorCargaPlanos {
             DataFormatter formatter = new DataFormatter();
             int Contador = 0;
             ModeloMb51 modeloMb51 = null;
-            while (iterator.hasNext()) {
+            while (iterator.hasNext())
+            {
                 modeloMb51 = new ModeloMb51();
                 Row nextRow = (Row) iterator.next();
                 Iterator cellIterator = nextRow.cellIterator();
-                while (cellIterator.hasNext()) {
+                while (cellIterator.hasNext())
+                {
                     Cell cell = (Cell) cellIterator.next();
                     String contenidoCelda = formatter.formatCellValue(cell);
-                    switch (Contador) {
+                    switch (Contador)
+                    {
                         case 0:
                             modeloMb51.setPlant(contenidoCelda);
                             System.out.println("Plant: " + modeloMb51.getPlant());
@@ -207,7 +221,8 @@ public class ControladorCargaPlanos {
                 modeloMb51 = null;
             }
 
-        } catch (Exception e) {
+        } catch (Exception e)
+        {
             e.printStackTrace();
         }
 
@@ -217,7 +232,8 @@ public class ControladorCargaPlanos {
     public String CargarXLS_Compras_ME80FN(String Ruta) {
         String Realizado = "False";
         String Errores = "";
-        try {
+        try
+        {
             FileInputStream inputStream = new FileInputStream(new File("C:\\Zred\\SunChemical\\DESCUENTOS.xlsx"));
             Workbook workbook = new XSSFWorkbook(inputStream);
             Sheet firstSheet = workbook.getSheetAt(0);
@@ -228,15 +244,18 @@ public class ControladorCargaPlanos {
 
             ModeloMe80fn modeloMe80fn = null;
 
-            while (iterator.hasNext()) {
+            while (iterator.hasNext())
+            {
                 modeloMe80fn = new ModeloMe80fn();
                 Row nextRow = (Row) iterator.next();
                 Iterator cellIterator = nextRow.cellIterator();
-                while (cellIterator.hasNext()) {
+                while (cellIterator.hasNext())
+                {
                     Cell cell = (Cell) cellIterator.next();
                     String contenidoCelda = formatter.formatCellValue(cell);
 
-                    switch (Contador) {
+                    switch (Contador)
+                    {
                         case 0:
                             modeloMe80fn.setPurchasing_Document(contenidoCelda);
                             System.out.println("Purchasing_Document: " + modeloMe80fn.getPurchasing_Document());
@@ -334,7 +353,8 @@ public class ControladorCargaPlanos {
                 modeloMe80fn = null;
             }
 
-        } catch (Exception e) {
+        } catch (Exception e)
+        {
             e.printStackTrace();
         }
 
@@ -344,7 +364,8 @@ public class ControladorCargaPlanos {
     public String CargarXLS_Compras_FBL3N(String Ruta) {
         String Realizado = "False";
         String Errores = "";
-        try {
+        try
+        {
             FileInputStream inputStream = new FileInputStream(new File("C:\\Zred\\SunChemical\\DESCUENTOS.xlsx"));
             Workbook workbook = new XSSFWorkbook(inputStream);
             Sheet firstSheet = workbook.getSheetAt(0);
@@ -355,15 +376,18 @@ public class ControladorCargaPlanos {
 
             ModeloFbl3m modeloFbl3m = null;
 
-            while (iterator.hasNext()) {
+            while (iterator.hasNext())
+            {
                 modeloFbl3m = new ModeloFbl3m();
                 Row nextRow = (Row) iterator.next();
                 Iterator cellIterator = nextRow.cellIterator();
-                while (cellIterator.hasNext()) {
+                while (cellIterator.hasNext())
+                {
                     Cell cell = (Cell) cellIterator.next();
                     String contenidoCelda = formatter.formatCellValue(cell);
 
-                    switch (Contador) {
+                    switch (Contador)
+                    {
                         case 0:
                             modeloFbl3m.setDocument_Number(contenidoCelda);
                             System.out.println("Document_Number: " + modeloFbl3m.getDocument_Number());
@@ -459,7 +483,8 @@ public class ControladorCargaPlanos {
                 }
             }
 
-        } catch (Exception e) {
+        } catch (Exception e)
+        {
             e.printStackTrace();
         }
 
@@ -469,7 +494,8 @@ public class ControladorCargaPlanos {
     public String CargarXLS_MRP_DATA(String Ruta) {
         String Realizado = "False";
         String Errores = "";
-        try {
+        try
+        {
             FileInputStream inputStream = new FileInputStream(new File("C:\\Zred\\SunChemical\\DESCUENTOS.xlsx"));
             Workbook workbook = new XSSFWorkbook(inputStream);
             Sheet firstSheet = workbook.getSheetAt(0);
@@ -480,15 +506,18 @@ public class ControladorCargaPlanos {
 
             ModeloMrpData modeloMrpData = null;
 
-            while (iterator.hasNext()) {
+            while (iterator.hasNext())
+            {
                 modeloMrpData = new ModeloMrpData();
                 Row nextRow = (Row) iterator.next();
                 Iterator cellIterator = nextRow.cellIterator();
-                while (cellIterator.hasNext()) {
+                while (cellIterator.hasNext())
+                {
                     Cell cell = (Cell) cellIterator.next();
                     String contenidoCelda = formatter.formatCellValue(cell);
 
-                    switch (Contador) {
+                    switch (Contador)
+                    {
                         case 0:
                             modeloMrpData.setMaterial(contenidoCelda);
                             System.out.println("Material: " + modeloMrpData.getMaterial());
@@ -860,7 +889,8 @@ public class ControladorCargaPlanos {
                 }
                 modeloMrpData = null;
             }
-        } catch (Exception e) {
+        } catch (Exception e)
+        {
             e.printStackTrace();
         }
         return "";
