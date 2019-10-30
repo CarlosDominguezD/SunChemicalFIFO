@@ -15,12 +15,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Iterator;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -41,25 +42,22 @@ public class ControladorCargaPlanos {
         try
         {
             long tamanorequies = request.getPart("archivo").getSize();
-            Part arch = request.getPart("archivo");
             formato = request.getParameter("Formato");
+            Part arch = request.getPart("archivo");            
+            String fileName = Paths.get(arch.getSubmittedFileName()).getFileName().toString();
+            System.out.println(fileName);
             InputStream is = arch.getInputStream();
-            File detino = new File("SunChemical\\" + formato);
+            File detino = new File("SunChemical\\" + formato + "\\");
             if (detino.exists() != true)
             {
                 detino.mkdirs();
             }
-            String RutaDispo = "SunChemical\\" + formato + "\\" + formato + " " + ObtenerFecha() + ".xlsx";
-            File f = new File(RutaDispo);
-            FileOutputStream ous = new FileOutputStream(f);
-            int dato = is.read();
-            while (dato != -1)
+            File file = new File(detino, formato + "_" + ObtenerFecha() + ".xlsx");
+            try (InputStream input = arch.getInputStream())
             {
-                ous.write(dato);
-                dato = is.read();
+                Files.copy(input, file.toPath());
             }
-            ous.close();
-            is.close();
+            String RutaDispo = file.getPath();
             File RutaFinal = new File(RutaDispo);
             if (tamanorequies == RutaFinal.length())
             {
@@ -69,8 +67,17 @@ public class ControladorCargaPlanos {
             System.out.println(d);
             switch (request.getParameter("NombrePlano"))
             {
-                case "MRP Data":
-                    resultado = ProcesarArchivoMRP_DATA(RutaDispo, formato);
+                case "MB51":
+                    resultado = CargarXLS_Compras_MB51(RutaDispo);
+                    break;
+                case "FBL3N":
+                    resultado = CargarXLS_Compras_FBL3N(RutaDispo);
+                    break;
+                case "ME80FN":
+                    resultado = CargarXLS_Compras_ME80FN(RutaDispo);
+                    break;
+                case "MRPDATA":
+                    resultado = CargarXLS_MRP_DATA(RutaDispo);
                     break;
             }
         } catch (IOException | ServletException e)
@@ -80,40 +87,13 @@ public class ControladorCargaPlanos {
         return resultado;
     }
 
-    private String ProcesarArchivoMRP_DATA(String RutaFinal, String formato) {
-        try (FileInputStream file = new FileInputStream(new File(RutaFinal)))
-        {
-            XSSFWorkbook workbook = new XSSFWorkbook(file);
-            XSSFSheet sheet = workbook.getSheetAt(0);
-            Iterator<Row> rowIterator = sheet.iterator();
-            Row row;;
-            while (rowIterator.hasNext())
-            {
-                row = rowIterator.next();
-                //se obtiene las celdas por fila
-                Iterator<Cell> cellIterator = row.cellIterator();
-                Cell cell;
-                //se recorre cada celda
-                while (cellIterator.hasNext())
-                {
-                    // se obtiene la celda en específico y se la imprime
-                    cell = cellIterator.next();
-                    System.out.print(cell.getStringCellValue() + " | ");
-                }
-                System.out.println();
-            }
-        } catch (Exception e)
-        {
-        }
-        return null;
-    }
-
     public String CargarXLS_Compras_MB51(String Ruta) {
         String Realizado = "False";
         String Errores = "";
         try
         {
-            FileInputStream inputStream = new FileInputStream(new File("C:\\Zred\\SunChemical\\DESCUENTOS.xlsx"));
+            //FileInputStream inputStream = new FileInputStream(new File("C:\\Zred\\SunChemical\\DESCUENTOS.xlsx"));
+            FileInputStream inputStream = new FileInputStream(new File(Ruta));
             Workbook workbook = new XSSFWorkbook(inputStream);
             Sheet firstSheet = workbook.getSheetAt(0);
             Iterator iterator = firstSheet.iterator();
@@ -221,11 +201,10 @@ public class ControladorCargaPlanos {
                 modeloMb51 = null;
             }
 
-        } catch (Exception e)
+        } catch (IOException e)
         {
-            e.printStackTrace();
+            System.out.println(e);
         }
-
         return Realizado;
     }
 
@@ -234,7 +213,8 @@ public class ControladorCargaPlanos {
         String Errores = "";
         try
         {
-            FileInputStream inputStream = new FileInputStream(new File("C:\\Zred\\SunChemical\\DESCUENTOS.xlsx"));
+            //FileInputStream inputStream = new FileInputStream(new File("C:\\Zred\\SunChemical\\DESCUENTOS.xlsx"));
+            FileInputStream inputStream = new FileInputStream(new File(Ruta));
             Workbook workbook = new XSSFWorkbook(inputStream);
             Sheet firstSheet = workbook.getSheetAt(0);
             Iterator iterator = firstSheet.iterator();
@@ -353,9 +333,9 @@ public class ControladorCargaPlanos {
                 modeloMe80fn = null;
             }
 
-        } catch (Exception e)
+        } catch (IOException e)
         {
-            e.printStackTrace();
+            System.out.println(e);
         }
 
         return Realizado;
@@ -366,7 +346,8 @@ public class ControladorCargaPlanos {
         String Errores = "";
         try
         {
-            FileInputStream inputStream = new FileInputStream(new File("C:\\Zred\\SunChemical\\DESCUENTOS.xlsx"));
+            //FileInputStream inputStream = new FileInputStream(new File("C:\\Zred\\SunChemical\\DESCUENTOS.xlsx"));
+            FileInputStream inputStream = new FileInputStream(new File(Ruta));
             Workbook workbook = new XSSFWorkbook(inputStream);
             Sheet firstSheet = workbook.getSheetAt(0);
             Iterator iterator = firstSheet.iterator();
@@ -483,9 +464,9 @@ public class ControladorCargaPlanos {
                 }
             }
 
-        } catch (Exception e)
+        } catch (IOException e)
         {
-            e.printStackTrace();
+            System.out.println(e);
         }
 
         return Realizado;
@@ -496,7 +477,8 @@ public class ControladorCargaPlanos {
         String Errores = "";
         try
         {
-            FileInputStream inputStream = new FileInputStream(new File("C:\\Zred\\SunChemical\\DESCUENTOS.xlsx"));
+            //FileInputStream inputStream = new FileInputStream(new File("C:\\Zred\\SunChemical\\DESCUENTOS.xlsx"));
+            FileInputStream inputStream = new FileInputStream(new File(Ruta));
             Workbook workbook = new XSSFWorkbook(inputStream);
             Sheet firstSheet = workbook.getSheetAt(0);
             Iterator iterator = firstSheet.iterator();
@@ -515,7 +497,6 @@ public class ControladorCargaPlanos {
                 {
                     Cell cell = (Cell) cellIterator.next();
                     String contenidoCelda = formatter.formatCellValue(cell);
-
                     switch (Contador)
                     {
                         case 0:
@@ -882,16 +863,15 @@ public class ControladorCargaPlanos {
                             modeloMrpData.setPeriod_Indicator(contenidoCelda);
                             System.out.println("Period_Indicator: " + modeloMrpData.getPeriod_Indicator());
                             break;
-
                     }
                     //guardar modelo
                     Contador++;
                 }
                 modeloMrpData = null;
             }
-        } catch (Exception e)
+        } catch (IOException e)
         {
-            e.printStackTrace();
+            System.out.println(e);
         }
         return "";
     }

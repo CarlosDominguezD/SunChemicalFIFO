@@ -6,10 +6,10 @@
 package Servlet;
 
 import Controlador.ControladorCargaPlanos;
-import java.io.File;
-import java.io.FileOutputStream;
+import Controlador.ControladorEstadoPlanos;
+import Controlador.ControladorExcel;
+import Controlador.ControladorMb51;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.Calendar;
 import javax.servlet.ServletException;
@@ -17,15 +17,13 @@ import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
 
 /**
  *
  * @author Carlos A Dominguez D
  */
 @MultipartConfig
-public class ServletSunchemical extends HttpServlet
-{
+public class ServletSunchemical extends HttpServlet {
 
     String res = "false";
 
@@ -39,8 +37,7 @@ public class ServletSunchemical extends HttpServlet
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException
-    {
+            throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter())
         {
@@ -48,29 +45,91 @@ public class ServletSunchemical extends HttpServlet
             if ("true".equals(res))
             {
                 out.println("<!DOCTYPE html>");
-                out.println("<html>");
-                out.println("<h1> Archivo Cargado Exitosamente </h1>");
+                out.println("<html lang=en>");
                 out.println("<head>");
-                out.println("<title>Plano Cargado</title>");
+                out.println("<link href=Principal/vendors/bootstrap/dist/css/bootstrap.min.css rel=stylesheet>");
+                out.println("<link href=Principal/vendors/font-awesome/css/font-awesome.min.css rel=stylesheet>");
+                out.println("<link href=Principal/vendors/nprogress/nprogress.css rel=stylesheet>");
+                out.println("<link href=Principal/build/css/custom.min.css rel=stylesheet>");
                 out.println("</head>");
-                out.println("<body>");
-                out.println("<h3> Plano Cargado</h3>");
-                out.println("<li><a href=../../../SunChemicalFIFO/Cargaplanos.jsp>Volver Cargar Planos</a></li>");
+                out.println("<body class=nav-md>");
+                out.println("<div class=right_col role=main>");
+                out.println("<div class=container body>");
+                out.println("<div class=main_container>");
+                out.println("<div class=col-md-12>");
+                out.println("<div class=col-middle>");
+                out.println("<div class=text-center text-center>");
+                out.println("<h1 class=error-number>OK</h1>");
+                out.println("<br/>");
+                out.println("<p");
+                out.println("<h2>Archivo Cargado Correctamente</h2>");
+                out.println("<br/>");
+                out.println("<br/>");
+                out.println("<p>Para retornar al formulario ==> <a href=Cargaplanos.jsp>Principal</a>");
+                out.println("</p>");
+                out.println("</div>");
+                out.println("</div>");
+                out.println("</div>");
+                out.println("</div>");
+                out.println("</div>");
+                out.println("</div>");
                 out.println("</body>");
                 out.println("</html>");
+//                out.println("<!DOCTYPE html>");
+//                out.println("<html>");
+//                out.println("<h1> Archivo Cargado Exitosamente </h1>");
+//                out.println("<head>");
+//                out.println("<title>Plano Cargado</title>");
+//                out.println("</head>");
+//                out.println("<body>");
+//                out.println("<h3> Plano Cargado</h3>");
+//                out.println("<li><a href=../../../SunChemicalFIFO/Cargaplanos.jsp>Volver Cargar Planos</a></li>");
+//                out.println("</body>");
+//                out.println("</html>");
             } else
             {
                 out.println("<!DOCTYPE html>");
-                out.println("<html>");
-                out.println("<h1> Errores en la carga del plano </h1>");
+                out.println("<html lang=en>");
                 out.println("<head>");
-                out.println("<title>Mensaje Error Plano</title>");
+                out.println("<link href=Principal/vendors/bootstrap/dist/css/bootstrap.min.css rel=stylesheet>");
+                out.println("<link href=Principal/vendors/font-awesome/css/font-awesome.min.css rel=stylesheet>");
+                out.println("<link href=Principal/vendors/nprogress/nprogress.css rel=stylesheet>");
+                out.println("<link href=Principal/build/css/custom.min.css rel=stylesheet>");
                 out.println("</head>");
-                out.println("<body>");
-                out.println("<h3>" + res + "</h3>");
-                out.println("<li><a href=../../../SunChemicalFIFO/Cargaplanos.jsp>Volver Cargar Planos</a></li>");
+                out.println("<body class=nav-md>");
+                out.println("<div class=right_col role=main>");
+                out.println("<div class=container body>");
+                out.println("<div class=main_container>");
+                out.println("<div class=col-md-12>");
+                out.println("<div class=col-middle>");
+                out.println("<div class=text-center text-center>");
+                out.println("<h1 class=error-number>Error</h1>");
+                out.println("<br/>");
+                out.println("<p");
+                out.println("<h2>Error en la carga del plano</h2>");
+                out.println("<br/>");
+                out.println("<br/>");
+                out.println("<p>Para retornar al formulario ==> <a href=Cargaplanos.jsp>Principal</a>");
+                out.println("</p>");
+                out.println("</div>");
+                out.println("</div>");
+                out.println("</div>");
+                out.println("</div>");
+                out.println("</div>");
+                out.println("</div>");
                 out.println("</body>");
                 out.println("</html>");
+//                out.println("<!DOCTYPE html>");
+//                out.println("<html>");
+//                out.println("<h1> Errores en la carga del plano </h1>");
+//                out.println("<head>");
+//                out.println("<title>Mensaje Error Plano</title>");
+//                out.println("</head>");
+//                out.println("<body>");
+//                out.println("<h3>" + res + "</h3>");
+//                out.println("<li><a href=../../../SunChemicalFIFO/Cargaplanos.jsp>Volver Cargar Planos</a></li>");
+//                out.println("</body>");
+//                out.println("</html>");
             }
         }
     }
@@ -86,9 +145,8 @@ public class ServletSunchemical extends HttpServlet
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException
-    {
-//        processRequest(request, response);
+            throws ServletException, IOException {
+        //processRequest(request, response);
     }
 
     /**
@@ -101,56 +159,35 @@ public class ServletSunchemical extends HttpServlet
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException
-    {
+            throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String Accion = request.getParameter("Accion");
         String res = "";
-        ControladorCargaPlanos controladorCargaPlanos = new ControladorCargaPlanos();
+        ControladorMb51 controladorMb51 = new ControladorMb51();
         switch (Accion)
         {
             case "Planos":
+                ControladorCargaPlanos controladorCargaPlanos = new ControladorCargaPlanos();
                 res = controladorCargaPlanos.Upload(request, response);
                 request.setAttribute("espuesta", res);
                 processRequest(request, response);
 //            response.setCharacterEncoding("UT
                 break;
+            case "GetArchivosCompras":
+                ControladorEstadoPlanos controladorEstadoPlanos = new ControladorEstadoPlanos();
+                res = controladorEstadoPlanos.ValidarArchivos(request, response);
+                PrintWriter pw = response.getWriter();
+                pw.write(res);
+                System.out.println(pw.checkError() ? "Error al cargar la lista" : "Tabla Cargada");
+                break;
+            case "GenerarArchivoCompras":
+                ControladorExcel controladorExcel = new ControladorExcel();
+                controladorExcel.Select("GenerarArchivoCompras", request, response);
+                break;
         }
-
-//        String respuesta = herramienta.GetDescrpCode(res);
-//        response.setCharacterEncoding("UTF-8");
-//        response.setContentType("text/plain");
-//        response.getWriter().write(respuesta);
-//        long tamanorequies = request.getPart("archivo").getSize();
-//        System.out.println(tamanorequies);
-//
-//        Part arch = request.getPart("archivo");
-//        String nombre = arch.getName();
-//        String formato = request.getParameter("Formato");
-//        InputStream is = arch.getInputStream();
-//        File detino = new File("SunChemical\\" + formato);
-//        if (detino.exists() != true) {
-//            detino.mkdirs();
-//        }
-//        String RutaDispo = "SunChemical\\" + formato + "\\" + formato + " " + ObtenerFecha() + ".txt";
-//        File f = new File(RutaDispo);
-//        FileOutputStream ous = new FileOutputStream(f);
-//        int dato = is.read();
-//        while (dato != -1) {
-//            ous.write(dato);
-//            dato = is.read();
-//        }
-//        ous.close();
-//        is.close();
-//
-//        String total = "0";
-//        String totalTrue = "0";
-//        String totalFalse = "0";
-        //processRequest(request, response);
     }
 
-    public static String ObtenerFecha()
-    {
+    public static String ObtenerFecha() {
         Calendar fecHor = Calendar.getInstance();
         String dia = Integer.toString(fecHor.get(Calendar.DAY_OF_MONTH));
         String mes = Integer.toString(fecHor.get(Calendar.MONDAY) + 1);
@@ -159,15 +196,8 @@ public class ServletSunchemical extends HttpServlet
         return fh;
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
-    public String getServletInfo()
-    {
+    public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
-
+    }
 }

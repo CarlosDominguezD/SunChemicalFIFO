@@ -16,6 +16,33 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `estadoplanos`
+--
+
+DROP TABLE IF EXISTS `estadoplanos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `estadoplanos` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `Actividad` varchar(20) DEFAULT NULL,
+  `NombrePlano` varchar(20) DEFAULT NULL,
+  `FechaCarga` varchar(20) DEFAULT NULL,
+  `Estado` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`Id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `estadoplanos`
+--
+
+LOCK TABLES `estadoplanos` WRITE;
+/*!40000 ALTER TABLE `estadoplanos` DISABLE KEYS */;
+INSERT INTO `estadoplanos` VALUES (1,'Compras','Plano01','28-10-2019','OK'),(2,'Compras','Plano02','28-10-2019','OK');
+/*!40000 ALTER TABLE `estadoplanos` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `fbl3m`
 --
 
@@ -321,4 +348,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-10-26 10:34:33
+-- Dump completed on 2019-10-28 14:17:28
