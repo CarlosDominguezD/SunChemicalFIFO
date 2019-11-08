@@ -255,4 +255,33 @@ public class ControladorProveedor {
         }
         return modeloProveedor;
     }
+    
+    public ModeloProveedor SelectSQL(String Sql) {
+        ModeloProveedor modeloProveedor = new ModeloProveedor();
+        ConexionBDMySql conexion = new ConexionBDMySql();
+        Connection con;
+        con = conexion.abrirConexion();
+        PreparedStatement SQL;
+        try
+        {
+            SQL = con.prepareStatement(Sql);
+            ResultSet res = SQL.executeQuery();
+            if (res.next())
+            {
+                modeloProveedor.setId(res.getInt("id"));
+                modeloProveedor.setVendors(res.getString("Vendors"));
+                modeloProveedor.setName(res.getString("Name"));
+                modeloProveedor.setVendor_Type(res.getString("Vendor_Type"));
+            }
+            res.close();
+            SQL.close();
+            con.close();
+        } catch (SQLException e)
+        {
+            System.out.println("Error en la consulta SQL Select " + e);
+        }
+        return modeloProveedor;
+    }
+    
+    
 }

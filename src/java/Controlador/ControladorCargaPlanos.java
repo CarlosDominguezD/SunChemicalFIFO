@@ -9,15 +9,21 @@ import Modelos.ModeloFbl3m;
 import Modelos.ModeloMb51;
 import Modelos.ModeloMe80fn;
 import Modelos.ModeloMrpData;
+import Modelos.ModeloProveedor;
 import static Servlet.ServletSunchemical.ObtenerFecha;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import com.opencsv.CSVReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Objects;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,39 +45,34 @@ public class ControladorCargaPlanos {
     public String Upload(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String resultado = "false";
         String formato = "";
-        try
-        {
+        try {
             long tamanorequies = request.getPart("archivo").getSize();
             formato = request.getParameter("Formato");
-            Part arch = request.getPart("archivo");            
+            Part arch = request.getPart("archivo");
             String fileName = Paths.get(arch.getSubmittedFileName()).getFileName().toString();
             System.out.println(fileName);
             InputStream is = arch.getInputStream();
             File detino = new File("SunChemical\\" + formato + "\\");
-            if (detino.exists() != true)
-            {
+            if (detino.exists() != true) {
                 detino.mkdirs();
             }
-            File file = new File(detino, formato + "_" + ObtenerFecha() + ".xlsx");
-            try (InputStream input = arch.getInputStream())
-            {
+            File file = new File(detino, formato + "_" + ObtenerFecha() + ".csv");
+            try (InputStream input = arch.getInputStream()) {
                 Files.copy(input, file.toPath());
             }
             String RutaDispo = file.getPath();
             File RutaFinal = new File(RutaDispo);
-            if (tamanorequies == RutaFinal.length())
-            {
+            if (tamanorequies == RutaFinal.length()) {
                 resultado = "true";
             }
             String d = request.getParameter("NombrePlano");
             System.out.println(d);
-            switch (request.getParameter("NombrePlano"))
-            {
+            switch (request.getParameter("NombrePlano")) {
                 case "MB51":
                     resultado = CargarXLS_Compras_MB51(RutaDispo);
                     break;
                 case "FBL3N":
-                    resultado = CargarXLS_Compras_FBL3N(RutaDispo);
+                    resultado = CargarCSV_Compras_FBL3N(RutaDispo);
                     break;
                 case "ME80FN":
                     resultado = CargarXLS_Compras_ME80FN(RutaDispo);
@@ -80,8 +81,7 @@ public class ControladorCargaPlanos {
                     resultado = CargarXLS_MRP_DATA(RutaDispo);
                     break;
             }
-        } catch (IOException | ServletException e)
-        {
+        } catch (IOException | ServletException e) {
             System.out.println("Error en la carga del plano " + formato + "  " + e);
         }
         return resultado;
@@ -90,107 +90,111 @@ public class ControladorCargaPlanos {
     public String CargarXLS_Compras_MB51(String Ruta) {
         String Realizado = "False";
         String Errores = "";
-        try
-        {
-            //FileInputStream inputStream = new FileInputStream(new File("C:\\Zred\\SunChemical\\DESCUENTOS.xlsx"));
-            FileInputStream inputStream = new FileInputStream(new File(Ruta));
+        try {
+            FileInputStream inputStream = new FileInputStream(new File("D:\\SkyDrive\\Sun-Chemical-Proyecto\\Documentos\\Fifo\\PRUEBAS DE EJEMPLO\\MB51_Compras Acum_2019_09.xlsx"));
             Workbook workbook = new XSSFWorkbook(inputStream);
             Sheet firstSheet = workbook.getSheetAt(0);
             Iterator iterator = firstSheet.iterator();
 
             DataFormatter formatter = new DataFormatter();
             int Contador = 0;
+            int Linea = 0;
             ModeloMb51 modeloMb51 = null;
-            while (iterator.hasNext())
-            {
+            while (iterator.hasNext()) {
                 modeloMb51 = new ModeloMb51();
                 Row nextRow = (Row) iterator.next();
                 Iterator cellIterator = nextRow.cellIterator();
-                while (cellIterator.hasNext())
-                {
+
+                while (cellIterator.hasNext()) {
                     Cell cell = (Cell) cellIterator.next();
                     String contenidoCelda = formatter.formatCellValue(cell);
-                    switch (Contador)
-                    {
+                    switch (Contador) {
                         case 0:
                             modeloMb51.setPlant(contenidoCelda);
-                            System.out.println("Plant: " + modeloMb51.getPlant());
+                            //System.out.println("Plant: " + modeloMb51.getPlant());
                             break;
                         case 1:
                             modeloMb51.setPurchase_order(contenidoCelda);
-                            System.out.println("Purchase_order: " + modeloMb51.getPurchase_order());
+                            //System.out.println("Purchase_order: " + modeloMb51.getPurchase_order());
                             break;
                         case 2:
                             modeloMb51.setMaterial(contenidoCelda);
-                            System.out.println("Material: " + modeloMb51.getMaterial());
+                            //System.out.println("Material: " + modeloMb51.getMaterial());
                             break;
                         case 3:
                             modeloMb51.setMaterial_Description(contenidoCelda);
-                            System.out.println("Material_Description: " + modeloMb51.getMaterial_Description());
+                            //System.out.println("Material_Description: " + modeloMb51.getMaterial_Description());
                             break;
                         case 4:
                             modeloMb51.setBatch(contenidoCelda);
-                            System.out.println("Batch: " + modeloMb51.getBatch());
+                            //System.out.println("Batch: " + modeloMb51.getBatch());
                             break;
                         case 5:
                             modeloMb51.setMovement_type(contenidoCelda);
-                            System.out.println("Movement_type: " + modeloMb51.getMovement_type());
+                            //System.out.println("Movement_type: " + modeloMb51.getMovement_type());
                             break;
                         case 6:
                             modeloMb51.setMovement_Type_Text(contenidoCelda);
-                            System.out.println("Movement_Type_Text: " + modeloMb51.getMovement_Type_Text());
+                            //System.out.println("Movement_Type_Text: " + modeloMb51.getMovement_Type_Text());
                             break;
                         case 7:
                             modeloMb51.setItem(contenidoCelda);
-                            System.out.println("Item: " + modeloMb51.getItem());
+                            //System.out.println("Item: " + modeloMb51.getItem());
                             break;
                         case 8:
-                            modeloMb51.setQuantity(contenidoCelda);
-                            System.out.println("Quantity: " + modeloMb51.getQuantity());
+                            contenidoCelda = String.format("%.5f", Double.valueOf((contenidoCelda.replace(".", "")).replace(",", ".")));
+                            modeloMb51.setQuantity((contenidoCelda.replace(".", "")).replace(",", "."));
+                            //System.out.println("Quantity: " + modeloMb51.getQuantity());
                             break;
                         case 9:
-                            modeloMb51.setQty_in_unit_of_entry(contenidoCelda);
-                            System.out.println("Qty_in_unit_of_entry: " + modeloMb51.getQty_in_unit_of_entry());
+                            contenidoCelda = String.format("%.5f", Double.valueOf((contenidoCelda.replace(".", "")).replace(",", ".")));
+                            modeloMb51.setQty_in_unit_of_entry((contenidoCelda.replace(".", "")).replace(",", "."));
+                            //System.out.println("Qty_in_unit_of_entry: " + modeloMb51.getQty_in_unit_of_entry());
                             break;
                         case 10:
                             modeloMb51.setUnit_of_Entry(contenidoCelda);
-                            System.out.println("Unit_of_Entry: " + modeloMb51.getUnit_of_Entry());
+                            //System.out.println("Unit_of_Entry: " + modeloMb51.getUnit_of_Entry());
                             break;
                         case 11:
-                            modeloMb51.setAmt_in_loc_cur(contenidoCelda);
-                            System.out.println("Amt_in_loc_cur: " + modeloMb51.getAmt_in_loc_cur());
+                            contenidoCelda = String.format("%.5f", Double.valueOf((contenidoCelda.replace(".", "")).replace(",", ".")));
+                            modeloMb51.setAmt_in_loc_cur((contenidoCelda.replace(".", "")).replace(",", "."));
+                            //System.out.println("Amt_in_loc_cur: " + modeloMb51.getAmt_in_loc_cur());
                             break;
                         case 12:
                             modeloMb51.setCurrency(contenidoCelda);
-                            System.out.println("Currency: " + modeloMb51.getCurrency());
+                            //System.out.println("Currency: " + modeloMb51.getCurrency());
                             break;
                         case 13:
                             modeloMb51.setStorage_Location(contenidoCelda);
-                            System.out.println("Storage_Location: " + modeloMb51.getStorage_Location());
+                            //System.out.println("Storage_Location: " + modeloMb51.getStorage_Location());
                             break;
                         case 14:
+                            String[] FechaMod = contenidoCelda.split("/");
+                            contenidoCelda = FechaMod[1] + "/" + FechaMod[0] + "/" + FechaMod[2];
                             modeloMb51.setPosting_Date(contenidoCelda);
-                            System.out.println("Posting_Date: " + modeloMb51.getPosting_Date());
+                            //System.out.println("Posting_Date: " + modeloMb51.getPosting_Date());
                             break;
                         case 15:
+                            String[] FechaModa = contenidoCelda.split("/");
+                            contenidoCelda = FechaModa[1] + "/" + FechaModa[0] + "/" + FechaModa[2];
                             modeloMb51.setDocument_Date(contenidoCelda);
-                            System.out.println("Document_Date: " + modeloMb51.getDocument_Date());
+                            //System.out.println("Document_Date: " + modeloMb51.getDocument_Date());
                             break;
                         case 16:
                             modeloMb51.setMaterial_Document(contenidoCelda);
-                            System.out.println("Material_Document: " + modeloMb51.getMaterial_Document());
+                            //System.out.println("Material_Document: " + modeloMb51.getMaterial_Document());
                             break;
                         case 17:
                             modeloMb51.setUser_Name(contenidoCelda);
-                            System.out.println("User_Name: " + modeloMb51.getUser_Name());
+                            //System.out.println("User_Name: " + modeloMb51.getUser_Name());
                             break;
                         case 18:
                             modeloMb51.setVendor(contenidoCelda);
-                            System.out.println("Vendor: " + modeloMb51.getVendor());
+                            //System.out.println("Vendor: " + modeloMb51.getVendor());
                             break;
                         case 19:
                             modeloMb51.setOrder(contenidoCelda);
-                            System.out.println("Order: " + modeloMb51.getOrder());
+                            //System.out.println("Order: " + modeloMb51.getOrder());
                             break;
 
                     }
@@ -198,21 +202,24 @@ public class ControladorCargaPlanos {
 
                     Contador++;
                 }
+                Contador = 0;
+                FinalComprasMB51(modeloMb51);
+                System.out.println("Linea: " + Linea);
+                Linea++;
                 modeloMb51 = null;
             }
 
-        } catch (IOException e)
-        {
-            System.out.println(e);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
         return Realizado;
     }
 
     public String CargarXLS_Compras_ME80FN(String Ruta) {
         String Realizado = "False";
         String Errores = "";
-        try
-        {
+        try {
             //FileInputStream inputStream = new FileInputStream(new File("C:\\Zred\\SunChemical\\DESCUENTOS.xlsx"));
             FileInputStream inputStream = new FileInputStream(new File(Ruta));
             Workbook workbook = new XSSFWorkbook(inputStream);
@@ -224,18 +231,15 @@ public class ControladorCargaPlanos {
 
             ModeloMe80fn modeloMe80fn = null;
 
-            while (iterator.hasNext())
-            {
+            while (iterator.hasNext()) {
                 modeloMe80fn = new ModeloMe80fn();
                 Row nextRow = (Row) iterator.next();
                 Iterator cellIterator = nextRow.cellIterator();
-                while (cellIterator.hasNext())
-                {
+                while (cellIterator.hasNext()) {
                     Cell cell = (Cell) cellIterator.next();
                     String contenidoCelda = formatter.formatCellValue(cell);
 
-                    switch (Contador)
-                    {
+                    switch (Contador) {
                         case 0:
                             modeloMe80fn.setPurchasing_Document(contenidoCelda);
                             System.out.println("Purchasing_Document: " + modeloMe80fn.getPurchasing_Document());
@@ -333,8 +337,7 @@ public class ControladorCargaPlanos {
                 modeloMe80fn = null;
             }
 
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             System.out.println(e);
         }
 
@@ -344,8 +347,7 @@ public class ControladorCargaPlanos {
     public String CargarXLS_Compras_FBL3N(String Ruta) {
         String Realizado = "False";
         String Errores = "";
-        try
-        {
+        try {
             //FileInputStream inputStream = new FileInputStream(new File("C:\\Zred\\SunChemical\\DESCUENTOS.xlsx"));
             FileInputStream inputStream = new FileInputStream(new File(Ruta));
             Workbook workbook = new XSSFWorkbook(inputStream);
@@ -357,18 +359,15 @@ public class ControladorCargaPlanos {
 
             ModeloFbl3m modeloFbl3m = null;
 
-            while (iterator.hasNext())
-            {
+            while (iterator.hasNext()) {
                 modeloFbl3m = new ModeloFbl3m();
                 Row nextRow = (Row) iterator.next();
                 Iterator cellIterator = nextRow.cellIterator();
-                while (cellIterator.hasNext())
-                {
+                while (cellIterator.hasNext()) {
                     Cell cell = (Cell) cellIterator.next();
                     String contenidoCelda = formatter.formatCellValue(cell);
 
-                    switch (Contador)
-                    {
+                    switch (Contador) {
                         case 0:
                             modeloFbl3m.setDocument_Number(contenidoCelda);
                             System.out.println("Document_Number: " + modeloFbl3m.getDocument_Number());
@@ -394,8 +393,8 @@ public class ControladorCargaPlanos {
                             System.out.println("Profit_Center: " + modeloFbl3m.getProfit_Center());
                             break;
                         case 6:
-                            modeloFbl3m.setYear_month(contenidoCelda);
-                            System.out.println("Year_month: " + modeloFbl3m.getYear_month());
+                            modeloFbl3m.setYearMonth(contenidoCelda);
+                            System.out.println("Year_month: " + modeloFbl3m.getYearMonth());
                             break;
                         case 7:
                             modeloFbl3m.setAccount(contenidoCelda);
@@ -464,8 +463,7 @@ public class ControladorCargaPlanos {
                 }
             }
 
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             System.out.println(e);
         }
 
@@ -475,8 +473,7 @@ public class ControladorCargaPlanos {
     public String CargarXLS_MRP_DATA(String Ruta) {
         String Realizado = "False";
         String Errores = "";
-        try
-        {
+        try {
             //FileInputStream inputStream = new FileInputStream(new File("C:\\Zred\\SunChemical\\DESCUENTOS.xlsx"));
             FileInputStream inputStream = new FileInputStream(new File(Ruta));
             Workbook workbook = new XSSFWorkbook(inputStream);
@@ -488,17 +485,14 @@ public class ControladorCargaPlanos {
 
             ModeloMrpData modeloMrpData = null;
 
-            while (iterator.hasNext())
-            {
+            while (iterator.hasNext()) {
                 modeloMrpData = new ModeloMrpData();
                 Row nextRow = (Row) iterator.next();
                 Iterator cellIterator = nextRow.cellIterator();
-                while (cellIterator.hasNext())
-                {
+                while (cellIterator.hasNext()) {
                     Cell cell = (Cell) cellIterator.next();
                     String contenidoCelda = formatter.formatCellValue(cell);
-                    switch (Contador)
-                    {
+                    switch (Contador) {
                         case 0:
                             modeloMrpData.setMaterial(contenidoCelda);
                             System.out.println("Material: " + modeloMrpData.getMaterial());
@@ -869,10 +863,331 @@ public class ControladorCargaPlanos {
                 }
                 modeloMrpData = null;
             }
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             System.out.println(e);
         }
         return "";
     }
+
+    public String CargarCSV_Compras_FBL3N(String Ruta) throws IOException {
+        String Realizado = "false";
+        CSVReader csvReader = null;
+        try {
+            LinkedList<ModeloFbl3m> ListModeloFbl3ms = new LinkedList<ModeloFbl3m>();
+            System.out.println(Ruta);
+
+            csvReader = new CSVReader(new InputStreamReader(new FileInputStream(Ruta), "UTF-8"));
+
+            String[] fila = null;
+            String[] filaContador = null;
+            System.out.println(new Date());
+            String Consulta = "";
+            Integer Contador = 0;
+            Integer Veces = 0;
+            Integer Cantidad = 4000;
+
+            while ((filaContador = csvReader.readNext()) != null) {
+                Contador++;
+            }
+            csvReader.close();
+
+            csvReader = null;
+            csvReader = new CSVReader(new InputStreamReader(new FileInputStream(Ruta), "UTF-8"));
+
+            while ((fila = csvReader.readNext()) != null) {
+                
+                
+                
+                
+                
+                
+
+                ModeloFbl3m modeloFbl3m = new ModeloFbl3m();
+
+                modeloFbl3m.setDocument_Number(fila[0]);
+                modeloFbl3m.setDocument_type(fila[1]);
+                modeloFbl3m.setDocument_Date(fila[2]);
+                modeloFbl3m.setPosting_Date(fila[3]);
+                modeloFbl3m.setCost_Center(fila[4]);
+                modeloFbl3m.setProfit_Center(fila[5]);
+                modeloFbl3m.setYearMonth(fila[6]);
+                modeloFbl3m.setAccount(fila[7]);
+                modeloFbl3m.setPlant(fila[8]);
+                modeloFbl3m.setMaterial(fila[9]);
+                modeloFbl3m.setQuantity(fila[10]);
+                modeloFbl3m.setAmount_in_local_currency(fila[11]);
+                modeloFbl3m.setLocal_Currency(fila[12]);
+                modeloFbl3m.setPurchasing_Document(fila[13]);
+                modeloFbl3m.setReference(fila[14]);
+                modeloFbl3m.setDocument_currency(fila[15]);
+                modeloFbl3m.setOffsetting_acct_no(fila[16]);
+                modeloFbl3m.setBase_Unit_of_Measure(fila[17]);
+                modeloFbl3m.setAlternative_Account_No(fila[18]);
+                modeloFbl3m.setTransaction_Code(fila[19]);
+                modeloFbl3m.setText(fila[20]);
+                modeloFbl3m.setAssignment(fila[21]);
+
+                Consulta = Consulta + "('" + modeloFbl3m.getDocument_Number() + "',"
+                        + "'" + modeloFbl3m.getDocument_type() + "',"
+                        + "'" + modeloFbl3m.getDocument_Date() + "',"
+                        + "'" + modeloFbl3m.getPosting_Date() + "',"
+                        + "'" + modeloFbl3m.getCost_Center() + "',"
+                        + "'" + modeloFbl3m.getProfit_Center() + "',"
+                        + "'" + modeloFbl3m.getYearMonth() + "',"
+                        + "'" + modeloFbl3m.getAccount() + "',"
+                        + "'" + modeloFbl3m.getPlant() + "',"
+                        + "'" + modeloFbl3m.getMaterial() + "',"
+                        + "'" + modeloFbl3m.getQuantity() + "',"
+                        + "'" + modeloFbl3m.getAmount_in_local_currency() + "',"
+                        + "'" + modeloFbl3m.getLocal_Currency() + "',"
+                        + "'" + modeloFbl3m.getPurchasing_Document() + "',"
+                        + "'" + modeloFbl3m.getReference() + "',"
+                        + "'" + modeloFbl3m.getDocument_currency() + "',"
+                        + "'" + modeloFbl3m.getOffsetting_acct_no() + "',"
+                        + "'" + modeloFbl3m.getBase_Unit_of_Measure() + "',"
+                        + "'" + modeloFbl3m.getAlternative_Account_No() + "',"
+                        + "'" + modeloFbl3m.getTransaction_Code() + "',"
+                        + "'" + modeloFbl3m.getText() + "',"
+                        + "'" + modeloFbl3m.getAssignment() + "'),";
+
+                if (Objects.equals(Veces+1, Cantidad)) {
+                    Integer x = Cantidad - Contador;
+                    Contador = Contador - Cantidad;
+                    if (Math.abs(x) > 4000) {
+                        Cantidad = 4000;
+                    } else {
+                        Cantidad = Math.abs(Contador);
+                    }
+                    System.err.println("Veces Insertadas");
+
+                    Consulta = Consulta.substring(0, Consulta.length() - 1);
+
+                    String SqlInsertMasivo = "INSERT INTO fbl3m ("
+                            + "Document_Number,"
+                            + "Document_type,"
+                            + "Document_Date,"
+                            + "Posting_Date,"
+                            + "Cost_Center,"
+                            + "Profit_Center,"
+                            + "YearMonth,"
+                            + "Account,"
+                            + "Plant,"
+                            + "Material,"
+                            + "Quantity,"
+                            + "Amount_in_local_currency,"
+                            + "Local_Currency,"
+                            + "Purchasing_Document,"
+                            + "Reference,"
+                            + "Document_currency,"
+                            + "Offsetting_acct_no,"
+                            + "Base_Unit_of_Measure,"
+                            + "Alternative_Account_No,"
+                            + "Transaction_Code,"
+                            + "Text,"
+                            + "Assignment) "
+                            + "VALUES "
+                            + Consulta;
+
+                    ControladorFbl3m controladorFbl3m = new ControladorFbl3m();
+                    controladorFbl3m.Insert(SqlInsertMasivo);
+                    controladorFbl3m = null;
+                    ListModeloFbl3ms = null;
+                    Consulta = "";
+                    Veces = 0;
+                }
+
+                Veces++;
+
+            }
+
+
+            System.out.println(new Date());
+            csvReader.close();
+        } catch (FileNotFoundException e) {
+            csvReader.close();
+        } catch (IOException e) {
+            csvReader.close();
+        }
+        return Realizado;
+    }
+
+    public void FinalComprasMB51(ModeloMb51 modeloMb51) {
+        //List<ModeloMb51> listModeloMb51 = new ArrayList<ModeloMb51>();
+        //LinkedList<ModeloMb51> listModeloMb51 = null;
+
+        //for (ModeloMb51 modeloMb51 : listModeloMb51) {
+        //BUSCAMOS EL PROVEEDOR
+        ControladorProveedor controladorProveedores = new ControladorProveedor();
+        ModeloProveedor modeloProveedor = controladorProveedores.SelectSQL("SELECT Id, Vendors, Name, Vendor_Type FROM proveedor WHERE Vendors = '" + modeloMb51.getVendor() + "'");
+        //LLENAMOS COLUMNA U
+        modeloMb51.setVendor_Name(modeloProveedor.getName());
+        //LLENAMOS COLUMNA V
+        modeloMb51.setVendor_Type(modeloProveedor.getVendor_Type());
+
+        String Month = modeloMb51.getPosting_Date().split("/")[1];
+        //LLENAMOS COLUMNA W
+        modeloMb51.setMonth(Month);
+
+        String Period = modeloMb51.getPosting_Date().split("/")[2];
+        //LLENAMOS COLUMNA X
+        modeloMb51.setPeriod(Period);
+
+        //BUSCAMOS EL MATERIAL
+        ControladorMrpdata controladorMrpData = new ControladorMrpdata();
+        ModeloMrpData modeloMrpData = controladorMrpData.SelectSQL("SELECT * FROM mrpdata WHERE Material = '" + modeloMb51.getMaterial() + "'");
+        //LLENAMOS COLUMNA Y
+        modeloMb51.setMaterial_Type(modeloMrpData.getMaterial_Type());
+        //LLENAMOS COLUMNA Z
+        modeloMb51.setProfit_Center(modeloMrpData.getProfit_Center());
+        //LLENAMOS COLUMNA AA
+        modeloMb51.setLink1_PO_Mas_Material(modeloMb51.getPurchase_order() + modeloMb51.getMaterial());
+        //LLENAMOS COLUMNA AB
+        modeloMb51.setLink2_PO_Mas_position(modeloMb51.getPurchase_order() + modeloMb51.getItem());
+        //LLENAMOS COLUMNA AC
+        modeloMb51.setReferencia_Y_vendor(modeloMb51.getMaterial() + modeloMb51.getVendor());
+
+        //BUSCAMOS EL TotalQ_ME80FN
+        ControladorMe80fn controladorMe80fn = new ControladorMe80fn();
+        LinkedList<ModeloMe80fn> LstmodeloMe80fn = controladorMe80fn.ListSelectSQL("SELECT * FROM me80fn WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Item = '" + modeloMb51.getItem() + "' AND Movement_type = ''");
+        Double Me80fnQuantity = 0.0;
+
+        for (ModeloMe80fn modeloMe80fn : LstmodeloMe80fn) {
+            Me80fnQuantity = Me80fnQuantity + Double.valueOf((modeloMe80fn.getQuantity().replace(".", "")).replace(",", "."));
+        }
+        //LLENAMOS COLUMNA AD
+        modeloMb51.setTotalQ_ME80FN(Me80fnQuantity + "");
+        //CALCULAMOS TotalQ_Porcentaje   
+        Double Qty_in_unit_of_entry = Double.valueOf(modeloMb51.getQty_in_unit_of_entry());
+        Double TotalQ_ME80FN = Double.valueOf(modeloMb51.getTotalQ_ME80FN());
+        Double TotalQ_Porcentaje = null;
+        try {
+            if (TotalQ_ME80FN == 0.0) {
+                TotalQ_Porcentaje = 0.0;
+            } else {
+                TotalQ_Porcentaje = Qty_in_unit_of_entry / TotalQ_ME80FN;
+            }
+
+        } catch (Exception e) {
+            TotalQ_Porcentaje = 0.0;
+        }
+        //LLENAMOS COLUMNA AE
+        modeloMb51.setTotalQ_Porcentaje(TotalQ_Porcentaje + "");
+
+        //BUSCAMOS TOTAL_INVOICE_VALUE
+        //modeloMe80fn = controladorMe80fn.SelectSQL("SELECT *, SUM(Amt_in_loc_cur) AS 'SUM_Amt_in_loc_cur' FROM me80fn WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Item = '" + modeloMb51.getItem() + "' AND Movement_type = ''");
+        Double TOTAL_INVOICE_VALUE = 0.0;
+        for (ModeloMe80fn modeloMe80fn : LstmodeloMe80fn) {
+            TOTAL_INVOICE_VALUE = TOTAL_INVOICE_VALUE + Double.valueOf((modeloMe80fn.getAmt_in_loc_cur().replace(".", "")).replace(",", "."));
+        }
+        //LLENAMOS COLUMNA AF
+        String TOTAL_INVOICE_VALUE_String = String.format("%.5f", TOTAL_INVOICE_VALUE);
+        modeloMb51.setTOTAL_INVOICE_VALUE((TOTAL_INVOICE_VALUE_String.replace(".", "")).replace(",", "."));
+
+        Double Factura_Value_Unit = TOTAL_INVOICE_VALUE / Qty_in_unit_of_entry * TotalQ_Porcentaje;
+        //LLENAMOS COLUMNA AG
+        modeloMb51.setFactura_Value_Unit(Factura_Value_Unit + "");
+
+        Double Unitario_estandar = Double.valueOf(modeloMb51.getAmt_in_loc_cur()) / Double.valueOf(modeloMb51.getQuantity());
+        Double PIR = Factura_Value_Unit / Unitario_estandar;
+        //LLENAMOS COLUMNA AH
+        modeloMb51.setPIR_Porcentaje(PIR + "");
+
+        //BUSCAMOS MONEDA
+        ModeloMe80fn modeloMe80fn = controladorMe80fn.SelectSQL("SELECT * FROM me80fn WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND Movement_type <> ''");
+        //LLENAMOS COLUMNA AI
+        modeloMb51.setMoneda(modeloMe80fn.getCurrency());
+
+        //BUSCAMOS Freight
+        ControladorFbl3m controladorFbl3m = new ControladorFbl3m();
+        LinkedList<ModeloFbl3m> ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND Account = '50320' AND (Offsetting_acct_no = '20011' OR Offsetting_acct_no LIKE '3%')");
+
+        Double Freight = 0.0;
+        for (ModeloFbl3m modeloFbl3m : ListmodeloFbl3m) {
+            if (modeloFbl3m.getAmount_in_local_currency() != null) {
+                Freight = Freight + Double.valueOf((modeloFbl3m.getAmount_in_local_currency().replace(".", "")).replace(",", "."));
+            }
+        }
+        Freight = Freight * TotalQ_Porcentaje;
+        //LLENAMOS COLUMNA AJ
+        modeloMb51.setFreightString(Freight + "");
+
+        //BUSCAMOS DUTYS
+        ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND Account = '50320' AND Offsetting_acct_no = '20014'");
+        Double Dutys = 0.0;
+        for (ModeloFbl3m modeloFbl3m : ListmodeloFbl3m) {
+            if (modeloFbl3m.getAmount_in_local_currency() != null) {
+                Dutys = Dutys + Double.valueOf((modeloFbl3m.getAmount_in_local_currency().replace(".", "")).replace(",", "."));
+            }
+        }
+        Dutys = Dutys * TotalQ_Porcentaje;
+        //LLENAMOS COLUMNA AK
+        modeloMb51.setDutys(Dutys + "");
+
+        // BUSCAMOS ARANCEL
+        ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND Account = '50320' AND Offsetting_acct_no = '20319'");
+        Double Arancel = 0.0;
+        for (ModeloFbl3m modeloFbl3m : ListmodeloFbl3m) {
+            if (modeloFbl3m.getAmount_in_local_currency() != null) {
+                Arancel = Arancel + Double.valueOf((modeloFbl3m.getAmount_in_local_currency().replace(".", "")).replace(",", "."));
+            }
+        }
+        Arancel = Arancel * TotalQ_Porcentaje;
+        //LLENAMOS COLUMNA AL
+        modeloMb51.setArancel(Arancel + "");
+
+        //buscamos Ajuste PIR
+        ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND Account = '50320' AND Offsetting_acct_no = '20010'");
+        Double Ajuste_PIR = 0.0;
+        for (ModeloFbl3m modeloFbl3m : ListmodeloFbl3m) {
+            if (modeloFbl3m.getAmount_in_local_currency() != null) {
+                Ajuste_PIR = Ajuste_PIR + Double.valueOf((modeloFbl3m.getAmount_in_local_currency().replace(".", "")).replace(",", "."));
+            }
+        }
+        //LLENAMOS COLUMNA AM            
+        Ajuste_PIR = Ajuste_PIR * TotalQ_Porcentaje;
+        modeloMb51.setAjuste_PIR(Ajuste_PIR + "");
+
+        //BUSCAMOS OTROS
+        ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND Account = '50320' AND Offsetting_acct_no = '10500'");
+        Double Otros = 0.0;
+        for (ModeloFbl3m modeloFbl3m : ListmodeloFbl3m) {
+            if (modeloFbl3m.getAmount_in_local_currency() != null) {
+                Otros = Otros + Double.valueOf((modeloFbl3m.getAmount_in_local_currency().replace(".", "")).replace(",", "."));
+            }
+        }
+        Otros = Otros * TotalQ_Porcentaje;
+        //LLENAMOS COLUMNA AN
+        modeloMb51.setOtros(Otros + "");
+
+        Double Total_Costos_Adicionales = Freight + Dutys + Arancel + Ajuste_PIR + Otros;
+        String Total_Costos_Adicionales_String = String.format("%.5f", Total_Costos_Adicionales);
+        //LLENAMOS COLUMNA AO
+        modeloMb51.setTotal_Costos_Adicionales((Total_Costos_Adicionales_String.replace(".", "")).replace(",", "."));
+
+        Double Participac_Adicionales = Total_Costos_Adicionales / TOTAL_INVOICE_VALUE;
+        //LLENAMOS COLUMNA AP
+        modeloMb51.setParticipac_Adicionales(Participac_Adicionales + "");
+
+        Double Total_Costos = (Total_Costos_Adicionales + TOTAL_INVOICE_VALUE) * TotalQ_Porcentaje;
+        String Total_Costos_String = String.format("%.5f", Total_Costos);
+        //LLENAMOS COLUMNA AQ
+        modeloMb51.setTotal_Costos((Total_Costos_String.replace(".", "")).replace(",", "."));
+
+        Double Unitario_final_FIFO = Total_Costos / Double.valueOf(modeloMb51.getQuantity());
+        //LLENAMOS COLUMNA AR
+        modeloMb51.setUnitario_final_FIFO(Unitario_final_FIFO + "");
+
+        //Unitario_estandar = Double.valueOf(modeloMb51.getAmt_in_loc_cur()) / Double.valueOf(modeloMb51.getQuantity());
+        //LLENAMOS COLUMNA AS
+        modeloMb51.setUnitario_estandar(Unitario_estandar + "");
+
+        Double Real_Vs_Estándar = (Unitario_final_FIFO / Unitario_estandar) - 1;
+        modeloMb51.setPorcentaje_Real_Vs_Estándar(Real_Vs_Estándar + "");
+
+        ControladorMb51 controladorMb51 = new ControladorMb51();
+        controladorMb51.Insert(modeloMb51);
+
+        //}
+    }
+
 }

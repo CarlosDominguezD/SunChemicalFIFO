@@ -13,14 +13,13 @@ public class ModeloFbl3m
 {
 
     Integer Id;
-    String Index;
     String Document_Number;
     String Document_type;
     String Document_Date;
     String Posting_Date;
     String Cost_Center;
     String Profit_Center;
-    String Year_month;
+    String YearMonth;
     String Account;
     String Plant;
     String Material;
@@ -36,23 +35,22 @@ public class ModeloFbl3m
     String Transaction_Code;
     String Text;
     String Assignment;
-    String Clasificación;
+    String Clasificacion;
 
     public ModeloFbl3m()
     {
     }
 
-    public ModeloFbl3m(Integer Id, String Index, String Document_Number, String Document_type, String Document_Date, String Posting_Date, String Cost_Center, String Profit_Center, String Year_month, String Account, String Plant, String Material, String Quantity, String Amount_in_local_currency, String Local_Currency, String Purchasing_Document, String Reference, String Document_currency, String Offsetting_acct_no, String Base_Unit_of_Measure, String Alternative_Account_No, String Transaction_Code, String Text, String Assignment, String Clasificación)
+    public ModeloFbl3m(Integer Id, String Document_Number, String Document_type, String Document_Date, String Posting_Date, String Cost_Center, String Profit_Center, String YearMonth, String Account, String Plant, String Material, String Quantity, String Amount_in_local_currency, String Local_Currency, String Purchasing_Document, String Reference, String Document_currency, String Offsetting_acct_no, String Base_Unit_of_Measure, String Alternative_Account_No, String Transaction_Code, String Text, String Assignment, String Clasificacion)
     {
         this.Id = Id;
-        this.Index = Index;
         this.Document_Number = Document_Number;
         this.Document_type = Document_type;
         this.Document_Date = Document_Date;
         this.Posting_Date = Posting_Date;
         this.Cost_Center = Cost_Center;
         this.Profit_Center = Profit_Center;
-        this.Year_month = Year_month;
+        this.YearMonth = YearMonth;
         this.Account = Account;
         this.Plant = Plant;
         this.Material = Material;
@@ -68,7 +66,7 @@ public class ModeloFbl3m
         this.Transaction_Code = Transaction_Code;
         this.Text = Text;
         this.Assignment = Assignment;
-        this.Clasificación = Clasificación;
+        this.Clasificacion = Clasificacion;
     }
 
     public Integer getId()
@@ -80,16 +78,7 @@ public class ModeloFbl3m
     {
         this.Id = Id;
     }
-
-    public String getIndex()
-    {
-        return Index;
-    }
-
-    public void setIndex(String Index)
-    {
-        this.Index = Index;
-    }
+   
 
     public String getDocument_Number()
     {
@@ -151,14 +140,14 @@ public class ModeloFbl3m
         this.Profit_Center = Profit_Center;
     }
 
-    public String getYear_month()
+    public String getYearMonth()
     {
-        return Year_month;
+        return YearMonth;
     }
 
-    public void setYear_month(String Year_month)
+    public void setYearMonth(String YearMonth)
     {
-        this.Year_month = Year_month;
+        this.YearMonth = YearMonth;
     }
 
     public String getAccount()
@@ -311,14 +300,14 @@ public class ModeloFbl3m
         this.Assignment = Assignment;
     }
 
-    public String getClasificación()
+    public String getClasificacion()
     {
-        return Clasificación;
+        return Clasificacion;
     }
 
-    public void setClasificación(String Clasificación)
+    public void setClasificacion(String Clasificacion)
     {
-        this.Clasificación = Clasificación;
+        this.Clasificacion = Clasificacion;
     }
 
 }

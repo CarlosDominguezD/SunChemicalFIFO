@@ -519,4 +519,103 @@ public class ControladorMe80fn {
         }
         return modeloMe80fn;
     }
+    
+    public ModeloMe80fn SelectSQL(String Sql) {
+        ModeloMe80fn modeloMe80fn = new ModeloMe80fn();
+        ConexionBDMySql conexion = new ConexionBDMySql();
+        Connection con;
+        con = conexion.abrirConexion();
+        PreparedStatement SQL;
+        try
+        {
+            SQL = con.prepareStatement(Sql);
+            ResultSet res = SQL.executeQuery();
+            if (res.next())
+            {
+                modeloMe80fn.setId(res.getInt("id"));
+                modeloMe80fn.setIndex(res.getString("Index"));
+                modeloMe80fn.setIndex2(res.getString("Index2"));
+                modeloMe80fn.setPurchasing_Document(res.getString("Purchasing_Document"));
+                modeloMe80fn.setMaterial_Doc_Year(res.getString("Material_Doc_Year"));
+                modeloMe80fn.setMaterial_Document(res.getString("Material_Document"));
+                modeloMe80fn.setDocument_Date(res.getString("Document_Date"));
+                modeloMe80fn.setMaterial(res.getString("Material"));
+                modeloMe80fn.setShort_Text(res.getString("Short_Text"));
+                modeloMe80fn.setBatch(res.getString("Batch"));
+                modeloMe80fn.setItem(res.getString("Item"));
+                modeloMe80fn.setMovement_type(res.getString("Movement_type"));
+                modeloMe80fn.setPosting_Date(res.getString("Posting_Date"));
+                modeloMe80fn.setDelivery_Completed(res.getString("Delivery_Completed"));
+                modeloMe80fn.setPlant(res.getString("Plant"));
+                modeloMe80fn.setQuantity(res.getString("Quantity"));
+                modeloMe80fn.setAmt_in_loc_cur(res.getString("Amt_in_loc_cur"));
+                modeloMe80fn.setAmount(res.getString("Amount"));
+                modeloMe80fn.setCurrency(res.getString("Currency"));
+                modeloMe80fn.setValuation_Type(res.getString("Valuation_Type"));
+                modeloMe80fn.setEntry_Date(res.getString("Entry_Date"));
+                modeloMe80fn.setLocal_currency(res.getString("Local_currency"));
+                modeloMe80fn.setReference_Doc_Item(res.getString("Reference_Doc_Item"));
+                modeloMe80fn.setInvoice_Value(res.getString("Invoice_Value"));
+                modeloMe80fn.setInvoice_Value_in_FC(res.getString("Invoice_Value_in_FC"));
+            }
+            res.close();
+            SQL.close();
+            con.close();
+        } catch (SQLException e)
+        {
+            System.out.println("Error en la consulta SQL Select " + e);
+        }
+        return modeloMe80fn;
+    }
+    
+    public LinkedList<ModeloMe80fn> ListSelectSQL(String Sql) {
+        LinkedList<ModeloMe80fn> modeloMe80fns = new LinkedList<ModeloMe80fn>();
+        ConexionBDMySql conexion = new ConexionBDMySql();
+        Connection con;
+        con = conexion.abrirConexion();
+        PreparedStatement SQL;
+        try
+        {
+            SQL = con.prepareStatement(Sql);
+            ResultSet res = SQL.executeQuery();
+            while (res.next())
+            {
+                ModeloMe80fn modeloMe80fn = new ModeloMe80fn();
+                modeloMe80fn.setId(res.getInt("id"));
+                modeloMe80fn.setIndex(res.getString("Index"));
+                modeloMe80fn.setIndex2(res.getString("Index2"));
+                modeloMe80fn.setPurchasing_Document(res.getString("Purchasing_Document"));
+                modeloMe80fn.setMaterial_Doc_Year(res.getString("Material_Doc_Year"));
+                modeloMe80fn.setMaterial_Document(res.getString("Material_Document"));
+                modeloMe80fn.setDocument_Date(res.getString("Document_Date"));
+                modeloMe80fn.setMaterial(res.getString("Material"));
+                modeloMe80fn.setShort_Text(res.getString("Short_Text"));
+                modeloMe80fn.setBatch(res.getString("Batch"));
+                modeloMe80fn.setItem(res.getString("Item"));
+                modeloMe80fn.setMovement_type(res.getString("Movement_type"));
+                modeloMe80fn.setPosting_Date(res.getString("Posting_Date"));
+                modeloMe80fn.setDelivery_Completed(res.getString("Delivery_Completed"));
+                modeloMe80fn.setPlant(res.getString("Plant"));
+                modeloMe80fn.setQuantity(res.getString("Quantity"));
+                modeloMe80fn.setAmt_in_loc_cur(res.getString("Amt_in_loc_cur"));
+                modeloMe80fn.setAmount(res.getString("Amount"));
+                modeloMe80fn.setCurrency(res.getString("Currency"));
+                modeloMe80fn.setValuation_Type(res.getString("Valuation_Type"));
+                modeloMe80fn.setEntry_Date(res.getString("Entry_Date"));
+                modeloMe80fn.setLocal_currency(res.getString("Local_currency"));
+                modeloMe80fn.setReference_Doc_Item(res.getString("Reference_Doc_Item"));
+                modeloMe80fn.setInvoice_Value(res.getString("Invoice_Value"));
+                modeloMe80fn.setInvoice_Value_in_FC(res.getString("Invoice_Value_in_FC"));
+                modeloMe80fns.add(modeloMe80fn);
+            }
+            res.close();
+            SQL.close();
+            con.close();
+        } catch (SQLException e)
+        {
+            System.out.println("Error en la consulta SQL Select " + e);
+        }
+        return modeloMe80fns;
+    }
+
 }
