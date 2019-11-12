@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 @MultipartConfig
 public class ServletSunchemical extends HttpServlet {
 
-    String res = "false";
+    String respuesta = "false";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -42,7 +42,7 @@ public class ServletSunchemical extends HttpServlet {
         try (PrintWriter out = response.getWriter())
         {
             /* TODO output your page here. You may use following sample code. */
-            if ("true".equals(res))
+            if ("true".equals(respuesta))
             {
                 out.println("<!DOCTYPE html>");
                 out.println("<html lang=en>");
@@ -75,17 +75,6 @@ public class ServletSunchemical extends HttpServlet {
                 out.println("</div>");
                 out.println("</body>");
                 out.println("</html>");
-//                out.println("<!DOCTYPE html>");
-//                out.println("<html>");
-//                out.println("<h1> Archivo Cargado Exitosamente </h1>");
-//                out.println("<head>");
-//                out.println("<title>Plano Cargado</title>");
-//                out.println("</head>");
-//                out.println("<body>");
-//                out.println("<h3> Plano Cargado</h3>");
-//                out.println("<li><a href=../../../SunChemicalFIFO/Cargaplanos.jsp>Volver Cargar Planos</a></li>");
-//                out.println("</body>");
-//                out.println("</html>");
             } else
             {
                 out.println("<!DOCTYPE html>");
@@ -119,17 +108,6 @@ public class ServletSunchemical extends HttpServlet {
                 out.println("</div>");
                 out.println("</body>");
                 out.println("</html>");
-//                out.println("<!DOCTYPE html>");
-//                out.println("<html>");
-//                out.println("<h1> Errores en la carga del plano </h1>");
-//                out.println("<head>");
-//                out.println("<title>Mensaje Error Plano</title>");
-//                out.println("</head>");
-//                out.println("<body>");
-//                out.println("<h3>" + res + "</h3>");
-//                out.println("<li><a href=../../../SunChemicalFIFO/Cargaplanos.jsp>Volver Cargar Planos</a></li>");
-//                out.println("</body>");
-//                out.println("</html>");
             }
         }
     }
@@ -169,7 +147,8 @@ public class ServletSunchemical extends HttpServlet {
             case "Planos":
                 ControladorCargaPlanos controladorCargaPlanos = new ControladorCargaPlanos();
                 res = controladorCargaPlanos.Upload(request, response);
-                request.setAttribute("espuesta", res);
+                respuesta = res;
+                request.setAttribute("respuesta", res);
                 processRequest(request, response);
 //            response.setCharacterEncoding("UT
                 break;
