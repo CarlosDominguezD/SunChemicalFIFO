@@ -563,7 +563,7 @@ public class ControladorMb51 {
                     + "  `Movement_Type_Text`,"
                     + "  `Item`,"
                     + "  `Quantity`,"
-                    + "  `Qty_in:unit_of_entry`,"
+                    + "  `Qty_in_unit_of_entry`,"
                     + "  `Unit_of_Entry`,"
                     + "  `Amt_in_loc_cur`,"
                     + "  `Currency`,"
@@ -573,7 +573,7 @@ public class ControladorMb51 {
                     + "  `Material_Document`,"
                     + "  `User_Name`,"
                     + "  `Vendor`,"
-                    + "  `Order`,"
+                    + "  `Order1`,"
                     + "  `Vendor_Name`,"
                     + "  `Vendor_Type`,"
                     + "  `Month`,"
@@ -616,7 +616,7 @@ public class ControladorMb51 {
                 modeloMb51.setMovement_Type_Text(res.getString("Movement_Type_Text"));
                 modeloMb51.setItem(res.getString("Item"));
                 modeloMb51.setQuantity(res.getString("Quantity"));
-                modeloMb51.setQty_in_unit_of_entry(res.getString("Qty_in:unit_of_entry"));
+                modeloMb51.setQty_in_unit_of_entry(res.getString("Qty_in_unit_of_entry"));
                 modeloMb51.setUnit_of_Entry(res.getString("Unit_of_Entry"));
                 modeloMb51.setAmt_in_loc_cur(res.getString("Amt_in_loc_cur"));
                 modeloMb51.setCurrency(res.getString("Currency"));
@@ -626,7 +626,7 @@ public class ControladorMb51 {
                 modeloMb51.setMaterial_Document(res.getString("Material_Document"));
                 modeloMb51.setUser_Name(res.getString("User_Name"));
                 modeloMb51.setVendor(res.getString("Vendor"));
-                modeloMb51.setOrder(res.getString("Order"));
+                modeloMb51.setOrder(res.getString("Order1"));
                 modeloMb51.setVendor_Name(res.getString("Vendor_Name"));
                 modeloMb51.setVendor_Type(res.getString("Vendor_Type"));
                 modeloMb51.setMonth(res.getString("Month"));

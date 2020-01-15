@@ -449,6 +449,34 @@ public class ControladorMrpdata {
         }
         return resul;
     }
+    
+    public boolean Insert(String Sql) {
+        boolean resul = false;
+        try
+        {
+            ConexionBDMySql conexion = new ConexionBDMySql();
+            Connection con;
+            con = conexion.abrirConexion();
+            PreparedStatement SQL = null;
+            try
+            {
+                SQL = con.prepareStatement(Sql);
+                if (SQL.executeUpdate() > 0)
+                {
+                    resul = true;
+                }
+            } catch (SQLException e)
+            {
+                System.out.println(e);
+            }
+            SQL.close();
+            con.close();
+        } catch (SQLException e)
+        {
+            System.out.println("Error en la consulta SQL Insert " + e);
+        }
+        return resul;
+    }
 
     public boolean Update(ModeloMrpData modelo) {
         boolean resul = false;
