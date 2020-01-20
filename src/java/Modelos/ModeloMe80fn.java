@@ -28,6 +28,7 @@ public class ModeloMe80fn
     String Delivery_Completed;
     String Plant;
     String Quantity;
+    String Order_Unit;
     String Amt_in_loc_cur;
     String Amount;
     String Currency;
@@ -42,7 +43,7 @@ public class ModeloMe80fn
     {
     }
 
-    public ModeloMe80fn(Integer Id, String Index, String Index2, String Purchasing_Document, String Material_Doc_Year, String Material_Document, String Document_Date, String Material, String Short_Text, String Batch, String Item, String Movement_type, String Posting_Date, String Delivery_Completed, String Plant, String Quantity, String Amt_in_loc_cur, String Amount, String Currency, String Valuation_Type, String Entry_Date, String Local_currency, String Reference_Doc_Item, String Invoice_Value, String Invoice_Value_in_FC)
+    public ModeloMe80fn(Integer Id, String Index, String Index2, String Purchasing_Document, String Material_Doc_Year, String Material_Document, String Document_Date, String Material, String Short_Text, String Batch, String Item, String Movement_type, String Posting_Date, String Delivery_Completed, String Plant, String Quantity, String Order_Unit, String Amt_in_loc_cur, String Amount, String Currency, String Valuation_Type, String Entry_Date, String Local_currency, String Reference_Doc_Item, String Invoice_Value, String Invoice_Value_in_FC)
     {
         this.Id = Id;
         this.Index = Index;
@@ -60,6 +61,7 @@ public class ModeloMe80fn
         this.Delivery_Completed = Delivery_Completed;
         this.Plant = Plant;
         this.Quantity = Quantity;
+        this.Order_Unit = Order_Unit;
         this.Amt_in_loc_cur = Amt_in_loc_cur;
         this.Amount = Amount;
         this.Currency = Currency;
@@ -231,6 +233,14 @@ public class ModeloMe80fn
         this.Quantity = Quantity;
     }
 
+    public String getOrder_Unit() {
+        return Order_Unit;
+    }
+
+    public void setOrder_Unit(String Order_Unit) {
+        this.Order_Unit = Order_Unit;
+    }
+    
     public String getAmt_in_loc_cur()
     {
         return Amt_in_loc_cur;

@@ -21,14 +21,12 @@ public class ControladorMrpdata {
 
     public boolean Insert(ModeloMrpData modelo) {
         boolean resul = false;
-        try
-        {
+        try {
             ConexionBDMySql conexion = new ConexionBDMySql();
             Connection con;
             con = conexion.abrirConexion();
             PreparedStatement SQL = null;
-            try
-            {
+            try {
                 SQL = con.prepareStatement("INSERT INTO `mrpdata`("
                         + "`Material`,"
                         + "`Material_Description`,"
@@ -216,18 +214,15 @@ public class ControladorMrpdata {
                 SQL.setString(89, modelo.getOverhead_Group());
                 SQL.setString(90, modelo.getTDS());
                 SQL.setString(91, modelo.getPeriod_Indicator());
-                if (SQL.executeUpdate() > 0)
-                {
+                if (SQL.executeUpdate() > 0) {
                     resul = true;
                 }
-            } catch (SQLException e)
-            {
+            } catch (SQLException e) {
                 System.out.println("Error en la consulta SQL Insert " + e);
             }
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Insert " + e);
         }
         return resul;
@@ -235,14 +230,12 @@ public class ControladorMrpdata {
 
     public boolean Insert(LinkedList<ModeloMrpData> listModeloMrpDatas) {
         boolean resul = false;
-        try
-        {
+        try {
             ConexionBDMySql conexion = new ConexionBDMySql();
             Connection con;
             con = conexion.abrirConexion();
             PreparedStatement SQL = null;
-            try
-            {
+            try {
                 SQL = con.prepareStatement("INSERT INTO `mrpdata`("
                         + "`Material`,"
                         + "`Material_Description`,"
@@ -339,8 +332,7 @@ public class ControladorMrpdata {
                         + "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,"
                         + "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,"
                         + "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);");
-                for (ModeloMrpData modelo : listModeloMrpDatas)
-                {
+                for (ModeloMrpData modelo : listModeloMrpDatas) {
                     SQL.setString(1, modelo.getMaterial());
                     SQL.setString(2, modelo.getMaterial_Description());
                     SQL.setString(3, modelo.getMaterial_Group());
@@ -432,47 +424,39 @@ public class ControladorMrpdata {
                     SQL.setString(89, modelo.getOverhead_Group());
                     SQL.setString(90, modelo.getTDS());
                     SQL.setString(91, modelo.getPeriod_Indicator());
-                    if (SQL.executeUpdate() > 0)
-                    {
+                    if (SQL.executeUpdate() > 0) {
                         resul = true;
                     }
                 }
-            } catch (SQLException e)
-            {
+            } catch (SQLException e) {
                 System.out.println(e);
             }
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Insert " + e);
         }
         return resul;
     }
-    
+
     public boolean Insert(String Sql) {
         boolean resul = false;
-        try
-        {
+        try {
             ConexionBDMySql conexion = new ConexionBDMySql();
             Connection con;
             con = conexion.abrirConexion();
             PreparedStatement SQL = null;
-            try
-            {
+            try {
                 SQL = con.prepareStatement(Sql);
-                if (SQL.executeUpdate() > 0)
-                {
+                if (SQL.executeUpdate() > 0) {
                     resul = true;
                 }
-            } catch (SQLException e)
-            {
+            } catch (SQLException e) {
                 System.out.println(e);
             }
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Insert " + e);
         }
         return resul;
@@ -484,8 +468,7 @@ public class ControladorMrpdata {
         Connection con;
         con = conexion.abrirConexion();
         PreparedStatement SQL = null;
-        try
-        {
+        try {
             SQL = con.prepareStatement("UPDATE mrpdata SE"
                     + "Material = ?,"
                     + "Material_Description = ?,"
@@ -671,14 +654,12 @@ public class ControladorMrpdata {
             SQL.setString(89, modelo.getOverhead_Group());
             SQL.setString(90, modelo.getTDS());
             SQL.setString(91, modelo.getPeriod_Indicator());
-            if (SQL.executeUpdate() > 0)
-            {
+            if (SQL.executeUpdate() > 0) {
                 resul = true;
             }
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Update " + e);
         }
         return resul;
@@ -690,8 +671,7 @@ public class ControladorMrpdata {
         Connection con;
         con = conexion.abrirConexion();
         PreparedStatement SQL = null;
-        try
-        {
+        try {
             SQL = con.prepareStatement("UPDATE mrpdata SE"
                     + "Material = ?,"
                     + "Material_Description = ?,"
@@ -786,8 +766,7 @@ public class ControladorMrpdata {
                     + "Period_Indicator = ?,"
                     + "WHERE "
                     + "Id = ?");
-            for (ModeloMrpData modelo : listModeloMrpDatas)
-            {
+            for (ModeloMrpData modelo : listModeloMrpDatas) {
                 SQL.setString(1, modelo.getMaterial());
                 SQL.setString(2, modelo.getMaterial_Description());
                 SQL.setString(3, modelo.getMaterial_Group());
@@ -879,15 +858,13 @@ public class ControladorMrpdata {
                 SQL.setString(89, modelo.getOverhead_Group());
                 SQL.setString(90, modelo.getTDS());
                 SQL.setString(91, modelo.getPeriod_Indicator());
-                if (SQL.executeUpdate() > 0)
-                {
+                if (SQL.executeUpdate() > 0) {
                     resul = true;
                 }
             }
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Update " + e);
         }
         return resul;
@@ -899,18 +876,15 @@ public class ControladorMrpdata {
         Connection con;
         con = conexion.abrirConexion();
         PreparedStatement SQL = null;
-        try
-        {
+        try {
             SQL = con.prepareStatement("DELETE FROM `mrpdata` WHERE `Id` = ?;");
             SQL.setInt(1, modelo.getId());
-            if (SQL.executeUpdate() > 0)
-            {
+            if (SQL.executeUpdate() > 0) {
                 resul = true;
             }
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Delete " + e);
         }
         return resul;
@@ -922,17 +896,14 @@ public class ControladorMrpdata {
         Connection con;
         con = conexion.abrirConexion();
         PreparedStatement SQL = null;
-        try
-        {
+        try {
             SQL = con.prepareStatement("DELETE FROM `mrpdata`;");
-            if (SQL.executeUpdate() > 0)
-            {
+            if (SQL.executeUpdate() > 0) {
                 resul = true;
             }
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Delete " + e);
         }
         return resul;
@@ -944,8 +915,7 @@ public class ControladorMrpdata {
         Connection con;
         con = conexion.abrirConexion();
         PreparedStatement SQL;
-        try
-        {
+        try {
             SQL = con.prepareStatement("SELECT "
                     + "`Id`,"
                     + "`Material`,"
@@ -1042,8 +1012,7 @@ public class ControladorMrpdata {
                     + "FROM "
                     + "`mrpdata`;");
             ResultSet res = SQL.executeQuery();
-            while (res.next())
-            {
+            while (res.next()) {
                 ModeloMrpData modeloMrpData = new ModeloMrpData();
                 modeloMrpData.setId(res.getInt("id"));
                 modeloMrpData.setMaterial(res.getString("Material"));
@@ -1142,8 +1111,7 @@ public class ControladorMrpdata {
             res.close();
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Select " + e);
         }
         return modeloMrpDatas;
@@ -1155,8 +1123,7 @@ public class ControladorMrpdata {
         Connection con;
         con = conexion.abrirConexion();
         PreparedStatement SQL;
-        try
-        {
+        try {
             SQL = con.prepareStatement("SELECT "
                     + "`Id`,"
                     + "`Material`,"
@@ -1253,8 +1220,7 @@ public class ControladorMrpdata {
                     + "FROM `mrpdata`;");
             SQL.setInt(1, Id);
             ResultSet res = SQL.executeQuery();
-            if (res.next())
-            {
+            if (res.next()) {
                 modeloMrpData.setId(res.getInt("id"));
                 modeloMrpData.setMaterial(res.getString("Material"));
                 modeloMrpData.setMaterial_Description(res.getString("Material_Description"));
@@ -1351,25 +1317,22 @@ public class ControladorMrpdata {
             res.close();
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Select " + e);
         }
         return modeloMrpData;
     }
-    
-        public ModeloMrpData SelectSQL(String Sql) {
+
+    public ModeloMrpData SelectSQL(String Sql) throws SQLException {
         ModeloMrpData modeloMrpData = new ModeloMrpData();
         ConexionBDMySql conexion = new ConexionBDMySql();
         Connection con;
         con = conexion.abrirConexion();
-        PreparedStatement SQL;
-        try
-        {
+        PreparedStatement SQL = null;
+        try {
             SQL = con.prepareStatement(Sql);
             ResultSet res = SQL.executeQuery();
-            if (res.next())
-            {
+            if (res.next()) {
                 modeloMrpData.setId(res.getInt("id"));
                 modeloMrpData.setMaterial(res.getString("Material"));
                 modeloMrpData.setMaterial_Description(res.getString("Material_Description"));
@@ -1466,9 +1429,10 @@ public class ControladorMrpdata {
             res.close();
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Select " + e);
+            SQL.close();
+            con.close();
         }
         return modeloMrpData;
     }

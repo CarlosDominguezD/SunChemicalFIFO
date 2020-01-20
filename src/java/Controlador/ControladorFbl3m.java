@@ -12,6 +12,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -21,14 +23,12 @@ public class ControladorFbl3m {
 
     public boolean Insert(ModeloFbl3m modelo) {
         boolean resul = false;
-        try
-        {
+        try {
             ConexionBDMySql conexion = new ConexionBDMySql();
             Connection con;
             con = conexion.abrirConexion();
             PreparedStatement SQL = null;
-            try
-            {
+            try {
 //                SQL = con.prepareStatement("INSERT INTO `fbl3m`("
 //                        + "`Document_Number`,"
 //                        + "`Document_type`,"
@@ -123,18 +123,15 @@ public class ControladorFbl3m {
 //                SQL.setString(21, modelo.getText());
 //                SQL.setString(22, modelo.getAssignment());
 //                SQL.setString(23, modelo.getClasificacion());
-                if (SQL.executeUpdate() > 0)
-                {
+                if (SQL.executeUpdate() > 0) {
                     resul = true;
                 }
-            } catch (SQLException e)
-            {
+            } catch (SQLException e) {
                 System.out.println(e);
             }
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Insert " + e);
         }
         return resul;
@@ -142,27 +139,22 @@ public class ControladorFbl3m {
 
     public boolean Insert(String Sql) {
         boolean resul = false;
-        try
-        {
+        try {
             ConexionBDMySql conexion = new ConexionBDMySql();
             Connection con;
             con = conexion.abrirConexion();
             PreparedStatement SQL = null;
-            try
-            {
+            try {
                 SQL = con.prepareStatement(Sql);
-                if (SQL.executeUpdate() > 0)
-                {
+                if (SQL.executeUpdate() > 0) {
                     resul = true;
                 }
-            } catch (SQLException e)
-            {
+            } catch (SQLException e) {
                 System.out.println(e);
             }
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Insert " + e);
         }
         return resul;
@@ -170,14 +162,12 @@ public class ControladorFbl3m {
 
     public boolean Insert(LinkedList<ModeloFbl3m> listModeloFbl3ms) {
         boolean resul = false;
-        try
-        {
+        try {
             ConexionBDMySql conexion = new ConexionBDMySql();
             Connection con;
             con = conexion.abrirConexion();
             PreparedStatement SQL = null;
-            try
-            {
+            try {
                 SQL = con.prepareStatement("INSERT INTO fbl3m ("
                         + "Document_Number,"
                         + "Document_type,"
@@ -202,8 +192,7 @@ public class ControladorFbl3m {
                         + "Text,"
                         + "Assignment) "
                         + "VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);");
-                for (ModeloFbl3m modelo : listModeloFbl3ms)
-                {
+                for (ModeloFbl3m modelo : listModeloFbl3ms) {
                     SQL.setString(1, modelo.getDocument_Number());
                     SQL.setString(2, modelo.getDocument_type());
                     SQL.setString(3, modelo.getDocument_Date());
@@ -226,19 +215,16 @@ public class ControladorFbl3m {
                     SQL.setString(20, modelo.getTransaction_Code());
                     SQL.setString(21, modelo.getText());
                     SQL.setString(22, modelo.getAssignment());
-                    if (SQL.executeUpdate() > 0)
-                    {
+                    if (SQL.executeUpdate() > 0) {
                         resul = true;
                     }
                 }
-            } catch (SQLException e)
-            {
+            } catch (SQLException e) {
                 System.out.println(e);
             }
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Insert " + e);
         }
         return resul;
@@ -250,8 +236,7 @@ public class ControladorFbl3m {
         Connection con;
         con = conexion.abrirConexion();
         PreparedStatement SQL = null;
-        try
-        {
+        try {
             SQL = con.prepareStatement("UPDATE `fbl3m` SET "
                     + "`Document_Number` = ?,"
                     + "`Document_type` = ?,"
@@ -301,14 +286,12 @@ public class ControladorFbl3m {
             SQL.setString(22, modelo.getAssignment());
             SQL.setString(23, modelo.getClasificacion());
             SQL.setInt(24, modelo.getId());
-            if (SQL.executeUpdate() > 0)
-            {
+            if (SQL.executeUpdate() > 0) {
                 resul = true;
             }
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Update " + e);
         }
         return resul;
@@ -320,8 +303,7 @@ public class ControladorFbl3m {
         Connection con;
         con = conexion.abrirConexion();
         PreparedStatement SQL = null;
-        try
-        {
+        try {
             SQL = con.prepareStatement("UPDATE `fbl3m` SET "
                     + "`Document_Number` = ?,"
                     + "`Document_type` = ?,"
@@ -347,8 +329,7 @@ public class ControladorFbl3m {
                     + "`Assignment` = ?,"
                     + "`Clasificacion` = ?"
                     + " WHERE `Id` = ?");
-            for (ModeloFbl3m modelo : listModeloFbl3ms)
-            {
+            for (ModeloFbl3m modelo : listModeloFbl3ms) {
                 SQL.setString(1, modelo.getDocument_Number());
                 SQL.setString(2, modelo.getDocument_type());
                 SQL.setString(3, modelo.getDocument_Date());
@@ -373,15 +354,13 @@ public class ControladorFbl3m {
                 SQL.setString(22, modelo.getAssignment());
                 SQL.setString(23, modelo.getClasificacion());
                 SQL.setInt(24, modelo.getId());
-                if (SQL.executeUpdate() > 0)
-                {
+                if (SQL.executeUpdate() > 0) {
                     resul = true;
                 }
             }
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Update " + e);
         }
         return resul;
@@ -393,18 +372,15 @@ public class ControladorFbl3m {
         Connection con;
         con = conexion.abrirConexion();
         PreparedStatement SQL = null;
-        try
-        {
+        try {
             SQL = con.prepareStatement("DELETE FROM `fbl3m` WHERE `Id` = ?;");
             SQL.setInt(1, modelo.getId());
-            if (SQL.executeUpdate() > 0)
-            {
+            if (SQL.executeUpdate() > 0) {
                 resul = true;
             }
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Delete " + e);
         }
         return resul;
@@ -416,17 +392,14 @@ public class ControladorFbl3m {
         Connection con;
         con = conexion.abrirConexion();
         PreparedStatement SQL = null;
-        try
-        {
+        try {
             SQL = con.prepareStatement("DELETE FROM `fbl3m`;");
-            if (SQL.executeUpdate() > 0)
-            {
+            if (SQL.executeUpdate() > 0) {
                 resul = true;
             }
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Delete " + e);
         }
         return resul;
@@ -438,8 +411,7 @@ public class ControladorFbl3m {
         Connection con;
         con = conexion.abrirConexion();
         PreparedStatement SQL;
-        try
-        {
+        try {
             SQL = con.prepareStatement("SELECT "
                     + "`Id`,"
                     + "`Document_Number`,"
@@ -467,8 +439,7 @@ public class ControladorFbl3m {
                     + "`Clasificacion`"
                     + " FROM `fbl3m`;");
             ResultSet res = SQL.executeQuery();
-            while (res.next())
-            {
+            while (res.next()) {
                 ModeloFbl3m modeloFbl3m = new ModeloFbl3m();
                 modeloFbl3m.setId(res.getInt("id"));
                 modeloFbl3m.setDocument_Number(res.getString("Document_Number"));
@@ -499,8 +470,7 @@ public class ControladorFbl3m {
             res.close();
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Select " + e);
         }
         return modeloFbl3ms;
@@ -512,8 +482,7 @@ public class ControladorFbl3m {
         Connection con;
         con = conexion.abrirConexion();
         PreparedStatement SQL;
-        try
-        {
+        try {
             SQL = con.prepareStatement("SELECT "
                     + "`Id`,"
                     + "`Document_Number`,"
@@ -543,8 +512,7 @@ public class ControladorFbl3m {
                     + " WHERE Id = ?");
             SQL.setInt(1, Id);
             ResultSet res = SQL.executeQuery();
-            if (res.next())
-            {
+            if (res.next()) {
                 modeloFbl3m.setId(res.getInt("id"));
                 modeloFbl3m.setDocument_Number(res.getString("Document_Number"));
                 modeloFbl3m.setDocument_type(res.getString("Document_type"));
@@ -573,25 +541,22 @@ public class ControladorFbl3m {
             res.close();
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Select " + e);
         }
         return modeloFbl3m;
     }
 
-    public LinkedList<ModeloFbl3m> ListSelectSQL(String Sql) {
+    public LinkedList<ModeloFbl3m> ListSelectSQL(String Sql) throws SQLException {
         LinkedList<ModeloFbl3m> modeloFbl3ms = new LinkedList<ModeloFbl3m>();
         ConexionBDMySql conexion = new ConexionBDMySql();
         Connection con;
         con = conexion.abrirConexion();
-        PreparedStatement SQL;
-        try
-        {
+        PreparedStatement SQL = null;
+        try {
             SQL = con.prepareStatement(Sql);
             ResultSet res = SQL.executeQuery();
-            while (res.next())
-            {
+            while (res.next()) {
                 ModeloFbl3m modeloFbl3m = new ModeloFbl3m();
                 modeloFbl3m.setId(res.getInt("id"));
                 modeloFbl3m.setDocument_Number(res.getString("Document_Number"));
@@ -622,9 +587,10 @@ public class ControladorFbl3m {
             res.close();
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Select " + e);
+            SQL.close();
+            con.close();
         }
         return modeloFbl3ms;
     }

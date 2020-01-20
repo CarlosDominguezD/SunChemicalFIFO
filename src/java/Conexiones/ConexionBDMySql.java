@@ -81,7 +81,7 @@ public class ConexionBDMySql
                                 } 
                                 catch (SQLException | ClassNotFoundException ex) 
                                 {
-                                    JOptionPane.showMessageDialog(null,"error" + ex);
+                                    System.out.println(ex);
                                 }
                             }
                         //}

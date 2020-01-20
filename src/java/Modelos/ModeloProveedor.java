@@ -16,17 +16,19 @@ public class ModeloProveedor
     String Vendors;
     String Name;
     String Vendor_Type;
+    String Moneda;
 
     public ModeloProveedor()
     {
     }
 
-    public ModeloProveedor(Integer Id, String Vendors, String Name, String Vendor_Type)
+    public ModeloProveedor(Integer Id, String Vendors, String Name, String Vendor_Type, String Moneda)
     {
         this.Id = Id;
         this.Vendors = Vendors;
         this.Name = Name;
         this.Vendor_Type = Vendor_Type;
+        this.Moneda = Moneda;
     }
 
     public Integer getId()
@@ -65,6 +67,14 @@ public class ModeloProveedor
 
     public void setVendor_Type(String Vendor_Type) {
         this.Vendor_Type = Vendor_Type;
+    }
+
+    public String getMoneda() {
+        return Moneda;
+    }
+
+    public void setMoneda(String Moneda) {
+        this.Moneda = Moneda;
     }
 
 }

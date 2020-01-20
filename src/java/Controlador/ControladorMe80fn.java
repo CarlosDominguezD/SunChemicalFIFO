@@ -548,6 +548,7 @@ public class ControladorMe80fn {
                 modeloMe80fn.setDelivery_Completed(res.getString("Delivery_Completed"));
                 modeloMe80fn.setPlant(res.getString("Plant"));
                 modeloMe80fn.setQuantity(res.getString("Quantity"));
+                modeloMe80fn.setOrder_Unit(res.getString("Order_Unit"));
                 modeloMe80fn.setAmt_in_loc_cur(res.getString("Amt_in_loc_cur"));
                 modeloMe80fn.setAmount(res.getString("Amount"));
                 modeloMe80fn.setCurrency(res.getString("Currency"));
@@ -597,6 +598,7 @@ public class ControladorMe80fn {
                 modeloMe80fn.setDelivery_Completed(res.getString("Delivery_Completed"));
                 modeloMe80fn.setPlant(res.getString("Plant"));
                 modeloMe80fn.setQuantity(res.getString("Quantity"));
+                modeloMe80fn.setOrder_Unit(res.getString("Order_Unit"));
                 modeloMe80fn.setAmt_in_loc_cur(res.getString("Amt_in_loc_cur"));
                 modeloMe80fn.setAmount(res.getString("Amount"));
                 modeloMe80fn.setCurrency(res.getString("Currency"));

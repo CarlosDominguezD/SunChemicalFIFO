@@ -5,6 +5,7 @@
  */
 package Controlador;
 
+import Modelos.ModeloEine;
 import Modelos.ModeloFbl3m;
 import Modelos.ModeloMb51;
 import Modelos.ModeloMe80fn;
@@ -20,6 +21,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.LinkedList;
 import javax.servlet.ServletException;
@@ -40,7 +42,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  */
 public class ControladorCargaPlanos {
 
-    public String Upload(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public String Upload(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
         String resultado = "false";
         String formato = "";
         try {
@@ -81,6 +83,12 @@ public class ControladorCargaPlanos {
                 case "MRPDATA":
                     resultado = CargarCSV_MRPDATA_INFILE(RutaDispo);
                     break;
+                case "PROVEEDORES":
+                    resultado = CargarCSV_PROVEEDORES_INFILE(RutaDispo);
+                    break;
+                case "EINE":
+                    resultado = CargarCSV_EINE_INFILE(RutaDispo);
+                    break;
             }
         } catch (IOException | ServletException e) {
             System.out.println("Error en la carga del plano " + formato + "  " + e);
@@ -88,7 +96,7 @@ public class ControladorCargaPlanos {
         return resultado;
     }
 
-    public String CargarCSV_MB51_INFILE(String Ruta) throws IOException {
+    public String CargarCSV_MB51_INFILE(String Ruta) throws IOException, SQLException {
         String Realizado = "false";
         Ruta = Ruta.replace("\\", "/");
         String SqlInsertMasivo
@@ -97,7 +105,7 @@ public class ControladorCargaPlanos {
                 + " ENCLOSED BY '\"'"
                 + " LINES TERMINATED BY '\\r\\n'"
                 + " IGNORE 1 LINES"
-                + " (Plant,Purchase_order,Material,Material_Description,Batch,Movement_type,Movement_Type_Text,Item,Quantity,Qty_in_unit_of_entry,Unit_of_Entry,Amt_in_loc_cur,Currency,Storage_Location,Posting_Date,Document_Date,Material_Document,User_Name,Vendor,Order1)";
+                + " (Plant,Purchase_order,Material,Material_Description,Batch,Movement_type,Movement_Type_Text,Item,Quantity,Qty_in_unit_of_entry,Unit_of_Entry,Amt_in_loc_cur,Currency,Storage_Location,Posting_Date,Document_Date,Material_Document,User_Name,Vendor)";
 
         System.out.println("Consulta: " + SqlInsertMasivo);
 
@@ -144,7 +152,7 @@ public class ControladorCargaPlanos {
                 + " ENCLOSED BY '\"'"
                 + " LINES TERMINATED BY '\\r\\n'"
                 + " IGNORE 1 LINES"
-                + " (Index2,Purchasing_Document,Material_Doc_Year,Material_Document,Document_Date,Material,Short_Text,Batch,Item,Movement_type,Posting_Date,Delivery_Completed,Plant,Quantity,Amt_in_loc_cur,Amount,Currency,Valuation_Type,Entry_Date,Local_currency,Reference_Doc_Item,Invoice_Value,Invoice_Value_in_FC)";
+                + " (Purchasing_Document,Material_Doc_Year,Material_Document,Document_Date,Material,Short_Text,Batch,Item,Movement_type,Posting_Date,Delivery_Completed,Plant,Quantity,Order_Unit,Amt_in_loc_cur,Amount,Currency,Valuation_Type,Entry_Date,Local_currency,Reference_Doc_Item,Invoice_Value,Invoice_Value_in_FC)";
 
         System.out.println("Consulta: " + SqlInsertMasivo);
 
@@ -175,246 +183,54 @@ public class ControladorCargaPlanos {
         return Realizado;
     }
 
-    public void FinalComprasMB51(ModeloMb51 modeloMb51) {
-        //List<ModeloMb51> listModeloMb51 = new ArrayList<ModeloMb51>();
-        //LinkedList<ModeloMb51> listModeloMb51 = null;
-
-        //for (ModeloMb51 modeloMb51 : listModeloMb51) {
-        //BUSCAMOS EL PROVEEDOR
-        ControladorProveedor controladorProveedores = new ControladorProveedor();
-        ModeloProveedor modeloProveedor = controladorProveedores.SelectSQL("SELECT Id, Vendors, Name, Vendor_Type FROM proveedor WHERE Vendors = '" + modeloMb51.getVendor() + "'");
-        //LLENAMOS COLUMNA U
-        modeloMb51.setVendor_Name(modeloProveedor.getName());
-        //LLENAMOS COLUMNA V
-        modeloMb51.setVendor_Type(modeloProveedor.getVendor_Type());
-
-        String Month = modeloMb51.getPosting_Date().split("/")[1];
-        //LLENAMOS COLUMNA W
-        modeloMb51.setMonth(Month);
-
-        String Period = modeloMb51.getPosting_Date().split("/")[2];
-        //LLENAMOS COLUMNA X
-        modeloMb51.setPeriod(Period);
-
-        //BUSCAMOS EL MATERIAL
-        ControladorMrpdata controladorMrpData = new ControladorMrpdata();
-        ModeloMrpData modeloMrpData = controladorMrpData.SelectSQL("SELECT * FROM mrpdata WHERE Material = '" + modeloMb51.getMaterial() + "'");
-        //LLENAMOS COLUMNA Y
-        modeloMb51.setMaterial_Type(modeloMrpData.getMaterial_Type());
-        //LLENAMOS COLUMNA Z
-        modeloMb51.setProfit_Center(modeloMrpData.getProfit_Center());
-        //LLENAMOS COLUMNA AA
-        modeloMb51.setLink1_PO_Mas_Material(modeloMb51.getPurchase_order() + modeloMb51.getMaterial());
-        //LLENAMOS COLUMNA AB
-        modeloMb51.setLink2_PO_Mas_position(modeloMb51.getPurchase_order() + modeloMb51.getItem());
-        //LLENAMOS COLUMNA AC
-        modeloMb51.setReferencia_Y_vendor(modeloMb51.getMaterial() + modeloMb51.getVendor());
-
-        //BUSCAMOS EL TotalQ_ME80FN
-        ControladorMe80fn controladorMe80fn = new ControladorMe80fn();
-        LinkedList<ModeloMe80fn> LstmodeloMe80fn = controladorMe80fn.ListSelectSQL("SELECT * FROM me80fn WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Item = '" + modeloMb51.getItem() + "' AND Movement_type = ''");
-        Double Me80fnQuantity = 0.0;
-
-        for (ModeloMe80fn modeloMe80fn : LstmodeloMe80fn) {
-            Me80fnQuantity = Me80fnQuantity + Double.valueOf((modeloMe80fn.getQuantity().replace(".", "")).replace(",", "."));
-        }
-        //LLENAMOS COLUMNA AD
-        modeloMb51.setTotalQ_ME80FN(Me80fnQuantity + "");
-        //CALCULAMOS TotalQ_Porcentaje   
-        Double Qty_in_unit_of_entry = Double.valueOf(modeloMb51.getQty_in_unit_of_entry());
-        Double TotalQ_ME80FN = Double.valueOf(modeloMb51.getTotalQ_ME80FN());
-        Double TotalQ_Porcentaje = null;
-        try {
-            if (TotalQ_ME80FN == 0.0) {
-                TotalQ_Porcentaje = 0.0;
-            } else {
-                TotalQ_Porcentaje = Qty_in_unit_of_entry / TotalQ_ME80FN;
-            }
-
-        } catch (Exception e) {
-            TotalQ_Porcentaje = 0.0;
-        }
-        //LLENAMOS COLUMNA AE
-        modeloMb51.setTotalQ_Porcentaje(TotalQ_Porcentaje + "");
-
-        //BUSCAMOS TOTAL_INVOICE_VALUE
-        //modeloMe80fn = controladorMe80fn.SelectSQL("SELECT *, SUM(Amt_in_loc_cur) AS 'SUM_Amt_in_loc_cur' FROM me80fn WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Item = '" + modeloMb51.getItem() + "' AND Movement_type = ''");
-        Double TOTAL_INVOICE_VALUE = 0.0;
-        for (ModeloMe80fn modeloMe80fn : LstmodeloMe80fn) {
-            TOTAL_INVOICE_VALUE = TOTAL_INVOICE_VALUE + Double.valueOf((modeloMe80fn.getAmt_in_loc_cur().replace(".", "")).replace(",", "."));
-        }
-        //LLENAMOS COLUMNA AF
-        String TOTAL_INVOICE_VALUE_String = String.format("%.5f", TOTAL_INVOICE_VALUE);
-        modeloMb51.setTOTAL_INVOICE_VALUE((TOTAL_INVOICE_VALUE_String.replace(".", "")).replace(",", "."));
-
-        Double Factura_Value_Unit = TOTAL_INVOICE_VALUE / Qty_in_unit_of_entry * TotalQ_Porcentaje;
-        //LLENAMOS COLUMNA AG
-        modeloMb51.setFactura_Value_Unit(Factura_Value_Unit + "");
-
-        Double Unitario_estandar = Double.valueOf(modeloMb51.getAmt_in_loc_cur()) / Double.valueOf(modeloMb51.getQuantity());
-        Double PIR = Factura_Value_Unit / Unitario_estandar;
-        //LLENAMOS COLUMNA AH
-        modeloMb51.setPIR_Porcentaje(PIR + "");
-
-        //BUSCAMOS MONEDA
-        ModeloMe80fn modeloMe80fn = controladorMe80fn.SelectSQL("SELECT * FROM me80fn WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND Movement_type <> ''");
-        //LLENAMOS COLUMNA AI
-        modeloMb51.setMoneda(modeloMe80fn.getCurrency());
-
-        //BUSCAMOS Freight
-        ControladorFbl3m controladorFbl3m = new ControladorFbl3m();
-        LinkedList<ModeloFbl3m> ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND Account = '50320' AND (Offsetting_acct_no = '20011' OR Offsetting_acct_no LIKE '3%')");
-
-        Double Freight = 0.0;
-        for (ModeloFbl3m modeloFbl3m : ListmodeloFbl3m) {
-            if (modeloFbl3m.getAmount_in_local_currency() != null) {
-                Freight = Freight + Double.valueOf((modeloFbl3m.getAmount_in_local_currency().replace(".", "")).replace(",", "."));
-            }
-        }
-        Freight = Freight * TotalQ_Porcentaje;
-        //LLENAMOS COLUMNA AJ
-        modeloMb51.setFreightString(Freight + "");
-
-        //BUSCAMOS DUTYS
-        ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND Account = '50320' AND Offsetting_acct_no = '20014'");
-        Double Dutys = 0.0;
-        for (ModeloFbl3m modeloFbl3m : ListmodeloFbl3m) {
-            if (modeloFbl3m.getAmount_in_local_currency() != null) {
-                Dutys = Dutys + Double.valueOf((modeloFbl3m.getAmount_in_local_currency().replace(".", "")).replace(",", "."));
-            }
-        }
-        Dutys = Dutys * TotalQ_Porcentaje;
-        //LLENAMOS COLUMNA AK
-        modeloMb51.setDutys(Dutys + "");
-
-        // BUSCAMOS ARANCEL
-        ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND Account = '50320' AND Offsetting_acct_no = '20319'");
-        Double Arancel = 0.0;
-        for (ModeloFbl3m modeloFbl3m : ListmodeloFbl3m) {
-            if (modeloFbl3m.getAmount_in_local_currency() != null) {
-                Arancel = Arancel + Double.valueOf((modeloFbl3m.getAmount_in_local_currency().replace(".", "")).replace(",", "."));
-            }
-        }
-        Arancel = Arancel * TotalQ_Porcentaje;
-        //LLENAMOS COLUMNA AL
-        modeloMb51.setArancel(Arancel + "");
-
-        //buscamos Ajuste PIR
-        ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND Account = '50320' AND Offsetting_acct_no = '20010'");
-        Double Ajuste_PIR = 0.0;
-        for (ModeloFbl3m modeloFbl3m : ListmodeloFbl3m) {
-            if (modeloFbl3m.getAmount_in_local_currency() != null) {
-                Ajuste_PIR = Ajuste_PIR + Double.valueOf((modeloFbl3m.getAmount_in_local_currency().replace(".", "")).replace(",", "."));
-            }
-        }
-        //LLENAMOS COLUMNA AM            
-        Ajuste_PIR = Ajuste_PIR * TotalQ_Porcentaje;
-        modeloMb51.setAjuste_PIR(Ajuste_PIR + "");
-
-        //BUSCAMOS OTROS
-        ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND Account = '50320' AND Offsetting_acct_no = '10500'");
-        Double Otros = 0.0;
-        for (ModeloFbl3m modeloFbl3m : ListmodeloFbl3m) {
-            if (modeloFbl3m.getAmount_in_local_currency() != null) {
-                Otros = Otros + Double.valueOf((modeloFbl3m.getAmount_in_local_currency().replace(".", "")).replace(",", "."));
-            }
-        }
-        Otros = Otros * TotalQ_Porcentaje;
-        //LLENAMOS COLUMNA AN
-        modeloMb51.setOtros(Otros + "");
-
-        Double Total_Costos_Adicionales = Freight + Dutys + Arancel + Ajuste_PIR + Otros;
-        String Total_Costos_Adicionales_String = String.format("%.5f", Total_Costos_Adicionales);
-        //LLENAMOS COLUMNA AO
-        modeloMb51.setTotal_Costos_Adicionales((Total_Costos_Adicionales_String.replace(".", "")).replace(",", "."));
-
-        Double Participac_Adicionales = Total_Costos_Adicionales / TOTAL_INVOICE_VALUE;
-        //LLENAMOS COLUMNA AP
-        modeloMb51.setParticipac_Adicionales(Participac_Adicionales + "");
-
-        Double Total_Costos = (Total_Costos_Adicionales + TOTAL_INVOICE_VALUE) * TotalQ_Porcentaje;
-        String Total_Costos_String = String.format("%.5f", Total_Costos);
-        //LLENAMOS COLUMNA AQ
-        modeloMb51.setTotal_Costos((Total_Costos_String.replace(".", "")).replace(",", "."));
-
-        Double Unitario_final_FIFO = Total_Costos / Double.valueOf(modeloMb51.getQuantity());
-        //LLENAMOS COLUMNA AR
-        modeloMb51.setUnitario_final_FIFO(Unitario_final_FIFO + "");
-
-        //Unitario_estandar = Double.valueOf(modeloMb51.getAmt_in_loc_cur()) / Double.valueOf(modeloMb51.getQuantity());
-        //LLENAMOS COLUMNA AS
-        modeloMb51.setUnitario_estandar(Unitario_estandar + "");
-
-        Double Real_Vs_Estándar = (Unitario_final_FIFO / Unitario_estandar) - 1;
-        modeloMb51.setPorcentaje_Real_Vs_Estándar(Real_Vs_Estándar + "");
-
-        ControladorMb51 controladorMb51 = new ControladorMb51();
-        controladorMb51.Insert(modeloMb51);
-
-        //}
-    }
-
-    public String CargarCSV_Compras_MB51(String Ruta) throws IOException {
-
+    public String CargarCSV_PROVEEDORES_INFILE(String Ruta) throws IOException {
         String Realizado = "false";
-        CSVReader csvReader = null;
-        try {
-            System.out.println(Ruta);
-            csvReader = new CSVReader(new InputStreamReader(new FileInputStream(Ruta), "UTF-8"));
-            String[] fila = null;
-            System.out.println(new Date());
-            //AQUI VUELVO A RECORRER EL ARCHIVO, 
-            ModeloMb51 modeloMb51 = null;
-            Integer Row = 0;
-            while ((fila = csvReader.readNext()) != null) {
-                modeloMb51 = new ModeloMb51();
-                modeloMb51.setPlant(fila[0]);
-                modeloMb51.setPurchase_order(fila[1]);
-                modeloMb51.setMaterial(fila[2]);
-                modeloMb51.setMaterial_Description(fila[3]);
-                modeloMb51.setBatch(fila[4]);
-                modeloMb51.setMovement_type(fila[5]);
-                modeloMb51.setMovement_Type_Text(fila[6]);
-                modeloMb51.setItem(fila[7]);
-                modeloMb51.setQuantity(fila[8].replace(",", ""));
-                modeloMb51.setQty_in_unit_of_entry(fila[9].replace(",", ""));
-                modeloMb51.setUnit_of_Entry(fila[10]);
-                modeloMb51.setAmt_in_loc_cur(fila[11].replace(",", ""));
-                modeloMb51.setCurrency(fila[12]);
-                modeloMb51.setStorage_Location(fila[13]);
-                modeloMb51.setPosting_Date(fila[14]);
-                modeloMb51.setDocument_Date(fila[15]);
-                modeloMb51.setMaterial_Document(fila[16]);
-                modeloMb51.setUser_Name(fila[17]);
-                modeloMb51.setVendor(fila[18]);
-                modeloMb51.setOrder(fila[19]);
-                if (Row != 0) {
-                    FinalComprasMB51_CargaCSV(modeloMb51);
-                }
-                Row = 1;
+        Ruta = Ruta.replace("\\", "/");
+        String SqlInsertMasivo
+                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE PROVEEDOR"
+                + " FIELDS TERMINATED BY ','"
+                + " ENCLOSED BY '\"'"
+                + " LINES TERMINATED BY '\\r\\n'"
+                + " IGNORE 1 LINES"
+                + " (Vendors, Name, Vendor_Type, Moneda)";
 
-                modeloMb51 = null;
-            }
-            System.out.println(new Date());
-            csvReader.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("Error en la carga del plano FBl3M " + e);
-            csvReader.close();
-        } catch (IOException e) {
-            System.out.println("Error en la carga del plano FBl3M " + e);
-            csvReader.close();
+        System.out.println("Consulta: " + SqlInsertMasivo);
+
+        ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
+        if (controladorMrpdata.Insert(SqlInsertMasivo)) {
+            Realizado = "true";
         }
         return Realizado;
     }
 
-    public void FinalComprasMB51_CargaCSV(ModeloMb51 modeloMb51) {
+    public String CargarCSV_EINE_INFILE(String Ruta) throws IOException {
+        String Realizado = "false";
+        Ruta = Ruta.replace("\\", "/");
+        String SqlInsertMasivo
+                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE EINE"
+                + " FIELDS TERMINATED BY ','"
+                + " ENCLOSED BY '\"'"
+                + " LINES TERMINATED BY '\\r\\n'"
+                + " IGNORE 1 LINES"
+                + " (Purchasing_info_rec,Plant,Created_On,Purchasing_Group,Currency,Standard_PO_Quantity,Planned_Deliv_Time,Net_Price,Price_unit,Order_Price_Unit,Valid_to,Quantity_Conversion_1,Quantity_Conversion_2,Effective_Price,Acknowledgment_Reqd,Confirmation_Control,Incoterms_1,Incoterms_2,Material,Vendor,Link_Material_vendor,Porcentaje_Additional)";
+
+        System.out.println("Consulta: " + SqlInsertMasivo);
+
+        ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
+        if (controladorMrpdata.Insert(SqlInsertMasivo)) {
+            Realizado = "true";
+        }
+        return Realizado;
+    }
+
+    public void FinalComprasMB51_CargaCSV(ModeloMb51 modeloMb51) throws SQLException {
         //List<ModeloMb51> listModeloMb51 = new ArrayList<ModeloMb51>();
         //LinkedList<ModeloMb51> listModeloMb51 = null;
 
         //for (ModeloMb51 modeloMb51 : listModeloMb51) {
         //BUSCAMOS EL PROVEEDOR
         ControladorProveedor controladorProveedores = new ControladorProveedor();
-        ModeloProveedor modeloProveedor = controladorProveedores.SelectSQL("SELECT Id, Vendors, Name, Vendor_Type FROM proveedor WHERE Vendors = '" + modeloMb51.getVendor() + "'");
+        ModeloProveedor modeloProveedor = controladorProveedores.SelectSQL("SELECT Id, Vendors, Name, Vendor_Type, Moneda FROM proveedor WHERE Vendors = '" + modeloMb51.getVendor() + "'");
         //LLENAMOS COLUMNA U
         modeloMb51.setVendor_Name(modeloProveedor.getName());
         //LLENAMOS COLUMNA V
@@ -428,212 +244,52 @@ public class ControladorCargaPlanos {
         //LLENAMOS COLUMNA X
         modeloMb51.setPeriod(Period);
 
+        Double Cost_Unit_SAP_en_KG = 0.0;
+        if (modeloMb51.getUnit_of_Entry().contentEquals("GAL")) {
+            Cost_Unit_SAP_en_KG = Double.valueOf(modeloMb51.getAmt_in_loc_cur()) / Double.valueOf(modeloMb51.getQuantity());
+        } else {
+            Cost_Unit_SAP_en_KG = Double.valueOf(modeloMb51.getAmt_in_loc_cur()) / Double.valueOf(modeloMb51.getQty_in_unit_of_entry());
+        }
+        //LLENAMOS COLUMNA Y
+        modeloMb51.setCost_Unit_SAP_en_KG(Cost_Unit_SAP_en_KG + "");
+
         //BUSCAMOS EL MATERIAL
         ControladorMrpdata controladorMrpData = new ControladorMrpdata();
         ModeloMrpData modeloMrpData = controladorMrpData.SelectSQL("SELECT * FROM mrpdata WHERE Material = '" + modeloMb51.getMaterial() + "'");
-        //LLENAMOS COLUMNA Y
+        //LLENAMOS COLUMNA Z
         modeloMb51.setMaterial_Type(modeloMrpData.getMaterial_Type());
-        //LLENAMOS COLUMNA Z
+        //LLENAMOS COLUMNA AA
         modeloMb51.setProfit_Center(modeloMrpData.getProfit_Center());
-        //LLENAMOS COLUMNA AA
-        modeloMb51.setLink1_PO_Mas_Material(modeloMb51.getPurchase_order() + modeloMb51.getMaterial());
         //LLENAMOS COLUMNA AB
-        modeloMb51.setLink2_PO_Mas_position(modeloMb51.getPurchase_order() + modeloMb51.getItem());
+        modeloMb51.setLink1_Material_Batch(modeloMb51.getMaterial() + modeloMb51.getBatch());
         //LLENAMOS COLUMNA AC
-        modeloMb51.setReferencia_Y_vendor(modeloMb51.getMaterial() + modeloMb51.getVendor());
+        modeloMb51.setLink2_PO_position(modeloMb51.getPurchase_order() + modeloMb51.getItem());
+        //LLENAMOS COLUMNA AD
+        modeloMb51.setReferencia_vendor(modeloMb51.getMaterial() + modeloMb51.getVendor());
 
         //BUSCAMOS EL TotalQ_ME80FN
         ControladorMe80fn controladorMe80fn = new ControladorMe80fn();
         LinkedList<ModeloMe80fn> LstmodeloMe80fn = controladorMe80fn.ListSelectSQL("SELECT * FROM me80fn WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Item = '" + modeloMb51.getItem() + "' AND Movement_type = ''");
         Double Me80fnQuantity = 0.0;
+        String O_Unit_ME80FN = "";
+        String Moneda = "";
 
         for (ModeloMe80fn modeloMe80fn : LstmodeloMe80fn) {
             Me80fnQuantity = Me80fnQuantity + Double.valueOf(modeloMe80fn.getQuantity());
-        }
-        //LLENAMOS COLUMNA AD
-        modeloMb51.setTotalQ_ME80FN(Me80fnQuantity + "");
-        //CALCULAMOS TotalQ_Porcentaje   
-        Double Qty_in_unit_of_entry = Double.valueOf(modeloMb51.getQty_in_unit_of_entry());
-        Double TotalQ_ME80FN = Double.valueOf(modeloMb51.getTotalQ_ME80FN());
-        Double TotalQ_Porcentaje = null;
-        try {
-            if (TotalQ_ME80FN == 0.0) {
-                TotalQ_Porcentaje = 0.0;
-            } else {
-                TotalQ_Porcentaje = Qty_in_unit_of_entry / TotalQ_ME80FN;
+            O_Unit_ME80FN = modeloMe80fn.getOrder_Unit();
+            if(!modeloMe80fn.getCurrency().contentEquals(""))
+            {
+                Moneda = modeloMe80fn.getCurrency();
             }
-
-        } catch (Exception e) {
-            TotalQ_Porcentaje = 0.0;
         }
         //LLENAMOS COLUMNA AE
-        modeloMb51.setTotalQ_Porcentaje(String.format("%.5f", TotalQ_Porcentaje));
+        modeloMb51.setTotalQ_ME80FN(Me80fnQuantity + "");
 
-        //BUSCAMOS TOTAL_INVOICE_VALUE
-        //modeloMe80fn = controladorMe80fn.SelectSQL("SELECT *, SUM(Amt_in_loc_cur) AS 'SUM_Amt_in_loc_cur' FROM me80fn WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Item = '" + modeloMb51.getItem() + "' AND Movement_type = ''");
-        Double TOTAL_INVOICE_VALUE = 0.0;
-        for (ModeloMe80fn modeloMe80fn : LstmodeloMe80fn) {
-            TOTAL_INVOICE_VALUE = TOTAL_INVOICE_VALUE + Double.valueOf(modeloMe80fn.getAmt_in_loc_cur());
-        }
         //LLENAMOS COLUMNA AF
+        modeloMb51.setO_Unit_ME80FN(O_Unit_ME80FN);
 
-        modeloMb51.setTOTAL_INVOICE_VALUE(String.format("%.5f", TOTAL_INVOICE_VALUE));
-
-        Double Factura_Value_Unit = TOTAL_INVOICE_VALUE / Qty_in_unit_of_entry * TotalQ_Porcentaje;
-        //LLENAMOS COLUMNA AG
-        modeloMb51.setFactura_Value_Unit(String.format("%.5f", Factura_Value_Unit));
-
-        Double Unitario_estandar = Double.valueOf(modeloMb51.getAmt_in_loc_cur()) / Double.valueOf(modeloMb51.getQuantity());
-        Double PIR = Factura_Value_Unit / Unitario_estandar;
-        //LLENAMOS COLUMNA AH
-        modeloMb51.setPIR_Porcentaje(String.format("%.5f", PIR));
-
-        //BUSCAMOS MONEDA
-        ModeloMe80fn modeloMe80fn = controladorMe80fn.SelectSQL("SELECT * FROM me80fn WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND Movement_type <> ''");
-        //LLENAMOS COLUMNA AI
-        modeloMb51.setMoneda(modeloMe80fn.getCurrency());
-
-        //BUSCAMOS Freight
-        ControladorFbl3m controladorFbl3m = new ControladorFbl3m();
-        LinkedList<ModeloFbl3m> ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND Account = '50320' AND (Offsetting_acct_no = '20011' OR Offsetting_acct_no LIKE '3%')");
-
-        Double Freight = 0.0;
-        for (ModeloFbl3m modeloFbl3m : ListmodeloFbl3m) {
-            if (modeloFbl3m.getAmount_in_local_currency() != null) {
-                Freight = Freight + Double.valueOf(modeloFbl3m.getAmount_in_local_currency());
-            }
-        }
-        Freight = Freight * TotalQ_Porcentaje;
-        //LLENAMOS COLUMNA AJ
-        modeloMb51.setFreightString(String.format("%.5f", Freight));
-
-        //BUSCAMOS DUTYS
-        ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND Account = '50320' AND Offsetting_acct_no = '20014'");
-        Double Dutys = 0.0;
-        for (ModeloFbl3m modeloFbl3m : ListmodeloFbl3m) {
-            if (modeloFbl3m.getAmount_in_local_currency() != null) {
-                Dutys = Dutys + Double.valueOf(modeloFbl3m.getAmount_in_local_currency());
-            }
-        }
-        Dutys = Dutys * TotalQ_Porcentaje;
-        //LLENAMOS COLUMNA AK
-        modeloMb51.setDutys(String.format("%.5f", Dutys));
-
-        // BUSCAMOS ARANCEL
-        ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND Account = '50320' AND Offsetting_acct_no = '20319'");
-        Double Arancel = 0.0;
-        for (ModeloFbl3m modeloFbl3m : ListmodeloFbl3m) {
-            if (modeloFbl3m.getAmount_in_local_currency() != null) {
-                Arancel = Arancel + Double.valueOf(modeloFbl3m.getAmount_in_local_currency());
-            }
-        }
-        Arancel = Arancel * TotalQ_Porcentaje;
-        //LLENAMOS COLUMNA AL
-        modeloMb51.setArancel(String.format("%.5f", Arancel));
-
-        //buscamos Ajuste PIR
-        ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND Account = '50320' AND Offsetting_acct_no = '20010'");
-        Double Ajuste_PIR = 0.0;
-        for (ModeloFbl3m modeloFbl3m : ListmodeloFbl3m) {
-            if (modeloFbl3m.getAmount_in_local_currency() != null) {
-                Ajuste_PIR = Ajuste_PIR + Double.valueOf(modeloFbl3m.getAmount_in_local_currency());
-            }
-        }
-        //LLENAMOS COLUMNA AM            
-        Ajuste_PIR = Ajuste_PIR * TotalQ_Porcentaje;
-        modeloMb51.setAjuste_PIR(String.format("%.5f", Ajuste_PIR));
-
-        //BUSCAMOS OTROS
-        ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND Account = '50320' AND Offsetting_acct_no = '10500'");
-        Double Otros = 0.0;
-        for (ModeloFbl3m modeloFbl3m : ListmodeloFbl3m) {
-            if (modeloFbl3m.getAmount_in_local_currency() != null) {
-                Otros = Otros + Double.valueOf(modeloFbl3m.getAmount_in_local_currency());
-            }
-        }
-        Otros = Otros * TotalQ_Porcentaje;
-        //LLENAMOS COLUMNA AN
-        modeloMb51.setOtros(String.format("%.5f", Otros));
-
-        Double Total_Costos_Adicionales = Freight + Dutys + Arancel + Ajuste_PIR + Otros;
-        //LLENAMOS COLUMNA AO
-        modeloMb51.setTotal_Costos_Adicionales(String.format("%.5f", Total_Costos_Adicionales));
-
-        Double Participac_Adicionales = Total_Costos_Adicionales / TOTAL_INVOICE_VALUE;
-        //LLENAMOS COLUMNA AP
-        modeloMb51.setParticipac_Adicionales(String.format("%.5f", Participac_Adicionales));
-
-        Double Total_Costos = (Total_Costos_Adicionales + TOTAL_INVOICE_VALUE) * TotalQ_Porcentaje;
-        //LLENAMOS COLUMNA AQ
-        modeloMb51.setTotal_Costos(String.format("%.5f", Total_Costos));
-
-        Double Unitario_final_FIFO = Total_Costos / Double.valueOf(modeloMb51.getQuantity());
-        //LLENAMOS COLUMNA AR
-        modeloMb51.setUnitario_final_FIFO(String.format("%.5f", Unitario_final_FIFO));
-
-        //Unitario_estandar = Double.valueOf(modeloMb51.getAmt_in_loc_cur()) / Double.valueOf(modeloMb51.getQuantity());
-        //LLENAMOS COLUMNA AS
-        modeloMb51.setUnitario_estandar(String.format("%.5f", Unitario_estandar));
-
-        Double Real_Vs_Estándar = (Unitario_final_FIFO / Unitario_estandar) - 1;
-        modeloMb51.setPorcentaje_Real_Vs_Estándar(String.format("%.5f", Real_Vs_Estándar));
-
-        ControladorMb51 controladorMb51 = new ControladorMb51();
-        controladorMb51.Insert(modeloMb51);
-
-        //}
-    }
-
-    public void FinalComprasMB51_CargaCSV20(ModeloMb51 modeloMb51) {
-
-        //BUSCAMOS EL PROVEEDOR
-        //ControladorProveedor controladorProveedores = new ControladorProveedor();
-        //ModeloProveedor modeloProveedor = controladorProveedores.SelectSQL("SELECT Id, Vendors, Name, Vendor_Type FROM proveedor WHERE Vendors = '" + modeloMb51.getVendor() + "'");
-        //LLENAMOS COLUMNA U
-        //modeloMb51.setVendor_Name(modeloProveedor.getName());
-        //LLENAMOS COLUMNA V
-        //modeloMb51.setVendor_Type(modeloProveedor.getVendor_Type());
-        ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
-
-        //String Month = modeloMb51.getPosting_Date().split("/")[1];
-        //LLENAMOS COLUMNA WUPDATE mb51 left OUTER JOIN proveedor ON (mb51.Vendor = proveedor.Vendors) SET mb51.Vendor_Name = proveedor.Name, mb51.Vendor_Type = proveedor.Vendor_Type
-        //modeloMb51.setMonth(Month);
-        //String Period = modeloMb51.getPosting_Date().split("/")[2];
-        //LLENAMOS COLUMNA X
-        //modeloMb51.setPeriod(Period);
-        //BUSCAMOS EL MATERIAL
-        //ControladorMrpdata controladorMrpData = new ControladorMrpdata();
-        //ModeloMrpData modeloMrpData = controladorMrpData.SelectSQL("SELECT * FROM mrpdata WHERE Material = '" + modeloMb51.getMaterial() + "'");
-        //LLENAMOS COLUMNA Y
-        //modeloMb51.setMaterial_Type(modeloMrpData.getMaterial_Type());
-        //LLENAMOS COLUMNA Z
-        //modeloMb51.setProfit_Center(modeloMrpData.getProfit_Center());
-        //LLENAMOS COLUMNA AA
-        //modeloMb51.setLink1_PO_Mas_Material(modeloMb51.getPurchase_order() + modeloMb51.getMaterial());
-        //LLENAMOS COLUMNA AB
-        //modeloMb51.setLink2_PO_Mas_position(modeloMb51.getPurchase_order() + modeloMb51.getItem());
-        //LLENAMOS COLUMNA AC
-        //modeloMb51.setReferencia_Y_vendor(modeloMb51.getMaterial() + modeloMb51.getVendor());        
-        String SqlUpdateMasivo = "UPDATE mb51 left "
-                + "OUTER JOIN proveedor ON (mb51.Vendor = proveedor.Vendors) "
-                + "SET mb51.Vendor_Name = proveedor.Name, "
-                + "mb51.Vendor_Type = proveedor.Vendor_Type, "
-                + "month = SUBSTRING_INDEX(SUBSTRING_INDEX(Posting_Date, '/', 2), '/', -1), "
-                + "Period = SUBSTRING_INDEX(SUBSTRING_INDEX(Posting_Date, '/', 3), '/', -1)";
-
-        controladorMrpdata.Insert(SqlUpdateMasivo);
-
-        //BUSCAMOS EL TotalQ_ME80FN
-        ControladorMe80fn controladorMe80fn = new ControladorMe80fn();
-        LinkedList<ModeloMe80fn> LstmodeloMe80fn = controladorMe80fn.ListSelectSQL("SELECT * FROM me80fn WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Item = '" + modeloMb51.getItem() + "' AND Movement_type = ''");
-        Double Me80fnQuantity = 0.0;
-
-        for (ModeloMe80fn modeloMe80fn : LstmodeloMe80fn) {
-            Me80fnQuantity = Me80fnQuantity + Double.valueOf(modeloMe80fn.getQuantity());
-        }
-        //LLENAMOS COLUMNA AD
-        modeloMb51.setTotalQ_ME80FN(Me80fnQuantity + "");
         //CALCULAMOS TotalQ_Porcentaje   
+        Double Quantity = Double.valueOf(modeloMb51.getQuantity());
         Double Qty_in_unit_of_entry = Double.valueOf(modeloMb51.getQty_in_unit_of_entry());
         Double TotalQ_ME80FN = Double.valueOf(modeloMb51.getTotalQ_ME80FN());
         Double TotalQ_Porcentaje = null;
@@ -641,13 +297,18 @@ public class ControladorCargaPlanos {
             if (TotalQ_ME80FN == 0.0) {
                 TotalQ_Porcentaje = 0.0;
             } else {
-                TotalQ_Porcentaje = Qty_in_unit_of_entry / TotalQ_ME80FN;
+                if (modeloMb51.getUnit_of_Entry().contentEquals(O_Unit_ME80FN)) {
+                    TotalQ_Porcentaje = Qty_in_unit_of_entry / TotalQ_ME80FN;
+                } else {
+                    TotalQ_Porcentaje = Quantity / TotalQ_ME80FN;
+                }
             }
 
         } catch (Exception e) {
             TotalQ_Porcentaje = 0.0;
         }
-        //LLENAMOS COLUMNA AE
+        //LLENAMOS COLUMNA AG
+        //modeloMb51.setTotalQ_Porcentaje(String.format("%.5f", TotalQ_Porcentaje));
         modeloMb51.setTotalQ_Porcentaje(TotalQ_Porcentaje + "");
 
         //BUSCAMOS TOTAL_INVOICE_VALUE
@@ -656,112 +317,207 @@ public class ControladorCargaPlanos {
         for (ModeloMe80fn modeloMe80fn : LstmodeloMe80fn) {
             TOTAL_INVOICE_VALUE = TOTAL_INVOICE_VALUE + Double.valueOf(modeloMe80fn.getAmt_in_loc_cur());
         }
-        //LLENAMOS COLUMNA AF
 
+        //LLENAMOS COLUMNA AH
+        //modeloMb51.setTOTAL_INVOICE_VALUE(String.format("%.5f", TOTAL_INVOICE_VALUE));
         modeloMb51.setTOTAL_INVOICE_VALUE(TOTAL_INVOICE_VALUE + "");
 
-        Double Factura_Value_Unit = TOTAL_INVOICE_VALUE / Qty_in_unit_of_entry * TotalQ_Porcentaje;
-        //LLENAMOS COLUMNA AG
+        Double Factura_Value_Unit = 0.0;
+        if (modeloMb51.getUnit_of_Entry().contentEquals("GAL")) {
+            Factura_Value_Unit = TOTAL_INVOICE_VALUE / Quantity * TotalQ_Porcentaje;
+        } else {
+            Factura_Value_Unit = TOTAL_INVOICE_VALUE / Qty_in_unit_of_entry * TotalQ_Porcentaje;
+        }
+
+        //LLENAMOS COLUMNA AI
+        //modeloMb51.setFactura_Value_Unit(String.format("%.5f", Factura_Value_Unit));
         modeloMb51.setFactura_Value_Unit(Factura_Value_Unit + "");
 
-        Double Unitario_estandar = Double.valueOf(modeloMb51.getAmt_in_loc_cur()) / Double.valueOf(modeloMb51.getQuantity());
-        Double PIR = Factura_Value_Unit / Unitario_estandar;
-        //LLENAMOS COLUMNA AH
-        modeloMb51.setPIR_Porcentaje(PIR + "");
+        //Double Unitario_estandar = Double.valueOf(modeloMb51.getAmt_in_loc_cur()) / Double.valueOf(modeloMb51.getQuantity());
+        Double PIR = Factura_Value_Unit / Cost_Unit_SAP_en_KG;
+        //LLENAMOS COLUMNA AJ
+        //modeloMb51.setPIR_Porcentaje(String.format("%.5f", PIR));
+        modeloMb51.setPIR_Porcentaje_del_Costo(PIR + "");
 
         //BUSCAMOS MONEDA
-        ModeloMe80fn modeloMe80fn = controladorMe80fn.SelectSQL("SELECT * FROM me80fn WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND Movement_type <> ''");
-        //LLENAMOS COLUMNA AI
-        modeloMb51.setMoneda(modeloMe80fn.getCurrency());
+        //ModeloMe80fn modeloMe80fn = controladorMe80fn.SelectSQL("SELECT * FROM me80fn WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND Movement_type <> ''");
+        //LLENAMOS COLUMNA AK
+        //modeloMb51.setMoneda(modeloMe80fn.getCurrency());
+        modeloMb51.setMoneda(Moneda);
 
-        //BUSCAMOS Freight
-        ControladorFbl3m controladorFbl3m = new ControladorFbl3m();
-        LinkedList<ModeloFbl3m> ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND Account = '50320' AND (Offsetting_acct_no = '20011' OR Offsetting_acct_no LIKE '3%')");
+        //LLENAMOS COLUMNA AL
+        modeloMb51.setLink3_PO_Item(modeloMb51.getPurchase_order() + modeloMb51.getMaterial());
 
         Double Freight = 0.0;
-        for (ModeloFbl3m modeloFbl3m : ListmodeloFbl3m) {
-            if (modeloFbl3m.getAmount_in_local_currency() != null) {
-                Freight = Freight + Double.valueOf(modeloFbl3m.getAmount_in_local_currency());
-            }
-        }
-        Freight = Freight * TotalQ_Porcentaje;
-        //LLENAMOS COLUMNA AJ
-        modeloMb51.setFreightString(Freight + "");
-
-        //BUSCAMOS DUTYS
-        ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND Account = '50320' AND Offsetting_acct_no = '20014'");
         Double Dutys = 0.0;
-        for (ModeloFbl3m modeloFbl3m : ListmodeloFbl3m) {
-            if (modeloFbl3m.getAmount_in_local_currency() != null) {
-                Dutys = Dutys + Double.valueOf(modeloFbl3m.getAmount_in_local_currency());
+        Double Arancel = 0.0;
+        ControladorFbl3m controladorFbl3m = new ControladorFbl3m();
+        LinkedList<ModeloFbl3m> ListmodeloFbl3m = null;
+        if (modeloMb51.getVendor_Type().contains("Nal")) {
+            Freight = 0.0;
+            Dutys = 0.0;
+            Arancel = 0.0;
+        } else if (modeloMb51.getVendor_Type().contains("ICO")) {
+            //BUSCAMOS Freight
+            //ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Item = '" + modeloMb51.getItem() + "' AND (Account = '50320' OR Account = '20011') AND (Offsetting_acct_no = '20011' OR Offsetting_acct_no LIKE '3%')");
+            ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Text = '" + modeloMb51.getPurchase_order() + modeloMb51.getItem() + "' AND (Account = '50320' OR Account = '20011') AND (Offsetting_acct_no = '20011' OR Offsetting_acct_no LIKE '3%')");
+            for (ModeloFbl3m modeloFbl3m : ListmodeloFbl3m) {
+                if (modeloFbl3m.getAmount_in_local_currency() != null) {
+                    Freight = Freight + Double.valueOf(modeloFbl3m.getAmount_in_local_currency());
+                }
+            }
+            //BUSCAMOS DUTYS
+            //ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Item = '" + modeloMb51.getItem() + "' AND (Account = '50320' OR Account = '20014') AND (Offsetting_acct_no = '20014' OR Offsetting_acct_no LIKE '3%')");
+            ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Text = '" + modeloMb51.getPurchase_order() + modeloMb51.getItem() + "' AND (Account = '50320' OR Account = '20014') AND (Offsetting_acct_no = '20014' OR Offsetting_acct_no LIKE '3%')");
+            for (ModeloFbl3m modeloFbl3m : ListmodeloFbl3m) {
+                if (modeloFbl3m.getAmount_in_local_currency() != null) {
+                    Dutys = Dutys + Double.valueOf(modeloFbl3m.getAmount_in_local_currency());
+                }
+            }
+            //BUSCAMOS ARANCEL
+            //ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Item = '" + modeloMb51.getItem() + "' AND (Account = '50320' OR Account = '20014') AND (Offsetting_acct_no = '20319' OR Offsetting_acct_no = '3062623')");
+            ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Text = '" + modeloMb51.getPurchase_order() + modeloMb51.getItem() + "' AND (Account = '50320' OR Account = '20014') AND (Offsetting_acct_no = '20319' OR Offsetting_acct_no = '3062623')");
+            for (ModeloFbl3m modeloFbl3m : ListmodeloFbl3m) {
+                if (modeloFbl3m.getAmount_in_local_currency() != null) {
+                    Arancel = Arancel + Double.valueOf(modeloFbl3m.getAmount_in_local_currency());
+                }
+            }
+        } else {
+            //BUSCAMOS Freight
+            ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND (Account = '50320' OR Account = '20011') AND (Offsetting_acct_no = '20011' OR Offsetting_acct_no LIKE '3%')");
+            for (ModeloFbl3m modeloFbl3m : ListmodeloFbl3m) {
+                if (modeloFbl3m.getAmount_in_local_currency() != null) {
+                    Freight = Freight + Double.valueOf(modeloFbl3m.getAmount_in_local_currency());
+                }
+            }
+            //BUSCAMOS DUTYS
+            ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND (Account = '50320' OR Account = '20014') AND (Offsetting_acct_no = '20014' OR Offsetting_acct_no LIKE '3%')");
+            for (ModeloFbl3m modeloFbl3m : ListmodeloFbl3m) {
+                if (modeloFbl3m.getAmount_in_local_currency() != null) {
+                    Dutys = Dutys + Double.valueOf(modeloFbl3m.getAmount_in_local_currency());
+                }
+            }
+            //BUSCAMOS ARANCEL
+            ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND (Account = '50320' OR Account = '20014') AND (Offsetting_acct_no = '20319' OR Offsetting_acct_no = '3062623')");
+            for (ModeloFbl3m modeloFbl3m : ListmodeloFbl3m) {
+                if (modeloFbl3m.getAmount_in_local_currency() != null) {
+                    Arancel = Arancel + Double.valueOf(modeloFbl3m.getAmount_in_local_currency());
+                }
             }
         }
-        Dutys = Dutys * TotalQ_Porcentaje;
-        //LLENAMOS COLUMNA AK
+
+        //LLENAMOS COLUMNA AM
+        //modeloMb51.setFreightString(String.format("%.5f", Freight));
+        modeloMb51.setFreight(Freight + "");
+
+        //LLENAMOS COLUMNA AN
+        //modeloMb51.setDutys(String.format("%.5f", Dutys));
         modeloMb51.setDutys(Dutys + "");
 
-        // BUSCAMOS ARANCEL
-        ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND Account = '50320' AND Offsetting_acct_no = '20319'");
-        Double Arancel = 0.0;
-        for (ModeloFbl3m modeloFbl3m : ListmodeloFbl3m) {
-            if (modeloFbl3m.getAmount_in_local_currency() != null) {
-                Arancel = Arancel + Double.valueOf(modeloFbl3m.getAmount_in_local_currency());
-            }
-        }
-        Arancel = Arancel * TotalQ_Porcentaje;
-        //LLENAMOS COLUMNA AL
+        //LLENAMOS COLUMNA AO
+        //modeloMb51.setArancel(String.format("%.5f", Arancel));
         modeloMb51.setArancel(Arancel + "");
 
-        //buscamos Ajuste PIR
-        ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND Account = '50320' AND Offsetting_acct_no = '20010'");
-        Double Ajuste_PIR = 0.0;
-        for (ModeloFbl3m modeloFbl3m : ListmodeloFbl3m) {
-            if (modeloFbl3m.getAmount_in_local_currency() != null) {
-                Ajuste_PIR = Ajuste_PIR + Double.valueOf(modeloFbl3m.getAmount_in_local_currency());
-            }
-        }
-        //LLENAMOS COLUMNA AM            
-        Ajuste_PIR = Ajuste_PIR * TotalQ_Porcentaje;
-        modeloMb51.setAjuste_PIR(Ajuste_PIR + "");
-
-        //BUSCAMOS OTROS
-        ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND Account = '50320' AND Offsetting_acct_no = '10500'");
-        Double Otros = 0.0;
-        for (ModeloFbl3m modeloFbl3m : ListmodeloFbl3m) {
-            if (modeloFbl3m.getAmount_in_local_currency() != null) {
-                Otros = Otros + Double.valueOf(modeloFbl3m.getAmount_in_local_currency());
-            }
-        }
-        Otros = Otros * TotalQ_Porcentaje;
-        //LLENAMOS COLUMNA AN
-        modeloMb51.setOtros(Otros + "");
-
-        Double Total_Costos_Adicionales = Freight + Dutys + Arancel + Ajuste_PIR + Otros;
-        //LLENAMOS COLUMNA AO
+        Double Total_Costos_Adicionales = Freight + Dutys + Arancel;
+        //LLENAMOS COLUMNA AP
+        //modeloMb51.setTotal_Costos_Adicionales(String.format("%.5f", Total_Costos_Adicionales));
         modeloMb51.setTotal_Costos_Adicionales(Total_Costos_Adicionales + "");
 
         Double Participac_Adicionales = Total_Costos_Adicionales / TOTAL_INVOICE_VALUE;
-        //LLENAMOS COLUMNA AP
+        //LLENAMOS COLUMNA AQ
+        //modeloMb51.setParticipac_Adicionales(String.format("%.5f", Participac_Adicionales));
         modeloMb51.setParticipac_Adicionales(Participac_Adicionales + "");
 
-        Double Total_Costos = (Total_Costos_Adicionales + TOTAL_INVOICE_VALUE) * TotalQ_Porcentaje;
-        //LLENAMOS COLUMNA AQ
+        ModeloEine modeloEine = null;
+        ControladorEine controladorEine = new ControladorEine();
+        if (modeloMb51.getVendor_Type().contains("ICO")) {
+            modeloEine = controladorEine.SelectSQL("SELECT * FROM EINE WHERE Link_Material_vendor = '" + modeloMb51.getVendor() + "'");
+        } else {
+            modeloEine = controladorEine.SelectSQL("SELECT * FROM EINE WHERE Link_Material_vendor = '" + modeloMb51.getMaterial() + modeloMb51.getVendor() + "'");
+        }
+        Double Porcentaje_Adicional = 0.0;
+        if (modeloEine != null) {
+            //LLENAMOS COLUMNA AR
+            //modeloMb51.setParticipac_Adicionales(String.format("%.5f", Participac_Adicionales));
+            Porcentaje_Adicional = Double.valueOf(modeloEine.getPorcentaje_Additional());
+            modeloMb51.setAdicionales_al_CTO_Estandar(modeloEine.getPorcentaje_Additional() + "");
+
+        }
+
+        Double Variance = 0.0;
+        Variance = Porcentaje_Adicional / Participac_Adicionales;
+
+        //LLENAMOS COLUMNA AS
+        modeloMb51.setVariance(Variance + "");
+
+        Double Total_Costos = 0.0;
+        Double Amt_in_loc_cur = Double.valueOf(modeloMb51.getAmt_in_loc_cur());
+
+        if (modeloMb51.getVendor_Type().contentEquals("Nal-Subcont")) {
+            Total_Costos = (Total_Costos_Adicionales * TOTAL_INVOICE_VALUE + Amt_in_loc_cur);
+        } else {
+            Total_Costos = (Total_Costos_Adicionales + TOTAL_INVOICE_VALUE) * TotalQ_Porcentaje;
+        }
+
+        Double Unitario_Real = 0.0;
+        //LLENAMOS COLUMNA AT
         modeloMb51.setTotal_Costos(Total_Costos + "");
 
-        Double Unitario_final_FIFO = Total_Costos / Double.valueOf(modeloMb51.getQuantity());
-        //LLENAMOS COLUMNA AR
+        if (modeloMb51.getUnit_of_Entry().contentEquals("GAL")) {
+            Unitario_Real = Total_Costos / Quantity;
+        } else {
+            Unitario_Real = Total_Costos / Qty_in_unit_of_entry;
+        }
+
+        //LLENAMOS COLUMNA AU
+        modeloMb51.setUnitario_Real(Unitario_Real + "");
+
+        Double Unitario_Real_adicional_estandar = 0.0;
+        Unitario_Real_adicional_estandar = (Total_Costos_Adicionales + TOTAL_INVOICE_VALUE) * TotalQ_Porcentaje;
+
+        //LLENAMOS COLUMNA AV
+        modeloMb51.setUnitario_Real_adicional_estandar(Unitario_Real_adicional_estandar + "");
+
+        Double Unitario_estandar_SAP = 0.0;
+        Unitario_estandar_SAP = Cost_Unit_SAP_en_KG;
+
+        //LLENAMOS COLUMNA AW
+        modeloMb51.setUnitario_estandar_SAP(Unitario_estandar_SAP + "");
+
+        Double Unitario_final_FIFO = Unitario_Real;
+
+        //LLENAMOS COLUMNA AX
         modeloMb51.setUnitario_final_FIFO(Unitario_final_FIFO + "");
 
-        //Unitario_estandar = Double.valueOf(modeloMb51.getAmt_in_loc_cur()) / Double.valueOf(modeloMb51.getQuantity());
-        //LLENAMOS COLUMNA AS
-        modeloMb51.setUnitario_estandar(Unitario_estandar + "");
+        Double Porcentaje_Real_Vs_Estanda = 0.0;
+        Porcentaje_Real_Vs_Estanda = ((Unitario_Real / Unitario_estandar_SAP) - 1);
 
-        Double Real_Vs_Estándar = (Unitario_final_FIFO / Unitario_estandar) - 1;
-        modeloMb51.setPorcentaje_Real_Vs_Estándar(Real_Vs_Estándar + "");
+        //LLENAMOS COLUMNA AY
+        modeloMb51.setPorcentaje_Real_Vs_Estandar(Porcentaje_Real_Vs_Estanda + "");
+
+        Double Porcentaje_fifo_final_vs_Estandar = 0.0;
+        Porcentaje_fifo_final_vs_Estandar = ((Unitario_final_FIFO / Unitario_estandar_SAP) - 1);
+
+        //LLENAMOS COLUMNA AZ
+        modeloMb51.setPorcentaje_fifo_final_vs_Estandar(Porcentaje_fifo_final_vs_Estandar + "");
+
+        Double Compra_valorada_a_Unit_FIFO = 0.0;
+        Compra_valorada_a_Unit_FIFO = Unitario_final_FIFO * Quantity;
+
+        //LLENAMOS COLUMNA BA
+        modeloMb51.setCompra_valorada_a_Unit_FIFO(Compra_valorada_a_Unit_FIFO + "");
+
+        Double Variacion_FIFO_vs_Estandar = 0.0;
+        Variacion_FIFO_vs_Estandar = Compra_valorada_a_Unit_FIFO - Amt_in_loc_cur;
+
+        //LLENAMOS COLUMNA BB
+        modeloMb51.setVariacion_FIFO_vs_Estandar(Variacion_FIFO_vs_Estandar + "");
 
         ControladorMb51 controladorMb51 = new ControladorMb51();
-        controladorMb51.Insert(modeloMb51);
+
+        controladorMb51.Update(modeloMb51);
 
         //}
     }
+
 }

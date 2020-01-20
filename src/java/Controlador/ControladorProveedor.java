@@ -272,6 +272,7 @@ public class ControladorProveedor {
                 modeloProveedor.setVendors(res.getString("Vendors"));
                 modeloProveedor.setName(res.getString("Name"));
                 modeloProveedor.setVendor_Type(res.getString("Vendor_Type"));
+                modeloProveedor.setMoneda(res.getString("Moneda"));
             }
             res.close();
             SQL.close();
