@@ -80,8 +80,9 @@ public class ControladorMb51 {
                         + "Porcentaje_Real_Vs_Estandar,"
                         + "Porcentaje_fifo_final_vs_Estandar,"
                         + "Compra_valorada_a_Unit_FIFO,"
-                        + "Variacion_FIFO_vs_Estandar)"
-                        + "VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                        + "Variacion_FIFO_vs_Estandar,"
+                        + "NovedadIco)"
+                        + "VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
                 SQL.setString(1, modeloMb51.getPlant());
                 SQL.setString(2, modeloMb51.getPurchase_order());
                 SQL.setString(3, modeloMb51.getMaterial());
@@ -135,9 +136,145 @@ public class ControladorMb51 {
                 SQL.setString(51, modeloMb51.getPorcentaje_fifo_final_vs_Estandar());
                 SQL.setString(52, modeloMb51.getCompra_valorada_a_Unit_FIFO());
                 SQL.setString(53, modeloMb51.getVariacion_FIFO_vs_Estandar());
+                SQL.setString(54, modeloMb51.getNovedadIco());
 
                 if (SQL.executeUpdate() > 0) {
                     resul = true;
+                }
+            } catch (SQLException e) {
+                System.out.println("Error en la consulta SQL Insert " + e);
+            }
+            SQL.close();
+            con.close();
+        } catch (SQLException e) {
+            System.out.println("Error en la consulta SQL Insert " + e);
+        }
+        return resul;
+    }
+
+    public boolean InsertList(LinkedList<ModeloMb51> listModeloMb51) {
+        boolean resul = false;
+        try {
+            ConexionBDMySql conexion = new ConexionBDMySql();
+            Connection con;
+            con = conexion.abrirConexion();
+            PreparedStatement SQL = null;
+            try {
+                SQL = con.prepareStatement("INSERT INTO mb51("
+                        + "Plant,"
+                        + "Purchase_order,"
+                        + "Material,"
+                        + "Material_Description,"
+                        + "Batch,"
+                        + "Movement_type,"
+                        + "Movement_Type_Text,"
+                        + "Item,"
+                        + "Quantity,"
+                        + "Qty_in_unit_of_entry,"
+                        + "Unit_of_Entry,"
+                        + "Amt_in_loc_cur,"
+                        + "Currency,"
+                        + "Storage_Location,"
+                        + "Posting_Date,"
+                        + "Document_Date,"
+                        + "Material_Document,"
+                        + "User_Name,"
+                        + "Vendor,"
+                        + "Vendor_Name,"
+                        + "Vendor_Type,"
+                        + "Month,"
+                        + "Period,"
+                        + "Cost_Unit_SAP_en_KG,"
+                        + "Material_Type,"
+                        + "Profit_Center,"
+                        + "link1_Material_Batch,"
+                        + "link2_PO_position,"
+                        + "Referencia_vendor,"
+                        + "TotalQ_ME80FN,"
+                        + "O_Unit_ME80FN,"
+                        + "TotalQ_Porcentaje,"
+                        + "TOTAL_INVOICE_VALUE,"
+                        + "Factura_Value_Unit,"
+                        + "PIR_Porcentaje_del_Costo,"
+                        + "Moneda,"
+                        + "link3_PO_Item,"
+                        + "Freight,"
+                        + "Dutys,"
+                        + "Arancel,"
+                        + "Total_Costos_Adicionales,"
+                        + "Participac_Adicionales,"
+                        + "Adicionales_al_CTO_Estandar,"
+                        + "Variance,"
+                        + "Total_Costos,"
+                        + "Unitario_Real,"
+                        + "Unitario_Real_adicional_estandar,"
+                        + "Unitario_estandar_SAP,"
+                        + "Unitario_final_FIFO,"
+                        + "Porcentaje_Real_Vs_Estandar,"
+                        + "Porcentaje_fifo_final_vs_Estandar,"
+                        + "Compra_valorada_a_Unit_FIFO,"
+                        + "Variacion_FIFO_vs_Estandar,"
+                        + "NovedadIco)"
+                        + "VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                for (ModeloMb51 modeloMb51 : listModeloMb51) {
+                    SQL.setString(1, modeloMb51.getPlant());
+                    SQL.setString(2, modeloMb51.getPurchase_order());
+                    SQL.setString(3, modeloMb51.getMaterial());
+                    SQL.setString(4, modeloMb51.getMaterial_Description());
+                    SQL.setString(5, modeloMb51.getBatch());
+                    SQL.setString(6, modeloMb51.getMovement_type());
+                    SQL.setString(7, modeloMb51.getMovement_Type_Text());
+                    SQL.setString(8, modeloMb51.getItem());
+                    SQL.setString(9, modeloMb51.getQuantity());
+                    SQL.setString(10, modeloMb51.getQty_in_unit_of_entry());
+                    SQL.setString(11, modeloMb51.getUnit_of_Entry());
+                    SQL.setString(12, modeloMb51.getAmt_in_loc_cur());
+                    SQL.setString(13, modeloMb51.getCurrency());
+                    SQL.setString(14, modeloMb51.getStorage_Location());
+                    SQL.setString(15, modeloMb51.getPosting_Date());
+                    SQL.setString(16, modeloMb51.getDocument_Date());
+                    SQL.setString(17, modeloMb51.getMaterial_Document());
+                    SQL.setString(18, modeloMb51.getUser_Name());
+                    SQL.setString(19, modeloMb51.getVendor());
+                    SQL.setString(20, modeloMb51.getVendor_Name());
+                    SQL.setString(21, modeloMb51.getVendor_Type());
+                    SQL.setString(22, modeloMb51.getMonth());
+                    SQL.setString(23, modeloMb51.getPeriod());
+                    SQL.setString(24, modeloMb51.getCost_Unit_SAP_en_KG());
+                    SQL.setString(25, modeloMb51.getMaterial_Type());
+                    SQL.setString(26, modeloMb51.getProfit_Center());
+                    SQL.setString(27, modeloMb51.getLink1_Material_Batch());
+                    SQL.setString(28, modeloMb51.getLink2_PO_position());
+                    SQL.setString(29, modeloMb51.getReferencia_vendor());
+                    SQL.setString(30, modeloMb51.getTotalQ_ME80FN());
+                    SQL.setString(31, modeloMb51.getO_Unit_ME80FN());
+                    SQL.setString(32, modeloMb51.getTotalQ_Porcentaje());
+                    SQL.setString(33, modeloMb51.getTOTAL_INVOICE_VALUE());
+                    SQL.setString(34, modeloMb51.getFactura_Value_Unit());
+                    SQL.setString(35, modeloMb51.getPIR_Porcentaje_del_Costo());
+                    SQL.setString(36, modeloMb51.getMoneda());
+                    SQL.setString(37, modeloMb51.getLink3_PO_Item());
+                    SQL.setString(38, modeloMb51.getFreight());
+                    SQL.setString(39, modeloMb51.getDutys());
+                    SQL.setString(40, modeloMb51.getArancel());
+                    SQL.setString(41, modeloMb51.getTotal_Costos_Adicionales());
+                    SQL.setString(42, modeloMb51.getParticipac_Adicionales());
+                    SQL.setString(43, modeloMb51.getAdicionales_al_CTO_Estandar());
+                    SQL.setString(44, modeloMb51.getVariance());
+                    SQL.setString(45, modeloMb51.getTotal_Costos());
+                    SQL.setString(46, modeloMb51.getUnitario_Real());
+                    SQL.setString(47, modeloMb51.getUnitario_Real_adicional_estandar());
+                    SQL.setString(48, modeloMb51.getUnitario_estandar_SAP());
+                    SQL.setString(49, modeloMb51.getUnitario_final_FIFO());
+                    SQL.setString(50, modeloMb51.getPorcentaje_Real_Vs_Estandar());
+                    SQL.setString(51, modeloMb51.getPorcentaje_fifo_final_vs_Estandar());
+                    SQL.setString(52, modeloMb51.getCompra_valorada_a_Unit_FIFO());
+                    SQL.setString(53, modeloMb51.getVariacion_FIFO_vs_Estandar());
+                    SQL.setString(54, modeloMb51.getNovedadIco());
+
+                    if (SQL.executeUpdate() > 0) {
+                        resul = true;
+                    }
                 }
             } catch (SQLException e) {
                 System.out.println("Error en la consulta SQL Insert " + e);
@@ -250,7 +387,8 @@ public class ControladorMb51 {
                     + "Porcentaje_Real_Vs_Estandar,"
                     + "Porcentaje_fifo_final_vs_Estandar,"
                     + "Compra_valorada_a_Unit_FIFO,"
-                    + "Variacion_FIFO_vs_Estandar"
+                    + "Variacion_FIFO_vs_Estandar,"
+                    + "NovedadIco"
                     + " FROM mb51");
             ResultSet res = SQL.executeQuery();
             while (res.next()) {
@@ -309,7 +447,7 @@ public class ControladorMb51 {
                 modeloMb51.setPorcentaje_fifo_final_vs_Estandar(res.getString("Porcentaje_fifo_final_vs_Estandar"));
                 modeloMb51.setCompra_valorada_a_Unit_FIFO(res.getString("Compra_valorada_a_Unit_FIFO"));
                 modeloMb51.setVariacion_FIFO_vs_Estandar(res.getString("Variacion_FIFO_vs_Estandar"));
-
+                modeloMb51.setNovedadIco(res.getString("NovedadIco"));
                 modeloMb51s.add(modeloMb51);
             }
             res.close();
@@ -381,7 +519,8 @@ public class ControladorMb51 {
                     + "Porcentaje_Real_Vs_Estandar = ?, "
                     + "Porcentaje_fifo_final_vs_Estandar = ?, "
                     + "Compra_valorada_a_Unit_FIFO = ?, "
-                    + "Variacion_FIFO_vs_Estandar = ? "
+                    + "Variacion_FIFO_vs_Estandar = ?, "
+                    + "NovedadIco = ? "
                     + " WHERE Id = ? ");
             SQL.setString(1, modeloMb51.getPlant());
             SQL.setString(2, modeloMb51.getPurchase_order());
@@ -436,9 +575,143 @@ public class ControladorMb51 {
             SQL.setString(51, modeloMb51.getPorcentaje_fifo_final_vs_Estandar());
             SQL.setString(52, modeloMb51.getCompra_valorada_a_Unit_FIFO());
             SQL.setString(53, modeloMb51.getVariacion_FIFO_vs_Estandar());
-            SQL.setInt(54, modeloMb51.getId());
+            SQL.setString(54, modeloMb51.getNovedadIco());
+            SQL.setInt(55, modeloMb51.getId());
             if (SQL.executeUpdate() > 0) {
                 resul = true;
+            }
+            SQL.close();
+            con.close();
+        } catch (SQLException e) {
+            System.out.println("Error en la consulta SQL Update " + e);
+            SQL.close();
+            con.close();
+        }
+        return resul;
+    }
+
+    public boolean UpdateList(LinkedList<ModeloMb51> listModeloMb51) throws SQLException {
+        boolean resul = false;
+        ConexionBDMySql conexion = new ConexionBDMySql();
+        Connection con;
+        con = conexion.abrirConexion();
+        PreparedStatement SQL = null;
+        try {
+            SQL = con.prepareStatement("UPDATE mb51 SET "
+                    + "Plant = ?, "
+                    + "Purchase_order = ?, "
+                    + "Material = ?, "
+                    + "Material_Description = ?, "
+                    + "Batch = ?, "
+                    + "Movement_type = ?, "
+                    + "Movement_Type_Text = ?, "
+                    + "Item = ?, "
+                    + "Quantity = ?, "
+                    + "Qty_in_unit_of_entry = ?, "
+                    + "Unit_of_Entry = ?, "
+                    + "Amt_in_loc_cur = ?, "
+                    + "Currency = ?, "
+                    + "Storage_Location = ?, "
+                    + "Posting_Date = ?, "
+                    + "Document_Date = ?, "
+                    + "Material_Document = ?, "
+                    + "User_Name = ?, "
+                    + "Vendor = ?, "
+                    + "Vendor_Name = ?, "
+                    + "Vendor_Type = ?, "
+                    + "Month = ?, "
+                    + "Period = ?, "
+                    + "Cost_Unit_SAP_en_KG = ?, "
+                    + "Material_Type = ?, "
+                    + "Profit_Center = ?, "
+                    + "link1_Material_Batch = ?, "
+                    + "link2_PO_position = ?, "
+                    + "Referencia_vendor = ?, "
+                    + "TotalQ_ME80FN = ?, "
+                    + "O_Unit_ME80FN = ?, "
+                    + "TotalQ_Porcentaje = ?, "
+                    + "TOTAL_INVOICE_VALUE = ?, "
+                    + "Factura_Value_Unit = ?, "
+                    + "PIR_Porcentaje_del_Costo = ?, "
+                    + "Moneda = ?, "
+                    + "link3_PO_Item = ?, "
+                    + "Freight = ?, "
+                    + "Dutys = ?, "
+                    + "Arancel = ?, "
+                    + "Total_Costos_Adicionales = ?, "
+                    + "Participac_Adicionales = ?, "
+                    + "Adicionales_al_CTO_Estandar = ?, "
+                    + "Variance = ?, "
+                    + "Total_Costos = ?, "
+                    + "Unitario_Real = ?, "
+                    + "Unitario_Real_adicional_estandar = ?, "
+                    + "Unitario_estandar_SAP = ?, "
+                    + "Unitario_final_FIFO = ?, "
+                    + "Porcentaje_Real_Vs_Estandar = ?, "
+                    + "Porcentaje_fifo_final_vs_Estandar = ?, "
+                    + "Compra_valorada_a_Unit_FIFO = ?, "
+                    + "Variacion_FIFO_vs_Estandar = ?, "
+                    + "NovedadIco = ? "
+                    + " WHERE Id = ? ");
+            for (ModeloMb51 modeloMb51 : listModeloMb51) {
+                SQL.setString(1, modeloMb51.getPlant());
+                SQL.setString(2, modeloMb51.getPurchase_order());
+                SQL.setString(3, modeloMb51.getMaterial());
+                SQL.setString(4, modeloMb51.getMaterial_Description());
+                SQL.setString(5, modeloMb51.getBatch());
+                SQL.setString(6, modeloMb51.getMovement_type());
+                SQL.setString(7, modeloMb51.getMovement_Type_Text());
+                SQL.setString(8, modeloMb51.getItem());
+                SQL.setString(9, modeloMb51.getQuantity());
+                SQL.setString(10, modeloMb51.getQty_in_unit_of_entry());
+                SQL.setString(11, modeloMb51.getUnit_of_Entry());
+                SQL.setString(12, modeloMb51.getAmt_in_loc_cur());
+                SQL.setString(13, modeloMb51.getCurrency());
+                SQL.setString(14, modeloMb51.getStorage_Location());
+                SQL.setString(15, modeloMb51.getPosting_Date());
+                SQL.setString(16, modeloMb51.getDocument_Date());
+                SQL.setString(17, modeloMb51.getMaterial_Document());
+                SQL.setString(18, modeloMb51.getUser_Name());
+                SQL.setString(19, modeloMb51.getVendor());
+                SQL.setString(20, modeloMb51.getVendor_Name());
+                SQL.setString(21, modeloMb51.getVendor_Type());
+                SQL.setString(22, modeloMb51.getMonth());
+                SQL.setString(23, modeloMb51.getPeriod());
+                SQL.setString(24, modeloMb51.getCost_Unit_SAP_en_KG());
+                SQL.setString(25, modeloMb51.getMaterial_Type());
+                SQL.setString(26, modeloMb51.getProfit_Center());
+                SQL.setString(27, modeloMb51.getLink1_Material_Batch());
+                SQL.setString(28, modeloMb51.getLink2_PO_position());
+                SQL.setString(29, modeloMb51.getReferencia_vendor());
+                SQL.setString(30, modeloMb51.getTotalQ_ME80FN());
+                SQL.setString(31, modeloMb51.getO_Unit_ME80FN());
+                SQL.setString(32, modeloMb51.getTotalQ_Porcentaje());
+                SQL.setString(33, modeloMb51.getTOTAL_INVOICE_VALUE());
+                SQL.setString(34, modeloMb51.getFactura_Value_Unit());
+                SQL.setString(35, modeloMb51.getPIR_Porcentaje_del_Costo());
+                SQL.setString(36, modeloMb51.getMoneda());
+                SQL.setString(37, modeloMb51.getLink3_PO_Item());
+                SQL.setString(38, modeloMb51.getFreight());
+                SQL.setString(39, modeloMb51.getDutys());
+                SQL.setString(40, modeloMb51.getArancel());
+                SQL.setString(41, modeloMb51.getTotal_Costos_Adicionales());
+                SQL.setString(42, modeloMb51.getParticipac_Adicionales());
+                SQL.setString(43, modeloMb51.getAdicionales_al_CTO_Estandar());
+                SQL.setString(44, modeloMb51.getVariance());
+                SQL.setString(45, modeloMb51.getTotal_Costos());
+                SQL.setString(46, modeloMb51.getUnitario_Real());
+                SQL.setString(47, modeloMb51.getUnitario_Real_adicional_estandar());
+                SQL.setString(48, modeloMb51.getUnitario_estandar_SAP());
+                SQL.setString(49, modeloMb51.getUnitario_final_FIFO());
+                SQL.setString(50, modeloMb51.getPorcentaje_Real_Vs_Estandar());
+                SQL.setString(51, modeloMb51.getPorcentaje_fifo_final_vs_Estandar());
+                SQL.setString(52, modeloMb51.getCompra_valorada_a_Unit_FIFO());
+                SQL.setString(53, modeloMb51.getVariacion_FIFO_vs_Estandar());
+                SQL.setString(54, modeloMb51.getNovedadIco());
+                SQL.setInt(55, modeloMb51.getId());
+                if (SQL.executeUpdate() > 0) {
+                    resul = true;
+                }
             }
             SQL.close();
             con.close();

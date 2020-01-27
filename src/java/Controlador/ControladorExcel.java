@@ -308,17 +308,12 @@ public class ControladorExcel {
         {
             case "GenerarArchivoCompras":
 
-                String SQLReporte = "SELECT "
-                        + "`Id`,"
-                        + "`Actividad`,"
-                        + "`NombrePlano`,"
-                        + "`FechaCarga`,"
-                        + "`Estado`"
-                        + "FROM `estadoplanos`";
+                String SQLReporte = "SELECT * "                        
+                        + "FROM mb51";
                 try
                 {
                     //String UrlArchivo = "C:\\Users\\Carlos A Dominguez D\\GlasFish\\glassfish\\domains\\GlassFish\\config\\SunChemical\\Informe.xls";//request.getParameter("PlantillaUrl");
-                    String UrlArchivo = "C:\\Zred\\SunChemical\\MacroSistemaSeguros.xls";//request.getParameter("PlantillaUrl");                
+                    String UrlArchivo = "C:\\Zred\\SunChemical\\MacroMB51.xls";//request.getParameter("PlantillaUrl");                
                     String newQuery = SQLReporte;
                     //ControladorExcel controladorExcel = new ControladorExcel();
                     String archivo = GenerarExcel(UrlArchivo, newQuery);

@@ -11,7 +11,10 @@ import Controlador.ControladorExcel;
 import Controlador.ControladorMb51;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.Calendar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
@@ -39,11 +42,9 @@ public class ServletSunchemical extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter())
-        {
+        try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
-            if ("true".equals(respuesta))
-            {
+            if ("true".equals(respuesta)) {
                 out.println("<!DOCTYPE html>");
                 out.println("<html lang=en>");
                 out.println("<head>");
@@ -75,8 +76,7 @@ public class ServletSunchemical extends HttpServlet {
                 out.println("</div>");
                 out.println("</body>");
                 out.println("</html>");
-            } else
-            {
+            } else {
                 out.println("<!DOCTYPE html>");
                 out.println("<html lang=en>");
                 out.println("<head>");
@@ -142,11 +142,16 @@ public class ServletSunchemical extends HttpServlet {
         String Accion = request.getParameter("Accion");
         String res = "";
         ControladorMb51 controladorMb51 = new ControladorMb51();
-        switch (Accion)
-        {
+        switch (Accion) {
             case "Planos":
                 ControladorCargaPlanos controladorCargaPlanos = new ControladorCargaPlanos();
-                res = controladorCargaPlanos.Upload(request, response);
+                 {
+                    try {
+                        res = controladorCargaPlanos.Upload(request, response);
+                    } catch (SQLException ex) {
+                        Logger.getLogger(ServletSunchemical.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
                 respuesta = res;
                 request.setAttribute("respuesta", res);
                 processRequest(request, response);
