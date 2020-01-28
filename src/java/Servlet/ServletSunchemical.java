@@ -9,8 +9,9 @@ import Controlador.ControladorCargaPlanos;
 import Controlador.ControladorEstadoPlanos;
 import Controlador.ControladorExcel;
 import Controlador.ControladorMb51;
+import Controlador.ControladorVendorType;
+import Herramienta.Herramienta;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.logging.Level;
@@ -20,6 +21,7 @@ import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
 
 /**
  *
@@ -139,9 +141,11 @@ public class ServletSunchemical extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String Accion = request.getParameter("Accion");
+        String Accion = request.getParameter("Accion");        
         String res = "";
+        String Resultado = "";
         ControladorMb51 controladorMb51 = new ControladorMb51();
+        Herramienta herramienta = new Herramienta();
         switch (Accion) {
             case "Planos":
                 ControladorCargaPlanos controladorCargaPlanos = new ControladorCargaPlanos();
@@ -155,7 +159,6 @@ public class ServletSunchemical extends HttpServlet {
                 respuesta = res;
                 request.setAttribute("respuesta", res);
                 processRequest(request, response);
-//            response.setCharacterEncoding("UT
                 break;
             case "GetArchivosCompras":
                 ControladorEstadoPlanos controladorEstadoPlanos = new ControladorEstadoPlanos();
@@ -168,7 +171,29 @@ public class ServletSunchemical extends HttpServlet {
                 ControladorExcel controladorExcel = new ControladorExcel();
                 controladorExcel.Select("GenerarArchivoCompras", request, response);
                 break;
+            case "VendorTypeJSP":
+                ControladorVendorType controladorVendorType = new ControladorVendorType();
+                String evento = request.getParameter("evento");
+                switch (evento) {
+                    case "Upload":
+                        Resultado = controladorVendorType.Insert(request);
+                        break;
+                    case "Delete":
+                        Resultado = controladorVendorType.Delete(request);
+                        break;
+                    case "Read":
+                        Resultado = controladorVendorType.ReadVendorType(request, response);
+                        PrintWriter pwr = response.getWriter();
+                        pwr.write(Resultado);
+                        System.out.println(pwr.checkError() ? "Error al cargar la lista" : "Tabla Cargada");
+                        break;
+                }
+                break;
         }
+        String respuesta = herramienta.GetDescrpCode(Resultado);
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("text/plain");
+        response.getWriter().write(respuesta);
     }
 
     public static String ObtenerFecha() {
