@@ -256,12 +256,12 @@ public class ControladorProveedor {
         return modeloProveedor;
     }
     
-    public ModeloProveedor SelectSQL(String Sql) {
+    public ModeloProveedor SelectSQL(String Sql) throws SQLException {
         ModeloProveedor modeloProveedor = new ModeloProveedor();
         ConexionBDMySql conexion = new ConexionBDMySql();
         Connection con;
         con = conexion.abrirConexion();
-        PreparedStatement SQL;
+        PreparedStatement SQL;        
         try
         {
             SQL = con.prepareStatement(Sql);
@@ -277,9 +277,9 @@ public class ControladorProveedor {
             res.close();
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Select " + e);
+            con.close();
         }
         return modeloProveedor;
     }

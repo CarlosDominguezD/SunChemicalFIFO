@@ -44,12 +44,13 @@ public class ControladorVendorType
                 modeloVendorType.setMaterial(res.getString("Material"));
                 modeloVendorType.setVendor_Type(res.getString("Vendor_Type"));
             }
-
+            res.close();
+            SQL.close();
+            con.close();
         } catch (SQLException e)
         {
             System.out.println("Error en la consulta SQL Select " + e);
         }
-
         return modeloVendorType;
     }
 
