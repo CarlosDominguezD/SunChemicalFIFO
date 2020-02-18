@@ -21,14 +21,12 @@ public class ControladorMe80fn {
 
     public boolean Insert(ModeloMe80fn modelo) {
         boolean resul = false;
-        try
-        {
+        try {
             ConexionBDMySql conexion = new ConexionBDMySql();
             Connection con;
             con = conexion.abrirConexion();
             PreparedStatement SQL = null;
-            try
-            {
+            try {
                 SQL = con.prepareStatement("INSERT INTO `me80fn`("
                         + "`Index`,"
                         + "`Index2`,"
@@ -79,18 +77,15 @@ public class ControladorMe80fn {
                 SQL.setString(22, modelo.getReference_Doc_Item());
                 SQL.setString(23, modelo.getInvoice_Value());
                 SQL.setString(24, modelo.getInvoice_Value_in_FC());
-                if (SQL.executeUpdate() > 0)
-                {
+                if (SQL.executeUpdate() > 0) {
                     resul = true;
                 }
-            } catch (SQLException e)
-            {
+            } catch (SQLException e) {
                 System.out.println(e);
             }
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Insert " + e);
         }
         return resul;
@@ -98,14 +93,12 @@ public class ControladorMe80fn {
 
     public boolean Insert(LinkedList<ModeloMe80fn> listModeloMe80fns) {
         boolean resul = false;
-        try
-        {
+        try {
             ConexionBDMySql conexion = new ConexionBDMySql();
             Connection con;
             con = conexion.abrirConexion();
             PreparedStatement SQL = null;
-            try
-            {
+            try {
                 SQL = con.prepareStatement("INSERT INTO `me80fn`("
                         + "`Index`,"
                         + "`Index2`,"
@@ -132,8 +125,7 @@ public class ControladorMe80fn {
                         + "`Invoice_Value`,"
                         + "`Invoice_Value_in_FC`)"
                         + " VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);");
-                for (ModeloMe80fn modelo : listModeloMe80fns)
-                {
+                for (ModeloMe80fn modelo : listModeloMe80fns) {
                     SQL.setString(1, modelo.getIndex());
                     SQL.setString(2, modelo.getIndex2());
                     SQL.setString(3, modelo.getPurchasing_Document());
@@ -158,19 +150,16 @@ public class ControladorMe80fn {
                     SQL.setString(22, modelo.getReference_Doc_Item());
                     SQL.setString(23, modelo.getInvoice_Value());
                     SQL.setString(24, modelo.getInvoice_Value_in_FC());
-                    if (SQL.executeUpdate() > 0)
-                    {
+                    if (SQL.executeUpdate() > 0) {
                         resul = true;
                     }
                 }
-            } catch (SQLException e)
-            {
+            } catch (SQLException e) {
                 System.out.println(e);
             }
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Insert " + e);;
         }
         return resul;
@@ -182,8 +171,7 @@ public class ControladorMe80fn {
         Connection con;
         con = conexion.abrirConexion();
         PreparedStatement SQL = null;
-        try
-        {
+        try {
             SQL = con.prepareStatement("UPDATE `me80fn` SET "
                     + "`Index` = ?,"
                     + "`Index2` = ?,"
@@ -235,14 +223,12 @@ public class ControladorMe80fn {
             SQL.setString(23, modelo.getInvoice_Value());
             SQL.setString(24, modelo.getInvoice_Value_in_FC());
             SQL.setInt(25, modelo.getId());
-            if (SQL.executeUpdate() > 0)
-            {
+            if (SQL.executeUpdate() > 0) {
                 resul = true;
             }
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Update " + e);
         }
         return resul;
@@ -254,8 +240,7 @@ public class ControladorMe80fn {
         Connection con;
         con = conexion.abrirConexion();
         PreparedStatement SQL = null;
-        try
-        {
+        try {
             SQL = con.prepareStatement("UPDATE `me80fn` SET "
                     + "`Index` = ?,"
                     + "`Index2` = ?,"
@@ -282,8 +267,7 @@ public class ControladorMe80fn {
                     + "`Invoice_Value` = ?,"
                     + "`Invoice_Value_in_FC` = ?"
                     + " WHERE `Id` = ?;");
-            for (ModeloMe80fn modelo : listModeloMe80fns)
-            {
+            for (ModeloMe80fn modelo : listModeloMe80fns) {
                 SQL.setString(1, modelo.getIndex());
                 SQL.setString(2, modelo.getIndex2());
                 SQL.setString(3, modelo.getPurchasing_Document());
@@ -310,15 +294,13 @@ public class ControladorMe80fn {
                 SQL.setString(24, modelo.getInvoice_Value_in_FC());
                 SQL.setInt(25, modelo.getId());
                 SQL.setInt(25, modelo.getId());
-                if (SQL.executeUpdate() > 0)
-                {
+                if (SQL.executeUpdate() > 0) {
                     resul = true;
                 }
             }
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Update " + e);
         }
         return resul;
@@ -330,18 +312,15 @@ public class ControladorMe80fn {
         Connection con;
         con = conexion.abrirConexion();
         PreparedStatement SQL = null;
-        try
-        {
+        try {
             SQL = con.prepareStatement("DELETE FROM `me80fn` WHERE `Id` = ?;");
             SQL.setInt(1, modelo.getId());
-            if (SQL.executeUpdate() > 0)
-            {
+            if (SQL.executeUpdate() > 0) {
                 resul = true;
             }
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Delete " + e);
         }
         return resul;
@@ -353,17 +332,14 @@ public class ControladorMe80fn {
         Connection con;
         con = conexion.abrirConexion();
         PreparedStatement SQL = null;
-        try
-        {
+        try {
             SQL = con.prepareStatement("DELETE FROM `me80fn`;");
-            if (SQL.executeUpdate() > 0)
-            {
+            if (SQL.executeUpdate() > 0) {
                 resul = true;
             }
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Delete " + e);
         }
         return resul;
@@ -375,8 +351,7 @@ public class ControladorMe80fn {
         Connection con;
         con = conexion.abrirConexion();
         PreparedStatement SQL;
-        try
-        {
+        try {
             SQL = con.prepareStatement("SELECT "
                     + "`Id`,"
                     + "`Index`,"
@@ -405,8 +380,7 @@ public class ControladorMe80fn {
                     + "`Invoice_Value_in_FC` "
                     + "FROM `me80fn`;");
             ResultSet res = SQL.executeQuery();
-            while (res.next())
-            {
+            while (res.next()) {
                 ModeloMe80fn modeloMe80fn = new ModeloMe80fn();
                 modeloMe80fn.setId(res.getInt("id"));
                 modeloMe80fn.setIndex(res.getString("Index"));
@@ -438,8 +412,7 @@ public class ControladorMe80fn {
             res.close();
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Select " + e);
         }
         return modeloMe80fns;
@@ -451,8 +424,7 @@ public class ControladorMe80fn {
         Connection con;
         con = conexion.abrirConexion();
         PreparedStatement SQL;
-        try
-        {
+        try {
             SQL = con.prepareStatement("SELECT "
                     + "`Id`,"
                     + "`Index`,"
@@ -482,8 +454,7 @@ public class ControladorMe80fn {
                     + "FROM `me80fn`;");
             SQL.setInt(1, Id);
             ResultSet res = SQL.executeQuery();
-            if (res.next())
-            {
+            if (res.next()) {
                 modeloMe80fn.setId(res.getInt("id"));
                 modeloMe80fn.setIndex(res.getString("Index"));
                 modeloMe80fn.setIndex2(res.getString("Index2"));
@@ -513,25 +484,22 @@ public class ControladorMe80fn {
             res.close();
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Select " + e);
         }
         return modeloMe80fn;
     }
-    
+
     public ModeloMe80fn SelectSQL(String Sql) {
         ModeloMe80fn modeloMe80fn = new ModeloMe80fn();
         ConexionBDMySql conexion = new ConexionBDMySql();
         Connection con;
         con = conexion.abrirConexion();
         PreparedStatement SQL;
-        try
-        {
+        try {
             SQL = con.prepareStatement(Sql);
             ResultSet res = SQL.executeQuery();
-            if (res.next())
-            {
+            if (res.next()) {
                 modeloMe80fn.setId(res.getInt("id"));
                 modeloMe80fn.setIndex(res.getString("Index"));
                 modeloMe80fn.setIndex2(res.getString("Index2"));
@@ -562,25 +530,22 @@ public class ControladorMe80fn {
             res.close();
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Select " + e);
         }
         return modeloMe80fn;
     }
-    
-    public LinkedList<ModeloMe80fn> ListSelectSQL(String Sql) {
+
+    public LinkedList<ModeloMe80fn> ListSelectSQL(String Sql) throws SQLException {
         LinkedList<ModeloMe80fn> modeloMe80fns = new LinkedList<ModeloMe80fn>();
         ConexionBDMySql conexion = new ConexionBDMySql();
         Connection con;
         con = conexion.abrirConexion();
-        PreparedStatement SQL;
-        try
-        {
+        PreparedStatement SQL = null;
+        try {
             SQL = con.prepareStatement(Sql);
             ResultSet res = SQL.executeQuery();
-            while (res.next())
-            {
+            while (res.next()) {
                 ModeloMe80fn modeloMe80fn = new ModeloMe80fn();
                 modeloMe80fn.setId(res.getInt("id"));
                 modeloMe80fn.setIndex(res.getString("Index"));
@@ -613,8 +578,9 @@ public class ControladorMe80fn {
             res.close();
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
+            SQL.close();
+            con.close();
             System.out.println("Error en la consulta SQL Select " + e);
         }
         return modeloMe80fns;

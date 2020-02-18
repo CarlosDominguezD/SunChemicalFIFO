@@ -160,7 +160,7 @@ public class ControladorMb51 {
             con = conexion.abrirConexion();
             PreparedStatement SQL = null;
             try {
-                SQL = con.prepareStatement("INSERT INTO mb51("
+                SQL = con.prepareStatement("INSERT INTO mb51 ("
                         + "Plant,"
                         + "Purchase_order,"
                         + "Material,"
@@ -214,7 +214,7 @@ public class ControladorMb51 {
                         + "Porcentaje_fifo_final_vs_Estandar,"
                         + "Compra_valorada_a_Unit_FIFO,"
                         + "Variacion_FIFO_vs_Estandar,"
-                        + "NovedadIco)"
+                        + "NovedadIco) "
                         + "VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
                 for (ModeloMb51 modeloMb51 : listModeloMb51) {
                     SQL.setString(1, modeloMb51.getPlant());
@@ -343,10 +343,10 @@ public class ControladorMb51 {
                     + "Movement_type,"
                     + "Movement_Type_Text,"
                     + "Item,"
-                    + "Quantity,"
-                    + "Qty_in_unit_of_entry,"
+                    + "SUM(Quantity) AS 'Quantity',"
+                    + "SUM(Qty_in_unit_of_entry) AS 'Qty_in_unit_of_entry',"
                     + "Unit_of_Entry,"
-                    + "Amt_in_loc_cur,"
+                    + "SUM(Amt_in_loc_cur) AS 'Amt_in_loc_cur',"
                     + "Currency,"
                     + "Storage_Location,"
                     + "Posting_Date,"
@@ -389,7 +389,7 @@ public class ControladorMb51 {
                     + "Compra_valorada_a_Unit_FIFO,"
                     + "Variacion_FIFO_vs_Estandar,"
                     + "NovedadIco"
-                    + " FROM mb51");
+                    + " FROM mb51 group by  Material, Batch order by Batch, Material");
             ResultSet res = SQL.executeQuery();
             while (res.next()) {
                 ModeloMb51 modeloMb51 = new ModeloMb51();

@@ -12,6 +12,7 @@ import Modelos.ModeloMe80fn;
 import Modelos.ModeloMrpData;
 import Modelos.ModeloProveedor;
 import Modelos.ModeloVendorType;
+import Modelos.ModeloZ39;
 import static Servlet.ServletSunchemical.ObtenerFecha;
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,10 +43,14 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  * @author Carlos A Dominguez D
  */
 public class ControladorCargaPlanos {
-    
+
+    LinkedList<ModeloMb51> LinkModeloMb51_New = new LinkedList<ModeloMb51>();
+    LinkedList<ModeloMb51> LinkModeloMb51_Upd = new LinkedList<ModeloMb51>();
+
     public String Upload(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
         String resultado = "false";
         String formato = "";
+
         try {
             long tamanorequies = request.getPart("archivo").getSize();
             formato = request.getParameter("Formato");
@@ -90,13 +95,16 @@ public class ControladorCargaPlanos {
                 case "EINE":
                     resultado = CargarCSV_EINE_INFILE(RutaDispo);
                     break;
+                case "Z39":
+                    resultado = CargarCSV_Z39_INFILE(RutaDispo);
+                    break;
             }
         } catch (IOException | ServletException e) {
             System.out.println("Error en la carga del plano " + formato + "  " + e);
         }
         return resultado;
     }
-    
+
     public String CargarCSV_MB51_INFILE(String Ruta) throws IOException, SQLException {
         String Realizado = "false";
         Ruta = Ruta.replace("\\", "/");
@@ -107,28 +115,51 @@ public class ControladorCargaPlanos {
                 + " LINES TERMINATED BY '\\r\\n'"
                 + " IGNORE 1 LINES"
                 + " (Plant,Purchase_order,Material,Material_Description,Batch,Movement_type,Movement_Type_Text,Item,Quantity,Qty_in_unit_of_entry,Unit_of_Entry,Amt_in_loc_cur,Currency,Storage_Location,Posting_Date,Document_Date,Material_Document,User_Name,Vendor)";
-        
+
         System.out.println("Consulta: " + SqlInsertMasivo);
-        
+
         ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
+
+        String Sqlborrar = "delete from Mb51";
+
+        if (controladorMrpdata.Insert(Sqlborrar)) {
+            //Realizado = "true";
+
+        }
+
         if (controladorMrpdata.Insert(SqlInsertMasivo)) {
             ControladorMb51 controladorMb51 = new ControladorMb51();
             LinkedList<ModeloMb51> LinkModeloMb51s;
             LinkModeloMb51s = controladorMb51.Select();
             LinkedList<ModeloMb51> LinkModeloMb51 = new LinkedList<ModeloMb51>();
             Integer Contador = 0;
+            System.out.println("Inicio:" + new Date());
             for (ModeloMb51 modeloMb51 : LinkModeloMb51s) {
-                //FinalComprasMB51_CargaCSV(modeloMb51);
-                LinkModeloMb51.add(FinalComprasMB51_CargaCSV(modeloMb51));
-                System.out.println("Registros Procesados: " + Contador++);
-                
+                //BUSCAMOS EN Z39 SI HAY ALGUN CAMBIO DE BATCH
+                CambiosBatch(modeloMb51);
+                //System.out.println("Registros Procesados: " + Contador++);
             }
-            controladorMb51.UpdateList(LinkModeloMb51);
+            Contador = 0;
+            for (ModeloMb51 modeloMb51 : LinkModeloMb51_New) {
+                LinkModeloMb51.add(FinalComprasMB51_CargaCSV(modeloMb51));
+                //System.out.println("Registros Procesados: " + Contador++);
+
+            }
+
+            System.out.println("Termina:" + new Date());
+
+            Sqlborrar = "delete from Mb51";
+
+            if (controladorMrpdata.Insert(Sqlborrar)) {
+                //Realizado = "true";
+            }
+            controladorMb51.InsertList(LinkModeloMb51);
+
             Realizado = "true";
         }
         return Realizado;
     }
-    
+
     public String CargarCSV_FBL3N_INFILE(String Ruta) throws IOException {
         String Realizado = "false";
         Ruta = Ruta.replace("\\", "/");
@@ -139,16 +170,23 @@ public class ControladorCargaPlanos {
                 + " LINES TERMINATED BY '\\r\\n'"
                 + " IGNORE 1 LINES"
                 + " (Document_Number,Document_type,Document_Date,Posting_Date,Cost_Center,Profit_Center,YearMonth,Account,Plant,Material,Quantity,Amount_in_local_currency,Local_Currency,Purchasing_Document,Reference,Document_currency,Offsetting_acct_no,Base_Unit_of_Measure,Alternative_Account_No,Transaction_Code,Text,Assignment)";
-        
+
         System.out.println("Consulta: " + SqlInsertMasivo);
-        
+
         ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
+
+        String Sqlborrar = "delete from FBL3M";
+
+        if (controladorMrpdata.Insert(Sqlborrar)) {
+            //Realizado = "true";
+        }
+
         if (controladorMrpdata.Insert(SqlInsertMasivo)) {
             Realizado = "true";
         }
         return Realizado;
     }
-    
+
     public String CargarCSV_ME80FN_INFILE(String Ruta) throws IOException {
         String Realizado = "false";
         Ruta = Ruta.replace("\\", "/");
@@ -159,16 +197,23 @@ public class ControladorCargaPlanos {
                 + " LINES TERMINATED BY '\\r\\n'"
                 + " IGNORE 1 LINES"
                 + " (Purchasing_Document,Material_Doc_Year,Material_Document,Document_Date,Material,Short_Text,Batch,Item,Movement_type,Posting_Date,Delivery_Completed,Plant,Quantity,Order_Unit,Amt_in_loc_cur,Amount,Currency,Valuation_Type,Entry_Date,Local_currency,Reference_Doc_Item,Invoice_Value,Invoice_Value_in_FC)";
-        
+
         System.out.println("Consulta: " + SqlInsertMasivo);
-        
+
         ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
+
+        String Sqlborrar = "delete from ME80FN";
+
+        if (controladorMrpdata.Insert(Sqlborrar)) {
+            //Realizado = "true";
+        }
+
         if (controladorMrpdata.Insert(SqlInsertMasivo)) {
             Realizado = "true";
         }
         return Realizado;
     }
-    
+
     public String CargarCSV_MRPDATA_INFILE(String Ruta) throws IOException {
         String Realizado = "false";
         Ruta = Ruta.replace("\\", "/");
@@ -179,16 +224,23 @@ public class ControladorCargaPlanos {
                 + " LINES TERMINATED BY '\\r\\n'"
                 + " IGNORE 1 LINES"
                 + " (Material,Material_Description,Profit_Center,Material_Type,Plant,Procurement_type,Base_Unit_of_Measure_1,Plant_sp_matl_status,Overhead_Group,Special_procurement)";
-        
+
         System.out.println("Consulta: " + SqlInsertMasivo);
-        
+
         ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
+
+        String Sqlborrar = "delete from MRPDATA";
+
+        if (controladorMrpdata.Insert(Sqlborrar)) {
+            //Realizado = "true";
+        }
+
         if (controladorMrpdata.Insert(SqlInsertMasivo)) {
             Realizado = "true";
         }
         return Realizado;
     }
-    
+
     public String CargarCSV_PROVEEDORES_INFILE(String Ruta) throws IOException {
         String Realizado = "false";
         Ruta = Ruta.replace("\\", "/");
@@ -199,16 +251,23 @@ public class ControladorCargaPlanos {
                 + " LINES TERMINATED BY '\\r\\n'"
                 + " IGNORE 1 LINES"
                 + " (Vendors, Name, Vendor_Type, Moneda)";
-        
+
         System.out.println("Consulta: " + SqlInsertMasivo);
-        
+
         ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
+
+        String Sqlborrar = "delete from PROVEEDOR";
+
+        if (controladorMrpdata.Insert(Sqlborrar)) {
+            //Realizado = "true";
+        }
+
         if (controladorMrpdata.Insert(SqlInsertMasivo)) {
             Realizado = "true";
         }
         return Realizado;
     }
-    
+
     public String CargarCSV_EINE_INFILE(String Ruta) throws IOException {
         String Realizado = "false";
         Ruta = Ruta.replace("\\", "/");
@@ -219,16 +278,50 @@ public class ControladorCargaPlanos {
                 + " LINES TERMINATED BY '\\r\\n'"
                 + " IGNORE 1 LINES"
                 + " (Purchasing_info_rec,Plant,Created_On,Purchasing_Group,Currency,Standard_PO_Quantity,Planned_Deliv_Time,Net_Price,Price_unit,Order_Price_Unit,Valid_to,Quantity_Conversion_1,Quantity_Conversion_2,Effective_Price,Acknowledgment_Reqd,Confirmation_Control,Incoterms_1,Incoterms_2,Material,Vendor,Link_Material_vendor,Porcentaje_Additional)";
-        
+
         System.out.println("Consulta: " + SqlInsertMasivo);
-        
+
         ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
+
+        String Sqlborrar = "delete from EINE";
+
+        if (controladorMrpdata.Insert(Sqlborrar)) {
+            //Realizado = "true";
+        }
+
         if (controladorMrpdata.Insert(SqlInsertMasivo)) {
             Realizado = "true";
         }
         return Realizado;
     }
-    
+
+    public String CargarCSV_Z39_INFILE(String Ruta) throws IOException {
+        String Realizado = "false";
+        Ruta = Ruta.replace("\\", "/");
+        String SqlInsertMasivo
+                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE Z39"
+                + " FIELDS TERMINATED BY ','"
+                + " ENCLOSED BY '\"'"
+                + " LINES TERMINATED BY '\\r\\n'"
+                + " IGNORE 1 LINES"
+                + " (Plant,Purchase_order,Material,Material_Description,Batch,Movement_type,Movement_Type_Text,Item,Quantity,Qty_in_unit_of_entry,Unit_of_Entry,Amt_in_loc_cur,Currency,Storage_Location,Posting_Date,Document_Date,Material_Document,User_Name,Vendor,Order1)";
+
+        System.out.println("Consulta: " + SqlInsertMasivo);
+
+        ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
+
+        String Sqlborrar = "delete from Z39";
+
+        if (controladorMrpdata.Insert(Sqlborrar)) {
+            //Realizado = "true";
+        }
+
+        if (controladorMrpdata.Insert(SqlInsertMasivo)) {
+            Realizado = "true";
+        }
+        return Realizado;
+    }
+
     public ModeloMb51 FinalComprasMB51_CargaCSV(ModeloMb51 modeloMb51) throws SQLException {
         //List<ModeloMb51> listModeloMb51 = new ArrayList<ModeloMb51>();
         //LinkedList<ModeloMb51> listModeloMb51 = null;
@@ -241,15 +334,15 @@ public class ControladorCargaPlanos {
         modeloMb51.setVendor_Name(modeloProveedor.getName());
         //LLENAMOS COLUMNA V
         modeloMb51.setVendor_Type(modeloProveedor.getVendor_Type());
-        
+
         String Month = modeloMb51.getPosting_Date().split("/")[1];
         //LLENAMOS COLUMNA W
         modeloMb51.setMonth(Month);
-        
+
         String Period = modeloMb51.getPosting_Date().split("/")[2];
         //LLENAMOS COLUMNA X
         modeloMb51.setPeriod(Period);
-        
+
         Double Cost_Unit_SAP_en_KG = 0.0;
         if (modeloMb51.getUnit_of_Entry().contentEquals("GAL")) {
             Cost_Unit_SAP_en_KG = Double.valueOf(modeloMb51.getAmt_in_loc_cur()) / Double.valueOf(modeloMb51.getQuantity());
@@ -279,7 +372,7 @@ public class ControladorCargaPlanos {
         Double Me80fnQuantity = 0.0;
         String O_Unit_ME80FN = "";
         String Moneda = "";
-        
+
         for (ModeloMe80fn modeloMe80fn : LstmodeloMe80fn) {
             Me80fnQuantity = Me80fnQuantity + Double.valueOf(modeloMe80fn.getQuantity());
             O_Unit_ME80FN = modeloMe80fn.getOrder_Unit();
@@ -309,7 +402,7 @@ public class ControladorCargaPlanos {
                     TotalQ_Porcentaje = Quantity / TotalQ_ME80FN;
                 }
             }
-            
+
         } catch (Exception e) {
             TotalQ_Porcentaje = 0.0;
         }
@@ -326,7 +419,7 @@ public class ControladorCargaPlanos {
 
         //LLENAMOS COLUMNA AH
         modeloMb51.setTOTAL_INVOICE_VALUE(String.format("%.5f", TOTAL_INVOICE_VALUE).replace(",", "."));
-        
+
         Double Factura_Value_Unit = 0.0;
         if (modeloMb51.getUnit_of_Entry().contentEquals("GAL")) {
             Factura_Value_Unit = TOTAL_INVOICE_VALUE / Quantity * TotalQ_Porcentaje;
@@ -351,7 +444,7 @@ public class ControladorCargaPlanos {
 
         //LLENAMOS COLUMNA AL
         modeloMb51.setLink3_PO_Item(modeloMb51.getPurchase_order() + modeloMb51.getMaterial());
-        
+
         Double Freight = 0.0;
         Double Dutys = 0.0;
         Double Arancel = 0.0;
@@ -393,7 +486,7 @@ public class ControladorCargaPlanos {
             if (!IcoEncontrado) {
                 modeloMb51.setNovedadIco("X");
             }
-            
+
         } else {
             //BUSCAMOS Freight
             ListmodeloFbl3m = controladorFbl3m.ListSelectSQL("SELECT * FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND (Offsetting_acct_no = '20011' OR Offsetting_acct_no = '50320' OR Offsetting_acct_no = '3062482' OR Offsetting_acct_no = '3072634' OR Offsetting_acct_no = '3905355' OR Offsetting_acct_no = '3905370' OR Offsetting_acct_no = '3905371')");
@@ -418,15 +511,6 @@ public class ControladorCargaPlanos {
             }
         }
 
-//        if (Freight < 0) {
-//            Freight = Freight * -1;
-//        }
-//        if (Dutys < 0) {
-//            Dutys = Dutys * -1;
-//        }
-//        if (Arancel < 0) {
-//            Arancel = Arancel * -1;
-//        }
         //LLENAMOS COLUMNA AM       
         modeloMb51.setFreight(String.format("%.5f", Freight).replace(",", "."));
 
@@ -435,15 +519,15 @@ public class ControladorCargaPlanos {
 
         //LLENAMOS COLUMNA AO
         modeloMb51.setArancel(String.format("%.5f", Arancel).replace(",", "."));
-        
+
         Double Total_Costos_Adicionales = Freight + Dutys + Arancel;
         //LLENAMOS COLUMNA AP
         modeloMb51.setTotal_Costos_Adicionales(String.format("%.5f", Total_Costos_Adicionales).replace(",", "."));
-        
+
         Double Participac_Adicionales = Total_Costos_Adicionales / TOTAL_INVOICE_VALUE;
         //LLENAMOS COLUMNA AQ
         modeloMb51.setParticipac_Adicionales(String.format("%.5f", Participac_Adicionales).replace(",", "."));
-        
+
         ModeloEine modeloEine = null;
         ControladorEine controladorEine = new ControladorEine();
         if (modeloMb51.getVendor_Type().contains("ICO")) {
@@ -460,14 +544,14 @@ public class ControladorCargaPlanos {
 
         //LLENAMOS COLUMNA AR
         modeloMb51.setAdicionales_al_CTO_Estandar(String.format("%.5f", Adicionales_al_CTO_Estandar).replace(",", "."));
-        
+
         Double Variance = 0.0;
         if (Participac_Adicionales != 0.0) {
             Variance = Porcentaje_Adicional - Participac_Adicionales;
         }
         //LLENAMOS COLUMNA AS
         modeloMb51.setVariance(String.format("%.5f", Variance).replace(",", "."));
-        
+
         Double Total_Costos = 0.0;
         Double Amt_in_loc_cur = Double.valueOf(modeloMb51.getAmt_in_loc_cur());
 
@@ -477,17 +561,17 @@ public class ControladorCargaPlanos {
         if (modeloVendorType != null) {
             modeloMb51.setVendor_Type("Nal-Subcont");
         }
-        
+
         if (modeloMb51.getVendor_Type().contentEquals("Nal-Subcont")) {
             Total_Costos = (Total_Costos_Adicionales * TotalQ_Porcentaje + Amt_in_loc_cur);
         } else {
             Total_Costos = (Total_Costos_Adicionales + TOTAL_INVOICE_VALUE) * TotalQ_Porcentaje;
         }
-        
+
         Double Unitario_Real = 0.0;
         //LLENAMOS COLUMNA AT
         modeloMb51.setTotal_Costos(String.format("%.5f", Total_Costos).replace(",", "."));
-        
+
         if (modeloMb51.getUnit_of_Entry().contentEquals("GAL")) {
             Unitario_Real = Total_Costos / Quantity;
         } else {
@@ -496,48 +580,48 @@ public class ControladorCargaPlanos {
 
         //LLENAMOS COLUMNA AU
         modeloMb51.setUnitario_Real(String.format("%.5f", Unitario_Real).replace(",", "."));
-        
+
         Double Unitario_Real_adicional_estandar = 0.0;
         Unitario_Real_adicional_estandar = (Total_Costos_Adicionales + TOTAL_INVOICE_VALUE) * TotalQ_Porcentaje;
 
         //LLENAMOS COLUMNA AV
         modeloMb51.setUnitario_Real_adicional_estandar(String.format("%.5f", Unitario_Real_adicional_estandar).replace(",", "."));
-        
+
         Double Unitario_estandar_SAP = 0.0;
         Unitario_estandar_SAP = Cost_Unit_SAP_en_KG;
 
         //LLENAMOS COLUMNA AW
         modeloMb51.setUnitario_estandar_SAP(String.format("%.5f", Unitario_estandar_SAP).replace(",", "."));
-        
+
         Double Unitario_final_FIFO = Unitario_Real;
 
         //LLENAMOS COLUMNA AX
         modeloMb51.setUnitario_final_FIFO(String.format("%.5f", Unitario_final_FIFO).replace(",", "."));
-        
+
         Double Porcentaje_Real_Vs_Estanda = 0.0;
         Porcentaje_Real_Vs_Estanda = ((Unitario_Real / Unitario_estandar_SAP) - 1);
 
         //LLENAMOS COLUMNA AY
         modeloMb51.setPorcentaje_Real_Vs_Estandar(String.format("%.5f", Porcentaje_Real_Vs_Estanda).replace(",", "."));
-        
+
         Double Porcentaje_fifo_final_vs_Estandar = 0.0;
         Porcentaje_fifo_final_vs_Estandar = ((Unitario_final_FIFO / Unitario_estandar_SAP) - 1);
 
         //LLENAMOS COLUMNA AZ
         modeloMb51.setPorcentaje_fifo_final_vs_Estandar(String.format("%.5f", Porcentaje_fifo_final_vs_Estandar).replace(",", "."));
-        
+
         Double Compra_valorada_a_Unit_FIFO = 0.0;
         Compra_valorada_a_Unit_FIFO = Unitario_final_FIFO * Quantity;
 
         //LLENAMOS COLUMNA BA
         modeloMb51.setCompra_valorada_a_Unit_FIFO(String.format("%.5f", Compra_valorada_a_Unit_FIFO).replace(",", "."));
-        
+
         Double Variacion_FIFO_vs_Estandar = 0.0;
         Variacion_FIFO_vs_Estandar = Compra_valorada_a_Unit_FIFO - Amt_in_loc_cur;
 
         //LLENAMOS COLUMNA BB
         modeloMb51.setVariacion_FIFO_vs_Estandar(String.format("%.5f", Variacion_FIFO_vs_Estandar).replace(",", ".") + "");
-        
+
         return modeloMb51;
 
 //        ControladorMb51 controladorMb51 = new ControladorMb51();
@@ -545,5 +629,66 @@ public class ControladorCargaPlanos {
 //        controladorMb51.Update(modeloMb51);
         //}
     }
+
+    public void CambiosBatch(ModeloMb51 modeloMb51) {
+
+        Double Quantity_mb51_Original = Double.valueOf(modeloMb51.getQuantity());
+        Double Amt_in_loc_cur_mb51_Original = Double.valueOf(modeloMb51.getAmt_in_loc_cur());
+
+        LinkModeloMb51_New.add(modeloMb51);
+
+        LinkedList<ModeloZ39> modeloZ39s = null;
+        LinkedList<ModeloZ39> modeloZ39s_1 = null;
+        //ModeloMb51 modeloMb51_Upd = modeloMb51;
+        ControladorZ39 controladorZ39 = new ControladorZ39();
+        ControladorMb51 controladorMb51 = new ControladorMb51();
+        modeloZ39s = controladorZ39.Select("Select * from Z39 where Material = '" + modeloMb51.getMaterial() + "' AND Batch = '" + modeloMb51.getBatch() + "'");
+        if (modeloZ39s.size() > 0) {
+            for (ModeloZ39 modeloZ39 : modeloZ39s) {
+                modeloZ39s_1 = controladorZ39.Select("Select * from Z39 where Material_Document = '" + modeloZ39.getMaterial_Document() + "' ORDER BY Quantity");
+                if (modeloZ39s_1.size() > 0) {
+                    for (ModeloZ39 modeloZ39_1 : modeloZ39s_1) {
+
+                        Double Quantity_Z39 = Double.valueOf(modeloZ39_1.getQuantity());
+//                        Double Qty_in_unit_of_entry_Z39 = Double.valueOf(modeloZ39_1.getQty_in_unit_of_entry());
+//
+//                        Double Quantity_mb51 = Double.valueOf(modeloMb51.getQuantity());
+//                        Double Qty_in_unit_of_entry_mb51 = Double.valueOf(modeloMb51.getQty_in_unit_of_entry());
+                        Double Amt_in_loc_cur_mb51 = 0.0;
+
+                        Amt_in_loc_cur_mb51 = Quantity_Z39 * Amt_in_loc_cur_mb51_Original / Quantity_mb51_Original;
+
+                        ModeloMb51 modeloMb51_New = new ModeloMb51();
+                        modeloMb51_New.setPlant(modeloMb51.getPlant());
+                        modeloMb51_New.setPurchase_order(modeloMb51.getPurchase_order());
+                        modeloMb51_New.setMaterial(modeloMb51.getMaterial());
+                        modeloMb51_New.setMaterial_Description(modeloMb51.getMaterial_Description());
+                        modeloMb51_New.setBatch(modeloZ39_1.getBatch());
+                        modeloMb51_New.setMovement_type(modeloMb51.getMovement_type());
+                        modeloMb51_New.setMovement_Type_Text(modeloMb51.getMovement_Type_Text());
+                        modeloMb51_New.setItem(modeloMb51.getItem());
+                        modeloMb51_New.setQuantity(modeloZ39_1.getQuantity());
+                        modeloMb51_New.setQty_in_unit_of_entry(modeloZ39_1.getQty_in_unit_of_entry());
+                        modeloMb51_New.setUnit_of_Entry(modeloMb51.getUnit_of_Entry());
+                        modeloMb51_New.setAmt_in_loc_cur(String.format("%.5f", Amt_in_loc_cur_mb51).replace(",", ".") + "");
+                        modeloMb51_New.setCurrency(modeloMb51.getCurrency());
+                        modeloMb51_New.setStorage_Location(modeloMb51.getStorage_Location());
+                        modeloMb51_New.setPosting_Date(modeloMb51.getPosting_Date());
+                        modeloMb51_New.setDocument_Date(modeloMb51.getDocument_Date());
+                        modeloMb51_New.setMaterial_Document(modeloMb51.getMaterial_Document());
+                        modeloMb51_New.setUser_Name(modeloMb51.getUser_Name());
+                        modeloMb51_New.setVendor(modeloMb51.getVendor());
+                        modeloMb51_New.setVendor_Name(modeloMb51.getVendor_Name());
+                        modeloMb51_New.setVendor_Type(modeloMb51.getVendor_Type());
+
+                        LinkModeloMb51_New.add(modeloMb51_New);
+
+                    }
+                }
+            }
+        }
+    }
+
     
+
 }

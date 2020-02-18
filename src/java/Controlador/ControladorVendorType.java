@@ -19,26 +19,22 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Diego Fdo Guzman B
  */
-public class ControladorVendorType
-{
+public class ControladorVendorType {
 
     String resultado = "";
     Connection con;
     PreparedStatement SQL = null;
     ConexionBDMySql conexion = new ConexionBDMySql();
 
-    public ModeloVendorType Select(String Sql)
-    {
+    public ModeloVendorType Select(String Sql) throws SQLException {
         ModeloVendorType modeloVendorType = null;
         Connection con;
         con = conexion.abrirConexion();
-        PreparedStatement SQL;
-        try
-        {
+        PreparedStatement SQL = null;
+        try {
             SQL = con.prepareStatement(Sql);
             ResultSet res = SQL.executeQuery();
-            if (res.next())
-            {
+            if (res.next()) {
                 modeloVendorType = new ModeloVendorType();
                 modeloVendorType.setId(res.getInt("id"));
                 modeloVendorType.setMaterial(res.getString("Material"));
@@ -47,27 +43,24 @@ public class ControladorVendorType
             res.close();
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
+            SQL.close();
+            con.close();
             System.out.println("Error en la consulta SQL Select " + e);
         }
         return modeloVendorType;
     }
 
-    public String Insert(HttpServletRequest request)
-    {
-        if ("".equals(request.getParameter("id")))
-        {
+    public String Insert(HttpServletRequest request) {
+        if ("".equals(request.getParameter("id"))) {
             ModeloVendorType modelo = new ModeloVendorType(
                     0,
                     request.getParameter("Material"),
                     request.getParameter("Vendor_Type")
             );
-            try
-            {
+            try {
                 con = conexion.abrirConexion();
-                try
-                {
+                try {
                     SQL = con.prepareStatement("INSERT INTO `vendortype`("
                             + "`Material`,"
                             + "`Vendor_Type`)"
@@ -76,36 +69,30 @@ public class ControladorVendorType
                             + "?);");
                     SQL.setString(1, modelo.getMaterial());
                     SQL.setString(2, modelo.getVendor_Type());
-                    if (SQL.executeUpdate() > 0)
-                    {
+                    if (SQL.executeUpdate() > 0) {
                         resultado = "1";
                         SQL.close();
                         con.close();
                     }
-                } catch (SQLException e)
-                {
+                } catch (SQLException e) {
                     System.out.println(e);
                     resultado = "-2";
                     SQL.close();
                     con.close();
                 }
-            } catch (SQLException e)
-            {
+            } catch (SQLException e) {
                 System.out.println(e);
                 resultado = "-3";
             }
-        } else
-        {
+        } else {
             ModeloVendorType modelo = new ModeloVendorType(
                     Integer.parseInt(request.getParameter("id")),
                     request.getParameter("Material"),
                     request.getParameter("Vendor_Type")
             );
-            try
-            {
+            try {
                 con = conexion.abrirConexion();
-                try
-                {
+                try {
                     SQL = con.prepareStatement("UPDATE `vendortype`  SET "
                             + "`Material` = ?,"
                             + "`Vendor_Type` = ? "
@@ -114,21 +101,18 @@ public class ControladorVendorType
                     SQL.setString(1, modelo.getMaterial());
                     SQL.setString(2, modelo.getVendor_Type());
                     SQL.setInt(3, modelo.getId());
-                    if (SQL.executeUpdate() > 0)
-                    {
+                    if (SQL.executeUpdate() > 0) {
                         resultado = "1";
                         SQL.close();
                         con.close();
                     }
-                } catch (SQLException e)
-                {
+                } catch (SQLException e) {
                     System.out.println(e);
                     resultado = "-2";
                     SQL.close();
                     con.close();
                 }
-            } catch (SQLException e)
-            {
+            } catch (SQLException e) {
                 System.out.println(e);
                 resultado = "-3";
             }
@@ -136,35 +120,28 @@ public class ControladorVendorType
         return resultado;
     }
 
-    public String Delete(HttpServletRequest request)
-    {
-        if (!"".equals(request.getParameter("id")))
-        {
+    public String Delete(HttpServletRequest request) {
+        if (!"".equals(request.getParameter("id"))) {
             String idtmp = request.getParameter("id");
             ModeloVendorType modelo = new ModeloVendorType();
             modelo.setId(Integer.parseInt(request.getParameter("id")));
 
-            try
-            {
+            try {
                 con = conexion.abrirConexion();
-                try
-                {
+                try {
                     SQL = con.prepareStatement("DELETE FROM `vendortype` "
                             + "WHERE `Id` = ?;");
                     SQL.setInt(1, modelo.getId());
-                    if (SQL.executeUpdate() > 0)
-                    {
+                    if (SQL.executeUpdate() > 0) {
                         resultado = "2";
                     }
-                } catch (SQLException e)
-                {
+                } catch (SQLException e) {
                     System.out.println(e);
                     resultado = "-2";
                 }
                 SQL.close();
                 con.close();
-            } catch (SQLException e)
-            {
+            } catch (SQLException e) {
                 System.out.println(e);
                 resultado = "-3";
             }
@@ -172,12 +149,10 @@ public class ControladorVendorType
         return resultado;
     }
 
-    public String ReadVendorType(HttpServletRequest request, HttpServletResponse response)
-    {
+    public String ReadVendorType(HttpServletRequest request, HttpServletResponse response) {
         String out = null;
-        try
-        {
-            LinkedList<ModeloVendorType> listmodelo;            
+        try {
+            LinkedList<ModeloVendorType> listmodelo;
             listmodelo = Read();
             response.setContentType("text/html;charset=UTF-8");
 
@@ -191,12 +166,11 @@ public class ControladorVendorType
             out += "</tr>";
             out += "</thead>";
             out += "<tbody>";
-            for (ModeloVendorType modeloVendorType : listmodelo)
-            {
+            for (ModeloVendorType modeloVendorType : listmodelo) {
                 out += "<tr>";
                 out += "<td WIDTH = \"0\" HEIGHT=\"0\">" + modeloVendorType.getId() + "</td>";
-                out += "<td WIDTH = \"0\" HEIGHT=\"0\">" + modeloVendorType.getMaterial()+ "</td>";
-                out += "<td WIDTH = \"0\" HEIGHT=\"0\">" + modeloVendorType.getVendor_Type()+ "</td>";
+                out += "<td WIDTH = \"0\" HEIGHT=\"0\">" + modeloVendorType.getMaterial() + "</td>";
+                out += "<td WIDTH = \"0\" HEIGHT=\"0\">" + modeloVendorType.getVendor_Type() + "</td>";
                 out += "<td WIDTH = \"10\" HEIGHT=\"0\" class=\"text-center\">";
                 // Boton Editar
                 out += "<button class=\"SetFormulario btn btn-warning btn-xs\"";
@@ -217,8 +191,7 @@ public class ControladorVendorType
 //            PrintWriter pw = response.getWriter();
 //            pw.write(out);
 //            System.out.println(pw.checkError() ? "Error al cargar la lista" : "Tabla Cargada");
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             System.out.println("Error en el kproceso de la tabla " + e.getMessage());
         }
 //        String frm = request.getParameter("frm");
@@ -227,20 +200,17 @@ public class ControladorVendorType
         return out;
     }
 
-    private LinkedList<ModeloVendorType> Read()
-    {
+    private LinkedList<ModeloVendorType> Read() {
         LinkedList<ModeloVendorType> listModeloVendorTypes = new LinkedList<ModeloVendorType>();
         con = conexion.abrirConexion();
-        try
-        {
+        try {
             SQL = con.prepareStatement("SELECT "
                     + "`Id`,"
                     + "`Material`,"
                     + "`Vendor_Type` "
                     + "FROM `vendortype`;");
             ResultSet res = SQL.executeQuery();
-            while (res.next())
-            {
+            while (res.next()) {
                 ModeloVendorType modelo = new ModeloVendorType();
                 modelo.setId(res.getInt("Id"));
                 modelo.setMaterial(res.getString("Material"));
@@ -250,8 +220,7 @@ public class ControladorVendorType
             res.close();
             SQL.close();
             con.close();
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println(e);
         }
         return listModeloVendorTypes;
