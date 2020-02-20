@@ -35,10 +35,10 @@
                             </div>
                             <h1>Login GT-40</h1>
                             <div>
-                                <input type="text" class="form-control" placeholder="Usuario" name="Usuario" id="Idusuario" required="" value="Fifo" />
+                                <input type="text" class="form-control" placeholder="Usuario" name="Usuario" id="Idusuario" required="" />
                             </div>
                             <div>
-                                <input type="password" class="form-control" placeholder="Clave" name="Password" id="Idpassword" required=""  value="f1f0"/></div>
+                                <input type="password" class="form-control" placeholder="Clave" name="Password" id="Idpassword" required="" /></div>
                             <div>
                                 <button type="button" id="IdIngresar" name="Ingresar" value="Ingresar" class="btn btn-default">Ingresar</button>                                       
                             </div>
