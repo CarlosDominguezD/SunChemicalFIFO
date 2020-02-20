@@ -6,6 +6,8 @@
 package Controlador;
 
 import Conexiones.ConexionBDMySql;
+import Modelos.ModeloAuditoria;
+import Modelos.ModeloUsuario;
 import Modelos.ModeloVendorType;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -73,6 +75,12 @@ public class ControladorVendorType {
                         resultado = "1";
                         SQL.close();
                         con.close();
+                        //Auditoria
+                        ModeloAuditoria modeloAuditoria = new ModeloAuditoria ();
+                        modeloAuditoria.setModeloUsuario ((ModeloUsuario) request.getSession ().getAttribute ("user"));
+                        modeloAuditoria.setMensaje ("El Usuario " + modeloAuditoria.getModeloUsuario ().getUsuario ()+ " a insertado un VendorType, nombre "+ modelo.getVendor_Type () + " en el sistema.");
+                        ControladorAuditoria controladorAuditoria = new ControladorAuditoria ();
+                        controladorAuditoria.Insert (modeloAuditoria);
                     }
                 } catch (SQLException e) {
                     System.out.println(e);
@@ -105,6 +113,12 @@ public class ControladorVendorType {
                         resultado = "1";
                         SQL.close();
                         con.close();
+                        //Auditoria
+                        ModeloAuditoria modeloAuditoria = new ModeloAuditoria ();
+                        modeloAuditoria.setModeloUsuario ((ModeloUsuario) request.getSession ().getAttribute ("user"));
+                        modeloAuditoria.setMensaje ("El Usuario " + modeloAuditoria.getModeloUsuario ().getUsuario ()+ " a modificado un VendorType, Id "+ modelo.getId ()+ " en el sistema.");
+                        ControladorAuditoria controladorAuditoria = new ControladorAuditoria ();
+                        controladorAuditoria.Insert (modeloAuditoria);
                     }
                 } catch (SQLException e) {
                     System.out.println(e);
@@ -134,6 +148,13 @@ public class ControladorVendorType {
                     SQL.setInt(1, modelo.getId());
                     if (SQL.executeUpdate() > 0) {
                         resultado = "2";
+                                                //Auditoria
+                        ModeloAuditoria modeloAuditoria = new ModeloAuditoria ();
+                        modeloAuditoria.setModeloUsuario ((ModeloUsuario) request.getSession ().getAttribute ("user"));
+                        modeloAuditoria.setMensaje ("El Usuario " + modeloAuditoria.getModeloUsuario ().getUsuario ()+ " a eliminado un VendorType, Id "+ modelo.getId ()+ " en el sistema.");
+                        ControladorAuditoria controladorAuditoria = new ControladorAuditoria ();
+                        controladorAuditoria.Insert (modeloAuditoria);
+
                     }
                 } catch (SQLException e) {
                     System.out.println(e);

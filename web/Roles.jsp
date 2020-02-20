@@ -1,7 +1,7 @@
 <%-- 
-    Document   : Dependencias
-    Created on : 13/12/2019, 10:47:52 AM
-    Author     : Frankie
+    Document   : Roles
+    Created on : 19-feb-2020, 10:04:45
+    Author     : Carlos A Dominguez D
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -10,7 +10,7 @@
     <head>        
         <%@include file="Principal/Head.html" %>        
         <script type="text/javascript" src="Principal/js/jsfifo/jquery.min.js" ></script>
-        <script type="text/javascript" src="Principal/js/jsfifo/ValidacionesVendortype.js" ></script> 
+        <script type="text/javascript" src="Principal/js/jsfifo/ValidacionesRoles.js" ></script> 
     </head>
     <body class="nav-md">
         <%@include file="Principal/Body.jsp" %>
@@ -19,7 +19,7 @@
             <div class="">
                 <div class="page-title">
                     <div class="title_left">
-                        <h3>VendorType</h3>
+                        <h3>Roles</h3>
                     </div>
                     <div class="title_right">
                         <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search"> 
@@ -54,18 +54,18 @@
                                 <!-- Formulario Configuración -->
                                 <form id="demo-form2" data-parsley-validate class="form-horizontal form-label-left">
                                     <div align="center" id="espera" style="display: none">
-                                        <img src="Principal/images/loading.gif">
+                                        <img src="Principal/images/loading_dash.gif">
                                     </div>
                                     <div id="Principal">
                                         <div class="row">
                                             <input type="hidden" id="Id" name="Id">
                                             <div class="col-md-6 col-sm-12 col-xs-12 form-group">
-                                                <label for="material">Material</label>
-                                                <input type="text" class="form-control" id="IdMaterial" name="Material" required="required">
+                                                <label for="codigo">Código</label>
+                                                <input type="number" class="form-control" id="IdCodigo" name="Codigo" min="0" required="required">
                                             </div>
                                             <div class="col-md-6 col-sm-12 col-xs-12 form-group">
-                                                <label for="vendor_Type">Vendor_Type</label>
-                                                <input type="text" class="form-control" id="IdVendor_Type" name="Vendor_Type" required="required">
+                                                <label for="nombre">Nombre</label>
+                                                <input type="text" class="form-control" id="IdNombre" name="Nombre" required="required">
                                             </div>
                                         </div>
                                         <!-- Formulario Configuración -->      
@@ -118,28 +118,28 @@
                                         <table id="datatable" class="table table-striped table-bordered">
                                             <thead>
                                                 <tr>
-                                                    <th>Internal Code</th>
-                                                    <th>Material</th>
-                                                    <th>Vendor_Type</th>
-                                                    <th>Option</th>   
+                                                    <th>InterCod</th>
+                                                    <th>Código</th>
+                                                    <th>Descripción</th>
+                                                    <th>Opciones</th>   
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <td WIDTH = "0" HEIGHT="0"></td>                                     
-                                                    <td WIDTH = "0" HEIGHT="0"></td>                                     
-                                                    <td WIDTH = "0" HEIGHT="0"></td>                                     
-                                                    <td WIDTH = "10" HEIGHT="0" class="text-center">
-                                                        <button class="SetFormulario btn btn-warning btn-xs" 
+                                                    <td></td>                                     
+                                                    <td></td>                                     
+                                                    <td></td>                                     
+                                                    <td class="text-center">
+                                                        <button class="SetFormulario btn btn-warning btn-md" 
                                                                 data-id=""
-                                                                data-material=""
-                                                                data-Vendor_Type=""                                                                
+                                                                data-codigo=""
+                                                                data-nombre=""                                                                
                                                                 type="button" id="IdModificar" name="Modificar">Editar</button>
-                                                        <button class="SetEliminar btn btn-dark btn-xs" 
+                                                        <button class="SetEliminar btn btn-dark btn-md" 
                                                                 data-id=""
-                                                                data-material=""
-                                                                data-Vendor_Type=""                                                                
-                                                                type="button" id="IdEliminar" name="Eliminar">Eliminar</button>
+                                                                data-codigo=""
+                                                                data-nombre=""                                                                
+                                                                type="button" id="IdEliminar" name="Eliminar"></button>
                                                     </td>                                                    
                                                 </tr>
                                             </tbody>
@@ -164,4 +164,3 @@
         <%@include file="Principal/Script.html" %>  
     </body>
 </html>
-

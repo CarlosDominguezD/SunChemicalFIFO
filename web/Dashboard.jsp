@@ -11,7 +11,7 @@
         <%@include file="Principal/Head.html" %>        
     </head>
     <body class="nav-md">        
-        <%@include file="Principal/Body.html" %>
+        <%@include file="Principal/Body.jsp" %>
         <div class="right_col" role="main">           
         </div>
         <%@include file="Principal/Script.html" %>                    

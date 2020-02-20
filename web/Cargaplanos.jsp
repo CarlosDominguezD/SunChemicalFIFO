@@ -11,7 +11,7 @@
         <%@include file="Principal/Head.html" %>        
     </head>
     <body class="nav-md">        
-        <%@include file="Principal/Body.html" %>
+        <%@include file="Principal/Body.jsp" %>
         <script type="text/javascript" src="Principal/js/jquery.min.js" ></script>
         <script type="text/javascript" src="Principal/js/ValidacionesPlano.js" ></script> 
         <div class="right_col" role="main">

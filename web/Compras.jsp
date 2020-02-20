@@ -13,7 +13,7 @@
         <script type="text/javascript" src="Principal/js/ValidacionesCompras.js" ></script> 
     </head>
     <body class="nav-md" onload="">        
-        <%@include file="Principal/Body.html" %>
+        <%@include file="Principal/Body.jsp" %>
         <div class="right_col" role="main">
             <div class="">            
                 <div class="clearfix"></div>
