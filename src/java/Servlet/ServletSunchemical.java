@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
+import java.util.Random;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -157,6 +158,7 @@ public class ServletSunchemical extends HttpServlet
             throws ServletException, IOException
     {
         response.setContentType ("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter ();
         String Accion = request.getParameter ("Accion");
         String res = "";
         String Resultado = "";
@@ -315,8 +317,11 @@ public class ServletSunchemical extends HttpServlet
         Calendar fecHor = Calendar.getInstance ();
         String dia = Integer.toString (fecHor.get (Calendar.DAY_OF_MONTH));
         String mes = Integer.toString (fecHor.get (Calendar.MONDAY) + 1);
-        String año = Integer.toString (fecHor.get (Calendar.YEAR));
-        String fh = (dia + "-" + mes + "-" + año);
+        String ano = Integer.toString (fecHor.get (Calendar.YEAR));
+        String hh = Integer.toString (fecHor.get (Calendar.HOUR));
+        String mm = Integer.toString (fecHor.get (Calendar.MINUTE));
+        String ss = Integer.toString (fecHor.get (Calendar.SECOND));
+        String fh = (dia + "-" + mes + "-" + ano + "_" + hh + mm + ss);
         return fh;
     }
 

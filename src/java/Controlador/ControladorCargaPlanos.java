@@ -5,6 +5,7 @@
  */
 package Controlador;
 
+import Modelos.ModeloArchivos;
 import Modelos.ModeloAuditoria;
 import Modelos.ModeloEine;
 import Modelos.ModeloFbl3m;
@@ -28,6 +29,9 @@ import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -46,6 +50,49 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  */
 public class ControladorCargaPlanos
 {
+
+    public String procesarCarga (LinkedList<ModeloArchivos> listModeloArchivoses, HttpServletRequest request, HttpServletResponse response)
+    {
+        String resultado = "false";
+        for (ModeloArchivos listModeloArchivose : listModeloArchivoses)
+        {
+            try
+            {
+                String RutaDispo = listModeloArchivose.getRuta ();
+                String nombre = listModeloArchivose.getNombre ();
+                StringTokenizer st = new StringTokenizer(nombre,".");  
+                nombre = st.nextToken ();
+                switch (nombre)
+                {
+                    case "MB51":
+                        resultado = CargarCSV_MB51_INFILE (RutaDispo, request);
+                        break;
+                    case "FBL3N":
+                        resultado = CargarCSV_FBL3N_INFILE (RutaDispo, request);
+                        break;
+                    case "ME80FN":
+                        resultado = CargarCSV_ME80FN_INFILE (RutaDispo, request);
+                        break;
+                    case "MRPDATA":
+                        resultado = CargarCSV_MRPDATA_INFILE (RutaDispo, request);
+                        break;
+                    case "PROVEEDORES":
+                        resultado = CargarCSV_PROVEEDORES_INFILE (RutaDispo, request);
+                        break;
+                    case "EINE":
+                        resultado = CargarCSV_EINE_INFILE (RutaDispo, request);
+                        break;
+                    case "Z39":
+                        resultado = CargarCSV_Z39_INFILE (RutaDispo, request);
+                        break;
+                }
+            } catch (IOException | SQLException ex)
+            {
+                Logger.getLogger (ControladorCargaPlanos.class.getName ()).log (Level.SEVERE, null, ex);
+            }
+        }
+        return resultado;
+    }
 
     LinkedList<ModeloMb51> LinkModeloMb51_New = new LinkedList<ModeloMb51> ();
     LinkedList<ModeloMb51> LinkModeloMb51_Upd = new LinkedList<ModeloMb51> ();
@@ -360,7 +407,7 @@ public class ControladorCargaPlanos
             modeloAuditoria.setMensaje ("El Usuario " + modeloAuditoria.getModeloUsuario ().getUsuario () + " a cargado el plano EINE en el sistema.");
             ControladorAuditoria controladorAuditoria = new ControladorAuditoria ();
             controladorAuditoria.Insert (modeloAuditoria);
-            
+
         }
         return Realizado;
     }

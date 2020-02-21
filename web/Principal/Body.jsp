@@ -35,12 +35,14 @@
                                     String ItemMateriales = "false";
                                     String ItemVendorType = "false";
                                     String ItemCargaPlanos = "false";
+                                    String ItemCargaPlanosAll = "false";
                                     String ItemPlanos = "false";
                                     String ItemResultados = "false";
                                     String ItemCompras = "false";
                                     String ItemProduccion = "false";
                                     String ItemInventario = "false";
                                     String ItemAuditoria = "false";
+                                    String ItemCargaplanosBarra = "false";
                                     ModeloUsuario modeloUsuario = (ModeloUsuario) request.getSession ().getAttribute ("user");
                                     if (modeloUsuario != null)
                                     {
@@ -105,6 +107,14 @@
                                             if ("ItemAuditoria".equals (modelo.getNombre ()))
                                             {
                                                 ItemAuditoria = "true";
+                                            }
+                                            if ("ItemCargaPlanosAll".equals (modelo.getNombre ()))
+                                            {
+                                                ItemCargaPlanosAll = "true";
+                                            }
+                                            if ("ItemCargaplanosBarra".equals (modelo.getNombre ()))
+                                            {
+                                                ItemCargaplanosBarra = "true";
                                             }
                                         }
                                         if ("true".equals (ItemAdministracion))
@@ -191,7 +201,19 @@
                                         if ("true".equals (ItemCargaPlanos))
                                         {
                                     %>
-                                    <li> <a href = "Cargaplanos.jsp" > Planos </a></li>
+                                    <li> <a href = "Cargaplanos.jsp" > Carga Planos </a></li>
+
+                                    <%      }
+                                        if ("true".equals (ItemCargaPlanosAll))
+                                        {
+                                    %>
+                                    <li> <a href = "CargaplanosAll.jsp" > Carga Masiva Planos</a></li>
+
+                                    <%      }
+                                        if ("true".equals (ItemCargaplanosBarra))
+                                        {
+                                    %>
+                                    <li> <a href = "CargaplanosBarra.jsp" > Carga Planos barra</a></li>
 
                                     <%      }
 
@@ -200,9 +222,7 @@
                                     %>
                                 </ul>
                             </li>
-
                             <%      }
-
                                 if ("true".equals (ItemResultados))
                                 {
                             %>
