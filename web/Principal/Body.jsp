@@ -122,7 +122,7 @@
                             %>
                             <li id="Administracion"><a><i class="fa fa-cog"></i>Administracion<span class="fa fa-chevron-down"></span></a>
                                 <ul class="nav child_menu">
-                                    <%      }
+                                    <%      
 
                                         if ("true".equals (ItemConfiguracion))
                                         {
@@ -182,9 +182,7 @@
                                         %>
                                     <li><a href="Vendortype.jsp">Vendortype</a></li>
                                         <%      }
-
-                                            if ("true".equals (ItemAdministracion))
-                                            {
+                                            
                                         %>
                                 </ul>
                             </li>
@@ -196,7 +194,7 @@
                             <li><a><i class="fa fa-upload"></i>Cargar Planos<span class="fa fa-chevron-down"></span></a>
                                 <ul class="nav child_menu">
 
-                                    <%      }
+                                    <%      
 
                                         if ("true".equals (ItemCargaPlanos))
                                         {
@@ -216,9 +214,6 @@
                                     <li> <a href = "CargaplanosBarra.jsp" > Carga Planos barra</a></li>
 
                                     <%      }
-
-                                        if ("true".equals (ItemCargaPlanos))
-                                        {
                                     %>
                                 </ul>
                             </li>
@@ -229,7 +224,7 @@
                             <li><a><i class="fa fa-download"></i>Resultados<span class="fa fa-chevron-down"></span></a>
                                 <ul class="nav child_menu">
 
-                                    <%      }
+                                    <%      
 
                                         if ("true".equals (ItemCompras))
                                         {
@@ -249,13 +244,9 @@
                                     <li><a href="#">Inventario</a></li>
 
                                     <%      }
-
-                                        if ("true".equals (ItemResultados))
-                                        {
                                     %>
                                 </ul>
                             </li>
-
                             <%      }
 
                                     }//if
