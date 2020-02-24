@@ -20,17 +20,51 @@
                 <div class="row">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>Carga Planos</h2>
+                            <h2>Carga Planos Masivo</h2>
                             <div class="clearfix"></div>
                         </div>
                         <div class="x_content">
                             <br />                            
                             <form method="post" action="UploadServlet" enctype="multipart/form-data">
-                                <fieldset>
+                                <div class="row">                                    
+                                    <div class="col-md-6 col-sm-12 col-xs-12 form-group">
+                                        <select class="form-control" id="IdMes" name="Mes">                                                                                        
+                                            <option value="Enero">Enero</option>
+                                            <option value="Febrero">Febrero</option>
+                                            <option value="Marzo">Marzo</option>
+                                            <option value="Abril">Abril</option>
+                                            <option value="Mayo">Mayo</option>
+                                            <option value="Junio">Junio</option>
+                                            <option value="Julio">Julio</option>
+                                            <option value="Agosto">Agosto</option>
+                                            <option value="Septiembre">Septiembre</option>
+                                            <option value="Octubre">Octubre</option>
+                                            <option value="Noviembre">Noviembre</option>
+                                            <option value="Diciembre">Diciembre</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12 col-xs-12 form-group">
+                                        <select class="form-control" id="IdAno" name="Ano">                                                                                        
+                                            <option value="2020">2020</option>
+                                            <option value="2021">2021</option>
+                                            <option value="2022">2022</option>
+                                            <option value="2023">2023</option>
+                                            <option value="2024">2024</option>
+                                            <option value="2025">2025</option>
+                                            <option value="2026">2026</option>
+                                            <option value="2027">2027</option>
+                                            <option value="2028">2028</option>
+                                            <option value="2029">2029</option>
+                                            <option value="2030">2030</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <br></br>
+                                <div>
                                     <div align="center">
                                         <input type="file" autofocus class="btn btn-lg btn-primary" onchange="nombre(this.value)" style=""name="files" id="files" multiple/>                                                                            
                                     </div>
-                                </fieldset>
+                                </div>
                                 <br>
                                 <br>
                                 <br>

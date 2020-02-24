@@ -60,7 +60,7 @@ public class ControladorCargaPlanos
             {
                 String RutaDispo = listModeloArchivose.getRuta ();
                 String nombre = listModeloArchivose.getNombre ();
-                StringTokenizer st = new StringTokenizer(nombre,".");  
+                StringTokenizer st = new StringTokenizer (nombre, ".");
                 nombre = st.nextToken ();
                 switch (nombre)
                 {
@@ -164,6 +164,12 @@ public class ControladorCargaPlanos
 
     public String CargarCSV_MB51_INFILE (String Ruta, HttpServletRequest request) throws IOException, SQLException
     {
+        /*
+         * Variables de Año y Mes
+         */
+        String ano = request.getParameter ("Mes");
+        String mes = request.getParameter ("Ano");
+        System.out.println (ano + " " + mes);
         String Realizado = "false";
         Ruta = Ruta.replace ("\\", "/");
         String SqlInsertMasivo
@@ -233,6 +239,11 @@ public class ControladorCargaPlanos
 
     public String CargarCSV_FBL3N_INFILE (String Ruta, HttpServletRequest request) throws IOException
     {
+        /*
+         * Variables de Año y Mes
+         */
+        String ano = request.getParameter ("Mes");
+        String mes = request.getParameter ("Ano");
         String Realizado = "false";
         Ruta = Ruta.replace ("\\", "/");
         String SqlInsertMasivo
@@ -269,6 +280,11 @@ public class ControladorCargaPlanos
 
     public String CargarCSV_ME80FN_INFILE (String Ruta, HttpServletRequest request) throws IOException
     {
+        /*
+         * Variables de Año y Mes
+         */
+        String ano = request.getParameter ("Mes");
+        String mes = request.getParameter ("Ano");
         String Realizado = "false";
         Ruta = Ruta.replace ("\\", "/");
         String SqlInsertMasivo
@@ -305,6 +321,11 @@ public class ControladorCargaPlanos
 
     public String CargarCSV_MRPDATA_INFILE (String Ruta, HttpServletRequest request) throws IOException
     {
+        /*
+         * Variables de Año y Mes
+         */
+        String ano = request.getParameter ("Mes");
+        String mes = request.getParameter ("Ano");
         String Realizado = "false";
         Ruta = Ruta.replace ("\\", "/");
         String SqlInsertMasivo
@@ -341,6 +362,11 @@ public class ControladorCargaPlanos
 
     public String CargarCSV_PROVEEDORES_INFILE (String Ruta, HttpServletRequest request) throws IOException
     {
+        /*
+         * Variables de Año y Mes
+         */
+        String ano = request.getParameter ("Mes");
+        String mes = request.getParameter ("Ano");
         String Realizado = "false";
         Ruta = Ruta.replace ("\\", "/");
         String SqlInsertMasivo
@@ -377,6 +403,11 @@ public class ControladorCargaPlanos
 
     public String CargarCSV_EINE_INFILE (String Ruta, HttpServletRequest request) throws IOException
     {
+        /*
+         * Variables de Año y Mes
+         */
+        String ano = request.getParameter ("Mes");
+        String mes = request.getParameter ("Ano");
         String Realizado = "false";
         Ruta = Ruta.replace ("\\", "/");
         String SqlInsertMasivo
@@ -414,6 +445,11 @@ public class ControladorCargaPlanos
 
     public String CargarCSV_Z39_INFILE (String Ruta, HttpServletRequest request) throws IOException
     {
+        /*
+         * Variables de Año y Mes
+         */
+        String ano = request.getParameter ("Mes");
+        String mes = request.getParameter ("Ano");
         String Realizado = "false";
         Ruta = Ruta.replace ("\\", "/");
         String SqlInsertMasivo

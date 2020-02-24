@@ -160,32 +160,35 @@ public class UploadServlet extends HttpServlet
         {
             ModeloArchivos modeloArchivos = new ModeloArchivos ();
             String name = getFileName (part);
-            modeloArchivos.setNombre (name);
-            long tamanorequies = part.getSize ();
-            String fileName = Paths.get (part.getSubmittedFileName ()).getFileName ().toString ();
-            System.out.println (fileName);
-            InputStream is = part.getInputStream ();
-            File detino = new File ("C:\\Zred\\SunChemical\\Upload\\");
-            if (detino.exists () != true)
+            if (!"null".equals (name))
             {
-                detino.mkdirs ();
+                modeloArchivos.setNombre (name);
+                long tamanorequies = part.getSize ();
+                String fileName = Paths.get (part.getSubmittedFileName ()).getFileName ().toString ();
+                System.out.println (fileName);
+                InputStream is = part.getInputStream ();
+                File detino = new File ("C:\\Zred\\SunChemical\\Upload\\");
+                if (detino.exists () != true)
+                {
+                    detino.mkdirs ();
+                }
+                File file = new File (detino, name + "_" + ObtenerFecha () + ".csv");
+                try (InputStream input = part.getInputStream ())
+                {
+                    file.delete ();
+                    Files.copy (input, file.toPath ());
+                    modeloArchivos.setRuta (file.getAbsolutePath ());
+                }
+                //String RutaDispo = "C:\\Users\\Carlos A Dominguez D\\GlasFish\\glassfish\\domains\\GlassFish\\config\\SunChemical\\Compras\\Compras_10-11-2019.csv";//
+                String RutaDispo = file.getPath ();
+                File RutaFinal = new File (RutaDispo);
+                //File RutaFinal = new File("C:\\Users\\Carlos A Dominguez D\\GlasFish\\glassfish\\domains\\GlassFish\\config\\SunChemical\\Compras\\Compras_10-11-2019.csv");
+                if (tamanorequies == RutaFinal.length ())
+                {
+                    resultado = "true";
+                }
+                listModeloArchivoses.add (modeloArchivos);
             }
-            File file = new File (detino, name + "_" + ObtenerFecha () + ".csv");
-            try (InputStream input = part.getInputStream ())
-            {
-                file.delete ();
-                Files.copy (input, file.toPath ());
-                modeloArchivos.setRuta (file.getAbsolutePath ());
-            }
-            //String RutaDispo = "C:\\Users\\Carlos A Dominguez D\\GlasFish\\glassfish\\domains\\GlassFish\\config\\SunChemical\\Compras\\Compras_10-11-2019.csv";//
-            String RutaDispo = file.getPath ();
-            File RutaFinal = new File (RutaDispo);
-            //File RutaFinal = new File("C:\\Users\\Carlos A Dominguez D\\GlasFish\\glassfish\\domains\\GlassFish\\config\\SunChemical\\Compras\\Compras_10-11-2019.csv");
-            if (tamanorequies == RutaFinal.length ())
-            {
-                resultado = "true";
-            }
-            listModeloArchivoses.add (modeloArchivos);
             //part.write (getFileName (part));
         }
         respuesta = controladorCargaPlanos.procesarCarga (listModeloArchivoses, request, response);
@@ -218,7 +221,7 @@ public class UploadServlet extends HttpServlet
                 return fileName.replace ("\"", "");
             }
         }
-        return null;
+        return "null";
     }
 
 }
