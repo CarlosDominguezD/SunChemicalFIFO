@@ -32,6 +32,7 @@
                                     <input type="hidden" id="Id" name="Id">
                                     <div class="col-md-6 col-sm-12 col-xs-12 form-group">
                                         <select class="form-control" id="IdMes" name="Mes">                                                                                        
+                                            <option value=0></option>
                                             <option value="Enero">Enero</option>
                                             <option value="Febrero">Febrero</option>
                                             <option value="Marzo">Marzo</option>
@@ -47,7 +48,8 @@
                                         </select>
                                     </div>
                                     <div class="col-md-6 col-sm-12 col-xs-12 form-group">
-                                        <select class="form-control" id="IdAno" name="Ano">                                                                                        
+                                        <select class="form-control" id="IdAno" name="Ano">  
+                                            <option value=0></option>
                                             <option value="2020">2020</option>
                                             <option value="2021">2021</option>
                                             <option value="2022">2022</option>
