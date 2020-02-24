@@ -106,5 +106,4 @@
         </div>
         <%@include file="Principal/Script.html" %>
     </body>
-    <%@include file="Principal/Validaciones.html" %>        
 </html>

@@ -30,6 +30,43 @@
                                 </div>
                                 <div id="Principal">                                                                                                                                                                         
                                     <div class="x_panel">
+                                        <div class="row">
+                                            <input type="hidden" id="Id" name="Id">
+                                            <div class="col-md-6 col-sm-12 col-xs-12 form-group">
+                                                <label for="codigo">Mes</label>
+                                                <select class="form-control" id="IdMes" name="Mes">                                                                                        
+                                                    <option value="Enero">Enero</option>
+                                                    <option value="Febrero">Febrero</option>
+                                                    <option value="Marzo">Marzo</option>
+                                                    <option value="Abril">Abril</option>
+                                                    <option value="Mayo">Mayo</option>
+                                                    <option value="Junio">Junio</option>
+                                                    <option value="Julio">Julio</option>
+                                                    <option value="Agosto">Agosto</option>
+                                                    <option value="Septiembre">Septiembre</option>
+                                                    <option value="Octubre">Octubre</option>
+                                                    <option value="Noviembre">Noviembre</option>
+                                                    <option value="Diciembre">Diciembre</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6 col-sm-12 col-xs-12 form-group">
+                                                <label for="codigo">Año</label>
+                                                <select class="form-control" id="IdAno" name="Ano">                                                                                        
+                                                    <option value="2020">2020</option>
+                                                    <option value="2021">2021</option>
+                                                    <option value="2022">2022</option>
+                                                    <option value="2023">2023</option>
+                                                    <option value="2024">2024</option>
+                                                    <option value="2025">2025</option>
+                                                    <option value="2026">2026</option>
+                                                    <option value="2027">2027</option>
+                                                    <option value="2028">2028</option>
+                                                    <option value="2029">2029</option>
+                                                    <option value="2030">2030</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <br>
                                         <table id="datatable" class="table table-striped table-bordered">                                  
                                             <thead>
                                                 <tr>
