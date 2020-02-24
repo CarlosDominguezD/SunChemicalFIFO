@@ -22,7 +22,8 @@
                 <!-- sidebar menu -->                
                 <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
                     <div class="menu_section">
-                        <h3>Panel Principal</h3>
+                        <%ModeloUsuario modeloUsuario = (ModeloUsuario) request.getSession ().getAttribute ("user");%>
+                        <h3>Usuario: <%=modeloUsuario.getNombre ()%></h3>
                         <ul class="nav side-menu">
                             <% try
                                 {
@@ -42,8 +43,7 @@
                                     String ItemProduccion = "false";
                                     String ItemInventario = "false";
                                     String ItemAuditoria = "false";
-                                    String ItemCargaplanosBarra = "false";
-                                    ModeloUsuario modeloUsuario = (ModeloUsuario) request.getSession ().getAttribute ("user");
+                                    String ItemCargaplanosBarra = "false";                                    
                                     if (modeloUsuario != null)
                                     {
                                         for (ModeloItemMenu modelo : modeloUsuario.getListModeloItemMenu ())
