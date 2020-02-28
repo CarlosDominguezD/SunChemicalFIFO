@@ -63,6 +63,7 @@ public class ControladorMb51 {
                         + "TOTAL_INVOICE_VALUE,"
                         + "Factura_Value_Unit,"
                         + "PIR_Porcentaje_del_Costo,"
+                        + "Precio_Unit_moneda_compra,"
                         + "Moneda,"
                         + "link3_PO_Item,"
                         + "Freight,"
@@ -82,7 +83,7 @@ public class ControladorMb51 {
                         + "Compra_valorada_a_Unit_FIFO,"
                         + "Variacion_FIFO_vs_Estandar,"
                         + "NovedadIco)"
-                        + "VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                        + "VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
                 SQL.setString(1, modeloMb51.getPlant());
                 SQL.setString(2, modeloMb51.getPurchase_order());
                 SQL.setString(3, modeloMb51.getMaterial());
@@ -118,25 +119,26 @@ public class ControladorMb51 {
                 SQL.setString(33, modeloMb51.getTOTAL_INVOICE_VALUE());
                 SQL.setString(34, modeloMb51.getFactura_Value_Unit());
                 SQL.setString(35, modeloMb51.getPIR_Porcentaje_del_Costo());
-                SQL.setString(36, modeloMb51.getMoneda());
-                SQL.setString(37, modeloMb51.getLink3_PO_Item());
-                SQL.setString(38, modeloMb51.getFreight());
-                SQL.setString(39, modeloMb51.getDutys());
-                SQL.setString(40, modeloMb51.getArancel());
-                SQL.setString(41, modeloMb51.getTotal_Costos_Adicionales());
-                SQL.setString(42, modeloMb51.getParticipac_Adicionales());
-                SQL.setString(43, modeloMb51.getAdicionales_al_CTO_Estandar());
-                SQL.setString(44, modeloMb51.getVariance());
-                SQL.setString(45, modeloMb51.getTotal_Costos());
-                SQL.setString(46, modeloMb51.getUnitario_Real());
-                SQL.setString(47, modeloMb51.getUnitario_Real_adicional_estandar());
-                SQL.setString(48, modeloMb51.getUnitario_estandar_SAP());
-                SQL.setString(49, modeloMb51.getUnitario_final_FIFO());
-                SQL.setString(50, modeloMb51.getPorcentaje_Real_Vs_Estandar());
-                SQL.setString(51, modeloMb51.getPorcentaje_fifo_final_vs_Estandar());
-                SQL.setString(52, modeloMb51.getCompra_valorada_a_Unit_FIFO());
-                SQL.setString(53, modeloMb51.getVariacion_FIFO_vs_Estandar());
-                SQL.setString(54, modeloMb51.getNovedadIco());
+                SQL.setString(36, modeloMb51.getPrecio_Unit_moneda_compra());
+                SQL.setString(37, modeloMb51.getMoneda());
+                SQL.setString(38, modeloMb51.getLink3_PO_Item());
+                SQL.setString(39, modeloMb51.getFreight());
+                SQL.setString(40, modeloMb51.getDutys());
+                SQL.setString(41, modeloMb51.getArancel());
+                SQL.setString(42, modeloMb51.getTotal_Costos_Adicionales());
+                SQL.setString(43, modeloMb51.getParticipac_Adicionales());
+                SQL.setString(44, modeloMb51.getAdicionales_al_CTO_Estandar());
+                SQL.setString(45, modeloMb51.getVariance());
+                SQL.setString(46, modeloMb51.getTotal_Costos());
+                SQL.setString(47, modeloMb51.getUnitario_Real());
+                SQL.setString(48, modeloMb51.getUnitario_Real_adicional_estandar());
+                SQL.setString(49, modeloMb51.getUnitario_estandar_SAP());
+                SQL.setString(50, modeloMb51.getUnitario_final_FIFO());
+                SQL.setString(51, modeloMb51.getPorcentaje_Real_Vs_Estandar());
+                SQL.setString(52, modeloMb51.getPorcentaje_fifo_final_vs_Estandar());
+                SQL.setString(53, modeloMb51.getCompra_valorada_a_Unit_FIFO());
+                SQL.setString(54, modeloMb51.getVariacion_FIFO_vs_Estandar());
+                SQL.setString(55, modeloMb51.getNovedadIco());
 
                 if (SQL.executeUpdate() > 0) {
                     resul = true;
@@ -196,6 +198,7 @@ public class ControladorMb51 {
                         + "TOTAL_INVOICE_VALUE,"
                         + "Factura_Value_Unit,"
                         + "PIR_Porcentaje_del_Costo,"
+                        + "Precio_Unit_moneda_compra,"
                         + "Moneda,"
                         + "link3_PO_Item,"
                         + "Freight,"
@@ -215,7 +218,7 @@ public class ControladorMb51 {
                         + "Compra_valorada_a_Unit_FIFO,"
                         + "Variacion_FIFO_vs_Estandar,"
                         + "NovedadIco) "
-                        + "VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                        + "VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
                 for (ModeloMb51 modeloMb51 : listModeloMb51) {
                     SQL.setString(1, modeloMb51.getPlant());
                     SQL.setString(2, modeloMb51.getPurchase_order());
@@ -252,25 +255,26 @@ public class ControladorMb51 {
                     SQL.setString(33, modeloMb51.getTOTAL_INVOICE_VALUE());
                     SQL.setString(34, modeloMb51.getFactura_Value_Unit());
                     SQL.setString(35, modeloMb51.getPIR_Porcentaje_del_Costo());
-                    SQL.setString(36, modeloMb51.getMoneda());
-                    SQL.setString(37, modeloMb51.getLink3_PO_Item());
-                    SQL.setString(38, modeloMb51.getFreight());
-                    SQL.setString(39, modeloMb51.getDutys());
-                    SQL.setString(40, modeloMb51.getArancel());
-                    SQL.setString(41, modeloMb51.getTotal_Costos_Adicionales());
-                    SQL.setString(42, modeloMb51.getParticipac_Adicionales());
-                    SQL.setString(43, modeloMb51.getAdicionales_al_CTO_Estandar());
-                    SQL.setString(44, modeloMb51.getVariance());
-                    SQL.setString(45, modeloMb51.getTotal_Costos());
-                    SQL.setString(46, modeloMb51.getUnitario_Real());
-                    SQL.setString(47, modeloMb51.getUnitario_Real_adicional_estandar());
-                    SQL.setString(48, modeloMb51.getUnitario_estandar_SAP());
-                    SQL.setString(49, modeloMb51.getUnitario_final_FIFO());
-                    SQL.setString(50, modeloMb51.getPorcentaje_Real_Vs_Estandar());
-                    SQL.setString(51, modeloMb51.getPorcentaje_fifo_final_vs_Estandar());
-                    SQL.setString(52, modeloMb51.getCompra_valorada_a_Unit_FIFO());
-                    SQL.setString(53, modeloMb51.getVariacion_FIFO_vs_Estandar());
-                    SQL.setString(54, modeloMb51.getNovedadIco());
+                    SQL.setString(36, modeloMb51.getPrecio_Unit_moneda_compra());
+                    SQL.setString(37, modeloMb51.getMoneda());
+                    SQL.setString(38, modeloMb51.getLink3_PO_Item());
+                    SQL.setString(39, modeloMb51.getFreight());
+                    SQL.setString(40, modeloMb51.getDutys());
+                    SQL.setString(41, modeloMb51.getArancel());
+                    SQL.setString(42, modeloMb51.getTotal_Costos_Adicionales());
+                    SQL.setString(43, modeloMb51.getParticipac_Adicionales());
+                    SQL.setString(44, modeloMb51.getAdicionales_al_CTO_Estandar());
+                    SQL.setString(45, modeloMb51.getVariance());
+                    SQL.setString(46, modeloMb51.getTotal_Costos());
+                    SQL.setString(47, modeloMb51.getUnitario_Real());
+                    SQL.setString(48, modeloMb51.getUnitario_Real_adicional_estandar());
+                    SQL.setString(49, modeloMb51.getUnitario_estandar_SAP());
+                    SQL.setString(50, modeloMb51.getUnitario_final_FIFO());
+                    SQL.setString(51, modeloMb51.getPorcentaje_Real_Vs_Estandar());
+                    SQL.setString(52, modeloMb51.getPorcentaje_fifo_final_vs_Estandar());
+                    SQL.setString(53, modeloMb51.getCompra_valorada_a_Unit_FIFO());
+                    SQL.setString(54, modeloMb51.getVariacion_FIFO_vs_Estandar());
+                    SQL.setString(55, modeloMb51.getNovedadIco());
 
                     if (SQL.executeUpdate() > 0) {
                         resul = true;
@@ -370,6 +374,7 @@ public class ControladorMb51 {
                     + "TOTAL_INVOICE_VALUE,"
                     + "Factura_Value_Unit,"
                     + "PIR_Porcentaje_del_Costo,"
+                    + "Precio_Unit_moneda_compra,"
                     + "Moneda,"
                     + "link3_PO_Item,"
                     + "Freight,"
@@ -429,6 +434,7 @@ public class ControladorMb51 {
                 modeloMb51.setTOTAL_INVOICE_VALUE(res.getString("TOTAL_INVOICE_VALUE"));
                 modeloMb51.setFactura_Value_Unit(res.getString("Factura_Value_Unit"));
                 modeloMb51.setPIR_Porcentaje_del_Costo(res.getString("PIR_Porcentaje_del_Costo"));
+                modeloMb51.setPrecio_Unit_moneda_compra(res.getString("Precio_Unit_moneda_compra"));
                 modeloMb51.setMoneda(res.getString("Moneda"));
                 modeloMb51.setLink3_PO_Item(res.getString("link3_PO_Item"));
                 modeloMb51.setFreight(res.getString("Freight"));
@@ -502,6 +508,7 @@ public class ControladorMb51 {
                     + "TOTAL_INVOICE_VALUE = ?, "
                     + "Factura_Value_Unit = ?, "
                     + "PIR_Porcentaje_del_Costo = ?, "
+                    + "Precio_Unit_moneda_compra = ?, "
                     + "Moneda = ?, "
                     + "link3_PO_Item = ?, "
                     + "Freight = ?, "
@@ -557,26 +564,27 @@ public class ControladorMb51 {
             SQL.setString(33, modeloMb51.getTOTAL_INVOICE_VALUE());
             SQL.setString(34, modeloMb51.getFactura_Value_Unit());
             SQL.setString(35, modeloMb51.getPIR_Porcentaje_del_Costo());
-            SQL.setString(36, modeloMb51.getMoneda());
-            SQL.setString(37, modeloMb51.getLink3_PO_Item());
-            SQL.setString(38, modeloMb51.getFreight());
-            SQL.setString(39, modeloMb51.getDutys());
-            SQL.setString(40, modeloMb51.getArancel());
-            SQL.setString(41, modeloMb51.getTotal_Costos_Adicionales());
-            SQL.setString(42, modeloMb51.getParticipac_Adicionales());
-            SQL.setString(43, modeloMb51.getAdicionales_al_CTO_Estandar());
-            SQL.setString(44, modeloMb51.getVariance());
-            SQL.setString(45, modeloMb51.getTotal_Costos());
-            SQL.setString(46, modeloMb51.getUnitario_Real());
-            SQL.setString(47, modeloMb51.getUnitario_Real_adicional_estandar());
-            SQL.setString(48, modeloMb51.getUnitario_estandar_SAP());
-            SQL.setString(49, modeloMb51.getUnitario_final_FIFO());
-            SQL.setString(50, modeloMb51.getPorcentaje_Real_Vs_Estandar());
-            SQL.setString(51, modeloMb51.getPorcentaje_fifo_final_vs_Estandar());
-            SQL.setString(52, modeloMb51.getCompra_valorada_a_Unit_FIFO());
-            SQL.setString(53, modeloMb51.getVariacion_FIFO_vs_Estandar());
-            SQL.setString(54, modeloMb51.getNovedadIco());
-            SQL.setInt(55, modeloMb51.getId());
+            SQL.setString(36, modeloMb51.getPrecio_Unit_moneda_compra());
+            SQL.setString(37, modeloMb51.getMoneda());
+            SQL.setString(38, modeloMb51.getLink3_PO_Item());
+            SQL.setString(39, modeloMb51.getFreight());
+            SQL.setString(40, modeloMb51.getDutys());
+            SQL.setString(41, modeloMb51.getArancel());
+            SQL.setString(42, modeloMb51.getTotal_Costos_Adicionales());
+            SQL.setString(43, modeloMb51.getParticipac_Adicionales());
+            SQL.setString(44, modeloMb51.getAdicionales_al_CTO_Estandar());
+            SQL.setString(45, modeloMb51.getVariance());
+            SQL.setString(46, modeloMb51.getTotal_Costos());
+            SQL.setString(47, modeloMb51.getUnitario_Real());
+            SQL.setString(48, modeloMb51.getUnitario_Real_adicional_estandar());
+            SQL.setString(49, modeloMb51.getUnitario_estandar_SAP());
+            SQL.setString(50, modeloMb51.getUnitario_final_FIFO());
+            SQL.setString(51, modeloMb51.getPorcentaje_Real_Vs_Estandar());
+            SQL.setString(52, modeloMb51.getPorcentaje_fifo_final_vs_Estandar());
+            SQL.setString(53, modeloMb51.getCompra_valorada_a_Unit_FIFO());
+            SQL.setString(54, modeloMb51.getVariacion_FIFO_vs_Estandar());
+            SQL.setString(55, modeloMb51.getNovedadIco());
+            SQL.setInt(56, modeloMb51.getId());
             if (SQL.executeUpdate() > 0) {
                 resul = true;
             }
@@ -633,6 +641,7 @@ public class ControladorMb51 {
                     + "TOTAL_INVOICE_VALUE = ?, "
                     + "Factura_Value_Unit = ?, "
                     + "PIR_Porcentaje_del_Costo = ?, "
+                    + "Precio_Unit_moneda_compra = ?, "
                     + "Moneda = ?, "
                     + "link3_PO_Item = ?, "
                     + "Freight = ?, "
@@ -689,26 +698,27 @@ public class ControladorMb51 {
                 SQL.setString(33, modeloMb51.getTOTAL_INVOICE_VALUE());
                 SQL.setString(34, modeloMb51.getFactura_Value_Unit());
                 SQL.setString(35, modeloMb51.getPIR_Porcentaje_del_Costo());
-                SQL.setString(36, modeloMb51.getMoneda());
-                SQL.setString(37, modeloMb51.getLink3_PO_Item());
-                SQL.setString(38, modeloMb51.getFreight());
-                SQL.setString(39, modeloMb51.getDutys());
-                SQL.setString(40, modeloMb51.getArancel());
-                SQL.setString(41, modeloMb51.getTotal_Costos_Adicionales());
-                SQL.setString(42, modeloMb51.getParticipac_Adicionales());
-                SQL.setString(43, modeloMb51.getAdicionales_al_CTO_Estandar());
-                SQL.setString(44, modeloMb51.getVariance());
-                SQL.setString(45, modeloMb51.getTotal_Costos());
-                SQL.setString(46, modeloMb51.getUnitario_Real());
-                SQL.setString(47, modeloMb51.getUnitario_Real_adicional_estandar());
-                SQL.setString(48, modeloMb51.getUnitario_estandar_SAP());
-                SQL.setString(49, modeloMb51.getUnitario_final_FIFO());
-                SQL.setString(50, modeloMb51.getPorcentaje_Real_Vs_Estandar());
-                SQL.setString(51, modeloMb51.getPorcentaje_fifo_final_vs_Estandar());
-                SQL.setString(52, modeloMb51.getCompra_valorada_a_Unit_FIFO());
-                SQL.setString(53, modeloMb51.getVariacion_FIFO_vs_Estandar());
-                SQL.setString(54, modeloMb51.getNovedadIco());
-                SQL.setInt(55, modeloMb51.getId());
+                SQL.setString(36, modeloMb51.getPrecio_Unit_moneda_compra());
+                SQL.setString(37, modeloMb51.getMoneda());
+                SQL.setString(38, modeloMb51.getLink3_PO_Item());
+                SQL.setString(39, modeloMb51.getFreight());
+                SQL.setString(40, modeloMb51.getDutys());
+                SQL.setString(41, modeloMb51.getArancel());
+                SQL.setString(42, modeloMb51.getTotal_Costos_Adicionales());
+                SQL.setString(43, modeloMb51.getParticipac_Adicionales());
+                SQL.setString(44, modeloMb51.getAdicionales_al_CTO_Estandar());
+                SQL.setString(45, modeloMb51.getVariance());
+                SQL.setString(46, modeloMb51.getTotal_Costos());
+                SQL.setString(47, modeloMb51.getUnitario_Real());
+                SQL.setString(48, modeloMb51.getUnitario_Real_adicional_estandar());
+                SQL.setString(49, modeloMb51.getUnitario_estandar_SAP());
+                SQL.setString(50, modeloMb51.getUnitario_final_FIFO());
+                SQL.setString(51, modeloMb51.getPorcentaje_Real_Vs_Estandar());
+                SQL.setString(52, modeloMb51.getPorcentaje_fifo_final_vs_Estandar());
+                SQL.setString(53, modeloMb51.getCompra_valorada_a_Unit_FIFO());
+                SQL.setString(54, modeloMb51.getVariacion_FIFO_vs_Estandar());
+                SQL.setString(55, modeloMb51.getNovedadIco());
+                SQL.setInt(56, modeloMb51.getId());
                 if (SQL.executeUpdate() > 0) {
                     resul = true;
                 }

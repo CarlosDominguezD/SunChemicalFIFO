@@ -47,6 +47,7 @@ public class ModeloMb51 {
     String TOTAL_INVOICE_VALUE;
     String Factura_Value_Unit;
     String PIR_Porcentaje_del_Costo;
+    String Precio_Unit_moneda_compra;
     String Moneda;
     String link3_PO_Item;
     String Freight;
@@ -70,7 +71,7 @@ public class ModeloMb51 {
     public ModeloMb51() {
     }
 
-    public ModeloMb51(Integer Id, String Plant, String Purchase_order, String Material, String Material_Description, String Batch, String Movement_type, String Movement_Type_Text, String Item, String Quantity, String Qty_in_unit_of_entry, String Unit_of_Entry, String Amt_in_loc_cur, String Currency, String Storage_Location, String Posting_Date, String Document_Date, String Material_Document, String User_Name, String Vendor, String Vendor_Name, String Vendor_Type, String Month, String Period, String Cost_Unit_SAP_en_KG, String Material_Type, String Profit_Center, String link1_Material_Batch, String link2_PO_position, String Referencia_vendor, String TotalQ_ME80FN, String O_Unit_ME80FN, String TotalQ_Porcentaje, String TOTAL_INVOICE_VALUE, String Factura_Value_Unit, String PIR_Porcentaje_del_Costo, String Moneda, String link3_PO_Item, String Freight, String Dutys, String Arancel, String Total_Costos_Adicionales, String Participac_Adicionales, String Adicionales_al_CTO_Estandar, String Variance, String Total_Costos, String Unitario_Real, String Unitario_Real_adicional_estandar, String Unitario_estandar_SAP, String Unitario_final_FIFO, String Porcentaje_Real_Vs_Estandar, String Porcentaje_fifo_final_vs_Estandar, String Compra_valorada_a_Unit_FIFO, String Variacion_FIFO_vs_Estandar, String NovedadIco) {
+    public ModeloMb51(Integer Id, String Plant, String Purchase_order, String Material, String Material_Description, String Batch, String Movement_type, String Movement_Type_Text, String Item, String Quantity, String Qty_in_unit_of_entry, String Unit_of_Entry, String Amt_in_loc_cur, String Currency, String Storage_Location, String Posting_Date, String Document_Date, String Material_Document, String User_Name, String Vendor, String Vendor_Name, String Vendor_Type, String Month, String Period, String Cost_Unit_SAP_en_KG, String Material_Type, String Profit_Center, String link1_Material_Batch, String link2_PO_position, String Referencia_vendor, String TotalQ_ME80FN, String O_Unit_ME80FN, String TotalQ_Porcentaje, String TOTAL_INVOICE_VALUE, String Factura_Value_Unit, String PIR_Porcentaje_del_Costo, String Precio_Unit_moneda_compra, String Moneda, String link3_PO_Item, String Freight, String Dutys, String Arancel, String Total_Costos_Adicionales, String Participac_Adicionales, String Adicionales_al_CTO_Estandar, String Variance, String Total_Costos, String Unitario_Real, String Unitario_Real_adicional_estandar, String Unitario_estandar_SAP, String Unitario_final_FIFO, String Porcentaje_Real_Vs_Estandar, String Porcentaje_fifo_final_vs_Estandar, String Compra_valorada_a_Unit_FIFO, String Variacion_FIFO_vs_Estandar, String NovedadIco) {
         this.Id = Id;
         this.Plant = Plant;
         this.Purchase_order = Purchase_order;
@@ -107,6 +108,7 @@ public class ModeloMb51 {
         this.TOTAL_INVOICE_VALUE = TOTAL_INVOICE_VALUE;
         this.Factura_Value_Unit = Factura_Value_Unit;
         this.PIR_Porcentaje_del_Costo = PIR_Porcentaje_del_Costo;
+        this.Precio_Unit_moneda_compra = Precio_Unit_moneda_compra;
         this.Moneda = Moneda;
         this.link3_PO_Item = link3_PO_Item;
         this.Freight = Freight;
@@ -415,6 +417,14 @@ public class ModeloMb51 {
     public void setPIR_Porcentaje_del_Costo(String PIR_Porcentaje_del_Costo) {
         this.PIR_Porcentaje_del_Costo = PIR_Porcentaje_del_Costo;
     }
+
+    public String getPrecio_Unit_moneda_compra() {
+        return Precio_Unit_moneda_compra;
+    }
+
+    public void setPrecio_Unit_moneda_compra(String Precio_Unit_moneda_compra) {
+        this.Precio_Unit_moneda_compra = Precio_Unit_moneda_compra;
+    }        
 
     public String getMoneda() {
         return Moneda;

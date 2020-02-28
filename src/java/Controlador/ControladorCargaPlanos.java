@@ -43,6 +43,7 @@ import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import sun.util.calendar.CalendarUtils;
 
 /**
  *
@@ -538,9 +539,14 @@ public class ControladorCargaPlanos
         Double Me80fnQuantity = 0.0;
         String O_Unit_ME80FN = "";
         String Moneda = "";
+        Double TOTAL_INVOICE_VALUE = 0.0;
+        Double Me80fnAmount = 0.0;
 
         for (ModeloMe80fn modeloMe80fn : LstmodeloMe80fn)
         {
+            TOTAL_INVOICE_VALUE = TOTAL_INVOICE_VALUE + Double.valueOf (modeloMe80fn.getAmt_in_loc_cur ());
+            Me80fnAmount = Me80fnAmount + Double.valueOf(modeloMe80fn.getAmount());
+            
             Me80fnQuantity = Me80fnQuantity + Double.valueOf (modeloMe80fn.getQuantity ());
             O_Unit_ME80FN = modeloMe80fn.getOrder_Unit ();
             if (!modeloMe80fn.getCurrency ().contentEquals (""))
@@ -588,11 +594,15 @@ public class ControladorCargaPlanos
 
         //BUSCAMOS TOTAL_INVOICE_VALUE
         //modeloMe80fn = controladorMe80fn.SelectSQL("SELECT *, SUM(Amt_in_loc_cur) AS 'SUM_Amt_in_loc_cur' FROM me80fn WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Item = '" + modeloMb51.getItem() + "' AND Movement_type = ''");
-        Double TOTAL_INVOICE_VALUE = 0.0;
-        for (ModeloMe80fn modeloMe80fn : LstmodeloMe80fn)
-        {
-            TOTAL_INVOICE_VALUE = TOTAL_INVOICE_VALUE + Double.valueOf (modeloMe80fn.getAmt_in_loc_cur ());
-        }
+//        Double TOTAL_INVOICE_VALUE = 0.0;
+//        Double AmountMe80fn = 0.0;
+//
+//        for (ModeloMe80fn modeloMe80fn : LstmodeloMe80fn)
+//        {
+//            TOTAL_INVOICE_VALUE = TOTAL_INVOICE_VALUE + Double.valueOf (modeloMe80fn.getAmt_in_loc_cur ());
+//            AmountMe80fn = AmountMe80fn + Double.valueOf(modeloMe80fn.getAmount());
+//
+//        }
 
         //LLENAMOS COLUMNA AH
         modeloMb51.setTOTAL_INVOICE_VALUE (String.format ("%.5f", TOTAL_INVOICE_VALUE).replace (",", "."));
@@ -619,10 +629,18 @@ public class ControladorCargaPlanos
         //BUSCAMOS MONEDA
         //ModeloMe80fn modeloMe80fn = controladorMe80fn.SelectSQL("SELECT * FROM me80fn WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND Movement_type <> ''");
         //LLENAMOS COLUMNA AK
+        Double Precio_Unit_moneda_compra = 0.0;
+        Precio_Unit_moneda_compra = Me80fnAmount / Me80fnQuantity;
+        modeloMb51.setPrecio_Unit_moneda_compra(String.format ("%.5f", Precio_Unit_moneda_compra).replace (",", "."));
+        
+        
+        
+        
+        //LLENAMOS COLUMNA AL
         //modeloMb51.setMoneda(modeloMe80fn.getCurrency());
         modeloMb51.setMoneda (Moneda);
 
-        //LLENAMOS COLUMNA AL
+        //LLENAMOS COLUMNA AM
         modeloMb51.setLink3_PO_Item (modeloMb51.getPurchase_order () + modeloMb51.getMaterial ());
 
         Double Freight = 0.0;
@@ -712,21 +730,21 @@ public class ControladorCargaPlanos
             }
         }
 
-        //LLENAMOS COLUMNA AM       
+        //LLENAMOS COLUMNA AN      
         modeloMb51.setFreight (String.format ("%.5f", Freight).replace (",", "."));
 
-        //LLENAMOS COLUMNA AN
+        //LLENAMOS COLUMNA AO
         modeloMb51.setDutys (String.format ("%.5f", Dutys).replace (",", "."));
 
-        //LLENAMOS COLUMNA AO
+        //LLENAMOS COLUMNA AP
         modeloMb51.setArancel (String.format ("%.5f", Arancel).replace (",", "."));
 
         Double Total_Costos_Adicionales = Freight + Dutys + Arancel;
-        //LLENAMOS COLUMNA AP
+        //LLENAMOS COLUMNA AQ
         modeloMb51.setTotal_Costos_Adicionales (String.format ("%.5f", Total_Costos_Adicionales).replace (",", "."));
 
         Double Participac_Adicionales = Total_Costos_Adicionales / TOTAL_INVOICE_VALUE;
-        //LLENAMOS COLUMNA AQ
+        //LLENAMOS COLUMNA AR
         modeloMb51.setParticipac_Adicionales (String.format ("%.5f", Participac_Adicionales).replace (",", "."));
 
         ModeloEine modeloEine = null;
@@ -747,7 +765,7 @@ public class ControladorCargaPlanos
             Adicionales_al_CTO_Estandar = Double.valueOf (modeloEine.getPorcentaje_Additional ());
         }
 
-        //LLENAMOS COLUMNA AR
+        //LLENAMOS COLUMNA AS
         modeloMb51.setAdicionales_al_CTO_Estandar (String.format ("%.5f", Adicionales_al_CTO_Estandar).replace (",", "."));
 
         Double Variance = 0.0;
@@ -755,7 +773,7 @@ public class ControladorCargaPlanos
         {
             Variance = Porcentaje_Adicional - Participac_Adicionales;
         }
-        //LLENAMOS COLUMNA AS
+        //LLENAMOS COLUMNA AT
         modeloMb51.setVariance (String.format ("%.5f", Variance).replace (",", "."));
 
         Double Total_Costos = 0.0;
@@ -779,7 +797,7 @@ public class ControladorCargaPlanos
         }
 
         Double Unitario_Real = 0.0;
-        //LLENAMOS COLUMNA AT
+        //LLENAMOS COLUMNA AU
         modeloMb51.setTotal_Costos (String.format ("%.5f", Total_Costos).replace (",", "."));
 
         if (modeloMb51.getUnit_of_Entry ().contentEquals ("GAL"))

@@ -380,6 +380,7 @@ public class ControladorExcel
                         + "TOTAL_INVOICE_VALUE,"
                         + "Factura_Value_Unit,"
                         + "PIR_Porcentaje_del_Costo,"
+                        + "Precio_Unit_moneda_compra,"
                         + "Moneda,"
                         + "link3_PO_Item,"
                         + "Freight,"
