@@ -12,7 +12,7 @@ package Modelos;
 public class ModeloEstadoPlanos {
 
     Integer Id;
-    String Actividad;
+    int IdFechas;
     String NombrePlano;
     String FechaCarga;
     String Estado;
@@ -20,51 +20,64 @@ public class ModeloEstadoPlanos {
     public ModeloEstadoPlanos() {
     }
 
-    public ModeloEstadoPlanos(Integer Id, String Actividad, String NombrePlano, String FechaCarga, String Estado) {
+    public ModeloEstadoPlanos (Integer Id, int IdFechas, String NombrePlano, String FechaCarga, String Estado)
+    {
         this.Id = Id;
-        this.Actividad = Actividad;
+        this.IdFechas = IdFechas;
         this.NombrePlano = NombrePlano;
         this.FechaCarga = FechaCarga;
         this.Estado = Estado;
     }
 
-    public Integer getId() {
+    public Integer getId ()
+    {
         return Id;
     }
 
-    public void setId(Integer Id) {
+    public void setId (Integer Id)
+    {
         this.Id = Id;
     }
 
-    public String getActividad() {
-        return Actividad;
+    public int getIdFechas ()
+    {
+        return IdFechas;
     }
 
-    public void setActividad(String Actividad) {
-        this.Actividad = Actividad;
+    public void setIdFechas (int IdFechas)
+    {
+        this.IdFechas = IdFechas;
     }
 
-    public String getNombrePlano() {
+    public String getNombrePlano ()
+    {
         return NombrePlano;
     }
 
-    public void setNombrePlano(String NombrePlano) {
+    public void setNombrePlano (String NombrePlano)
+    {
         this.NombrePlano = NombrePlano;
     }
 
-    public String getFechaCarga() {
+    public String getFechaCarga ()
+    {
         return FechaCarga;
     }
 
-    public void setFechaCarga(String FechaCarga) {
+    public void setFechaCarga (String FechaCarga)
+    {
         this.FechaCarga = FechaCarga;
     }
 
-    public String getEstado() {
+    public String getEstado ()
+    {
         return Estado;
     }
 
-    public void setEstado(String Estado) {
+    public void setEstado (String Estado)
+    {
         this.Estado = Estado;
     }
+    
+    
 }

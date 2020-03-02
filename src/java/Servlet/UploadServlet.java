@@ -75,7 +75,7 @@ public class UploadServlet extends HttpServlet
                 out.println ("<h2>Archivo Cargado Correctamente</h2>");
                 out.println ("<br/>");
                 out.println ("<br/>");
-                out.println ("<p>Para retornar al formulario ==> <a href=Cargaplanos.jsp>Principal</a>");
+                out.println ("<p>Para retornar al formulario ==> <a href=CargaplanosAll.jsp>Principal</a>");
                 out.println ("</p>");
                 out.println ("</div>");
                 out.println ("</div>");
@@ -109,7 +109,7 @@ public class UploadServlet extends HttpServlet
                 out.println ("<h2>Error en la carga del plano</h2>");
                 out.println ("<br/>");
                 out.println ("<br/>");
-                out.println ("<p>Para retornar al formulario ==> <a href=Cargaplanos.jsp>Principal</a>");
+                out.println ("<p>Para retornar al formulario ==> <a href=CargaplanosAll.jsp>Principal</a>");
                 out.println ("</p>");
                 out.println ("</div>");
                 out.println ("</div>");

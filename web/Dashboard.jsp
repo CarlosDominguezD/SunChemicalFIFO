@@ -10,11 +10,27 @@
     <head>        
         <%@include file="Principal/Head.html" %>        
     </head>
-    <body class="nav-md">        
+    <body class="nav-md">    
+        <%
+            ModeloUsuario modeloUsuarios = (ModeloUsuario) request.getSession ().getAttribute ("user");
+            //String nombre = modeloUsuarios.getNombre().toString();
+            if (modeloUsuarios != null)
+            {
+                %> 
         <%@include file="Principal/Body.jsp" %>
         <div class="right_col" role="main">           
         </div>
-        <%@include file="Principal/Script.html" %>                    
+        <%@include file="Principal/Script.html" %>   
+        <%         }
+        else
+        {
+        %> 
+        <br>
+        <h1  class="text-center">El Usuario no ha iniciado seccion</h1>
+        <%@include file="index.jsp" %>
+        <%
+            }
+        %>  
     </body>
     <%@include file="Principal/Validaciones.html" %>
 </html>

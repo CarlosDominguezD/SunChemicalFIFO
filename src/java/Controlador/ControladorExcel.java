@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -97,7 +98,7 @@ public class ControladorExcel
         File fileToDownload = new File (filePath);
         FileInputStream fileInputStream = new FileInputStream (fileToDownload);
 
-        ServletOutputStream out = response.getOutputStream ();
+        ServletOutputStream out = response.getOutputStream ();        
         String mimeType = new MimetypesFileTypeMap ().getContentType (filePath);
 
         response.setContentType (mimeType);
@@ -398,12 +399,14 @@ public class ControladorExcel
                         + "Porcentaje_fifo_final_vs_Estandar,"
                         + "Compra_valorada_a_Unit_FIFO,"
                         + "Variacion_FIFO_vs_Estandar,"
-                        + "NovedadIco"
-                        + " FROM mb51 group by  Material, Batch order by Batch, Material";
+                        + "NovedadIco,"
+                        + "IdArchivo"
+                        + " FROM mb51 WHERE IdArchivo = "+request.getParameter ("IdPlano")+" group by  Material, Batch order by Batch, Material";
                 try
                 {
                     //String UrlArchivo = "C:\\Users\\Carlos A Dominguez D\\GlasFish\\glassfish\\domains\\GlassFish\\config\\SunChemical\\Informe.xls";//request.getParameter("PlantillaUrl");
-                    String UrlArchivo = "C:\\Zred\\SunChemical\\MacroMB51.xls";//request.getParameter("PlantillaUrl");                
+                    //String UrlArchivo = "C:\\Zred\\SunChemical\\MacroMB51.xls";//request.getParameter("PlantillaUrl");                
+                    String UrlArchivo = "D:\\Zred\\SunChemical\\MacroMB51.xls";//request.getParameter("PlantillaUrl");                
                     String newQuery = SQLReporte;
                     //ControladorExcel controladorExcel = new ControladorExcel();
                     String archivo = GenerarExcel (UrlArchivo, newQuery);

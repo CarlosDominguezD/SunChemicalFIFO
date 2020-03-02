@@ -5,9 +5,11 @@
  */
 package Controlador;
 
+import Herramienta.Herramienta;
 import Modelos.ModeloArchivos;
 import Modelos.ModeloAuditoria;
 import Modelos.ModeloEine;
+import Modelos.ModeloEstadoPlanos;
 import Modelos.ModeloFbl3m;
 import Modelos.ModeloMb51;
 import Modelos.ModeloMe80fn;
@@ -66,6 +68,22 @@ public class ControladorCargaPlanos
                 {
                     case "MB51":
                         resultado = CargarCSV_MB51_INFILE (RutaDispo, request);
+                        if ("true".equals (resultado))
+                        {
+                            Herramienta herramientas = new Herramienta ();
+                            ControladorFechas controladorFechas = new ControladorFechas ();
+                            ModeloEstadoPlanos modeloEstadoPlanos = new ModeloEstadoPlanos ();
+                            modeloEstadoPlanos.setNombrePlano ("MB51");
+                            modeloEstadoPlanos.setFechaCarga (herramientas.sDate ());
+                            modeloEstadoPlanos.setEstado ("Activo");
+                            modeloEstadoPlanos.setIdFechas (controladorFechas.getIdFecha (request));
+                            ControladorEstadoPlanos controladorEstadoPlanos = new ControladorEstadoPlanos ();
+                            controladorEstadoPlanos.Insert (modeloEstadoPlanos);
+                            //Selecionamos el ultimo Id del la tabal estado plano
+                            modeloEstadoPlanos.setId (controladorEstadoPlanos.getIdEstadoPlanos ());
+                            // Update Mb51
+                            controladorEstadoPlanos.UpdateMB51 (modeloEstadoPlanos);
+                        }
                         break;
                     case "FBL3N":
                         resultado = CargarCSV_FBL3N_INFILE (RutaDispo, request);
@@ -135,6 +153,22 @@ public class ControladorCargaPlanos
             {
                 case "MB51":
                     resultado = CargarCSV_MB51_INFILE (RutaDispo, request);
+                    if ("true".equals (resultado))
+                    {
+                        Herramienta herramientas = new Herramienta ();
+                        ControladorFechas controladorFechas = new ControladorFechas ();
+                        ModeloEstadoPlanos modeloEstadoPlanos = new ModeloEstadoPlanos ();
+                        modeloEstadoPlanos.setNombrePlano ("MB51");
+                        modeloEstadoPlanos.setFechaCarga (herramientas.sDate ());
+                        modeloEstadoPlanos.setEstado ("Activo");
+                        modeloEstadoPlanos.setIdFechas (controladorFechas.getIdFecha (request));
+                        ControladorEstadoPlanos controladorEstadoPlanos = new ControladorEstadoPlanos ();
+                        controladorEstadoPlanos.Insert (modeloEstadoPlanos);
+                        //Selecionamos el ultimo Id del la tabal estado plano
+                        modeloEstadoPlanos.setId (controladorEstadoPlanos.getIdEstadoPlanos ());
+                        // Update Mb51
+                        controladorEstadoPlanos.UpdateMB51 (modeloEstadoPlanos);
+                    }
                     break;
                 case "FBL3N":
                     resultado = CargarCSV_FBL3N_INFILE (RutaDispo, request);
