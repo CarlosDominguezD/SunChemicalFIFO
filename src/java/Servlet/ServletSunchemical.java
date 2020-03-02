@@ -158,7 +158,6 @@ public class ServletSunchemical extends HttpServlet
             throws ServletException, IOException
     {
         response.setContentType ("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter ();
         String Accion = request.getParameter ("Accion");
         String res = "";
         String Resultado = "";
@@ -182,12 +181,21 @@ public class ServletSunchemical extends HttpServlet
                 request.setAttribute ("respuesta", res);
                 processRequest (request, response);
                 break;
-            case "GetArchivosCompras":
+            case "ConprasJSP":
                 ControladorEstadoPlanos controladorEstadoPlanos = new ControladorEstadoPlanos ();
-                res = controladorEstadoPlanos.ValidarArchivos (request, response);
-                PrintWriter pw = response.getWriter ();
-                pw.write (res);
-                System.out.println (pw.checkError () ? "Error al cargar la lista" : "Tabla Cargada");
+                evento = request.getParameter ("evento");
+                switch (evento)
+                {                    
+                    case "Update":
+                        Resultado = controladorEstadoPlanos.UpdateIncativoEstadoPlanos(request);
+                        break;
+                    case "Read":
+                        Resultado = controladorEstadoPlanos.ValidarArchivos (request, response);
+                        PrintWriter pwr = response.getWriter ();
+                        pwr.write (Resultado);
+                        System.out.println (pwr.checkError () ? "Error al cargar la lista" : "Tabla Cargada");
+                        break;
+                }
                 break;
             case "GenerarArchivoCompras":
                 ControladorExcel controladorExcel = new ControladorExcel ();
@@ -306,10 +314,13 @@ public class ServletSunchemical extends HttpServlet
                 }
                 break;
         }
-        String respuesta = herramienta.GetDescrpCode (Resultado);
-        response.setCharacterEncoding ("UTF-8");
-        response.setContentType ("text/plain");
-        response.getWriter ().write (respuesta);
+        if (!"GenerarArchivoCompras".equals (Accion))
+        {
+            String respuesta = herramienta.GetDescrpCode (Resultado);
+            response.setCharacterEncoding ("UTF-8");
+            response.setContentType ("text/plain");
+            response.getWriter ().write (respuesta);
+        }
     }
 
     public static String ObtenerFecha ()

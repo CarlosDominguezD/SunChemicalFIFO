@@ -43,7 +43,8 @@
                                     String ItemProduccion = "false";
                                     String ItemInventario = "false";
                                     String ItemAuditoria = "false";
-                                    String ItemCargaplanosBarra = "false";                                    
+                                    String ItemCargaplanosBarra = "false";
+                                    String ItemGestionCompras = "false";
                                     if (modeloUsuario != null)
                                     {
                                         for (ModeloItemMenu modelo : modeloUsuario.getListModeloItemMenu ())
@@ -116,14 +117,17 @@
                                             {
                                                 ItemCargaplanosBarra = "true";
                                             }
+                                            if ("ItemGestionCompras".equals (modelo.getNombre ()))
+                                            {
+                                                ItemGestionCompras = "true";
+                                            }
                                         }
                                         if ("true".equals (ItemAdministracion))
                                         {
                             %>
                             <li id="Administracion"><a><i class="fa fa-cog"></i>Administracion<span class="fa fa-chevron-down"></span></a>
                                 <ul class="nav child_menu">
-                                    <%      
-
+                                    <%
                                         if ("true".equals (ItemConfiguracion))
                                         {
                                     %>
@@ -149,6 +153,12 @@
                                                 {
                                             %>
                                             <li><a href="Usuarios.jsp#">Usuarios</a>
+                                            </li>                                          
+                                            <%      }
+                                                if ("true".equals (ItemGestionCompras))
+                                                {
+                                            %>
+                                            <li><a href="GestionCompras.jsp#">Gestion Compras</a>
                                             </li>                                          
                                             <%      }
                                                 if ("true".equals (ItemAuditoria))
@@ -182,7 +192,7 @@
                                         %>
                                     <li><a href="Vendortype.jsp">Vendortype</a></li>
                                         <%      }
-                                            
+
                                         %>
                                 </ul>
                             </li>
@@ -194,8 +204,7 @@
                             <li><a><i class="fa fa-upload"></i>Cargar Planos<span class="fa fa-chevron-down"></span></a>
                                 <ul class="nav child_menu">
 
-                                    <%      
-
+                                    <%
                                         if ("true".equals (ItemCargaPlanos))
                                         {
                                     %>
@@ -224,8 +233,7 @@
                             <li><a><i class="fa fa-download"></i>Resultados<span class="fa fa-chevron-down"></span></a>
                                 <ul class="nav child_menu">
 
-                                    <%      
-
+                                    <%
                                         if ("true".equals (ItemCompras))
                                         {
                                     %>

@@ -57,6 +57,9 @@ public class Herramienta
             case "3":
                 resp = "true";
                 break;
+            case "4":
+                resp = "El plano se a momdificado con exito";
+                break;
             case "-1":
                 resp = "El registro ya existe";
                 break;
@@ -68,6 +71,9 @@ public class Herramienta
                 break;
             case "-4":
                 resp = "false";
+                break;
+            case "-5":
+                resp = "Error al modificar el plano";
                 break;
         }
         return resp;

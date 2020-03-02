@@ -10,7 +10,7 @@
     <head>         
         <%@include file="Principal/Head.html" %>     
         <script type="text/javascript" src="Principal/js/jquery.min.js" ></script>
-        <script type="text/javascript" src="Principal/js/ValidacionesCompras.js" ></script> 
+        <script type="text/javascript" src="Principal/js/jsfifo/ValidacionesCompras.js" ></script> 
     </head>
     <body class="nav-md" onload="">        
         <%@include file="Principal/Body.jsp" %>
@@ -67,7 +67,15 @@
                                                     <option value="2030">2030</option>
                                                 </select>
                                             </div>
+                                            <br>
+                                            <div class="text-center" id="botonCargar" align="center">
+                                                <div class="col-lg-12" style="text-align: center">                                        
+                                                    <button type="button" class="btn btn-primary" id="IdFiltrar" name="Accion" value="Filtrar" >Filtrar</button>                                        
+                                                </div>                                                            
+                                            </div>
                                         </div>
+                                        <br>
+                                        <br>
                                         <br>
                                         <table id="datatable" class="table table-striped table-bordered">                                  
                                             <thead>
@@ -75,22 +83,42 @@
                                                     <th>Nombre Plano</th>
                                                     <th>Fecha Carga</th>
                                                     <th>Estado</th>                                                                                                                                                       
+                                                    <th>Opciones</th>                                                                                                                                                       
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr>                                                    
                                                     <td WIDTH = "0" HEIGHT="0"></td>                                     
                                                     <td WIDTH = "0" HEIGHT="0"></td>                                     
-                                                    <td WIDTH = "0" HEIGHT="0"></td>                                                                                         
+                                                    <td WIDTH = "0" HEIGHT="0"></td>    
+                                                    <td class="text-center">
+                                                        <button class="SetFormulario btn btn-warning btn-md" 
+                                                                data-id=""
+                                                                data-nombreplano=""
+                                                                data-fechacarga=""
+                                                                type="button" id="Idbtnsetformulario" name="Seleccionar">Seleccionar</button>                                                        
+                                                    </td>      
                                                 </tr> 
                                             </tbody>
                                         </table>                                           
                                     </div>
+                                    <div class="row">
+                                        <input type="hidden" id="IdPlano" name="IdPlano">
+                                        <div class="col-md-6 col-sm-12 col-xs-12 form-group">
+                                            <label for="codigo">Nombre Plano</label>     
+                                            <input type="text" class="form-control" id="IdNombrePlano" name="NombrePlano" required="required" disabled="">
+                                        </div>
+                                        <div class="col-md-6 col-sm-12 col-xs-12 form-group">
+                                            <label for="codigo">Fecha Carga</label>      
+                                            <input type="text" class="form-control" id="IdFechaPlano" name="FechaPlano" required="required" disabled="">
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="text-center" id="botonCargar">
+                                <div class="text-center" id="botonCargar" align="center">
                                     <div class="col-lg-12" style="text-align: center">
-                                        <button type="submit" class="btn btn-primary" id="IdGenerarPlano" name="Accion" value="GenerarArchivoCompras">Generar Plano</button>                                        
-                                    </div>                        
+                                        <button type="submit" class="btn btn-primary" id="IdGenerarPlano" name="Accion" value="GenerarArchivoCompras" >Generar Plano</button>                                        
+                                        <button type="button" class="btn btn-warning" id="IdCerrarPlano" name="Accion" value="GenerarArchivoCompras" >Cerrar Plano</button>                                        
+                                    </div>                                                            
                                 </div>
                                 <script type="text/javascript">
                                     function enableGif()
