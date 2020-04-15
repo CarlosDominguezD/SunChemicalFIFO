@@ -40,6 +40,7 @@ public class ServletSunchemical extends HttpServlet
 {
 
     String respuesta = "false";
+    String jsp = "false";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -59,73 +60,147 @@ public class ServletSunchemical extends HttpServlet
             /*
              * TODO output your page here. You may use following sample code.
              */
-            if ("true".equals (respuesta))
+            if ("true".equals (request.getAttribute ("respuesta")))
             {
-                out.println ("<!DOCTYPE html>");
-                out.println ("<html lang=en>");
-                out.println ("<head>");
-                out.println ("<link href=Principal/vendors/bootstrap/dist/css/bootstrap.min.css rel=stylesheet>");
-                out.println ("<link href=Principal/vendors/font-awesome/css/font-awesome.min.css rel=stylesheet>");
-                out.println ("<link href=Principal/vendors/nprogress/nprogress.css rel=stylesheet>");
-                out.println ("<link href=Principal/build/css/custom.min.css rel=stylesheet>");
-                out.println ("</head>");
-                out.println ("<body class=nav-md>");
-                out.println ("<div class=right_col role=main>");
-                out.println ("<div class=container body>");
-                out.println ("<div class=main_container>");
-                out.println ("<div class=col-md-12>");
-                out.println ("<div class=col-middle>");
-                out.println ("<div class=text-center text-center>");
-                out.println ("<h1 class=error-number>OK</h1>");
-                out.println ("<br/>");
-                out.println ("<p");
-                out.println ("<h2>Archivo Cargado Correctamente</h2>");
-                out.println ("<br/>");
-                out.println ("<br/>");
-                out.println ("<p>Para retornar al formulario ==> <a href=Cargaplanos.jsp>Principal</a>");
-                out.println ("</p>");
-                out.println ("</div>");
-                out.println ("</div>");
-                out.println ("</div>");
-                out.println ("</div>");
-                out.println ("</div>");
-                out.println ("</div>");
-                out.println ("</body>");
-                out.println ("</html>");
+                if ("CargaplanosCompras".equals (request.getAttribute ("jsp")))
+                {
+                    out.println ("<!DOCTYPE html>");
+                    out.println ("<html lang=en>");
+                    out.println ("<head>");
+                    out.println ("<link href=Principal/vendors/bootstrap/dist/css/bootstrap.min.css rel=stylesheet>");
+                    out.println ("<link href=Principal/vendors/font-awesome/css/font-awesome.min.css rel=stylesheet>");
+                    out.println ("<link href=Principal/vendors/nprogress/nprogress.css rel=stylesheet>");
+                    out.println ("<link href=Principal/build/css/custom.min.css rel=stylesheet>");
+                    out.println ("</head>");
+                    out.println ("<body class=nav-md>");
+                    out.println ("<div class=right_col role=main>");
+                    out.println ("<div class=container body>");
+                    out.println ("<div class=main_container>");
+                    out.println ("<div class=col-md-12>");
+                    out.println ("<div class=col-middle>");
+                    out.println ("<div class=text-center text-center>");
+                    out.println ("<h1 class=error-number>OK</h1>");
+                    out.println ("<br/>");
+                    out.println ("<p");
+                    out.println ("<h2>Archivo Cargado Correctamente</h2>");
+                    out.println ("<br/>");
+                    out.println ("<br/>");
+                    out.println ("<p>Para retornar al formulario ==> <a href=CargaplanosCompras.jsp>Principal</a>");
+                    out.println ("</p>");
+                    out.println ("</div>");
+                    out.println ("</div>");
+                    out.println ("</div>");
+                    out.println ("</div>");
+                    out.println ("</div>");
+                    out.println ("</div>");
+                    out.println ("</body>");
+                    out.println ("</html>");
+                }
+                if ("CargaplanosProduccion".equals (request.getAttribute ("jsp")))
+                {
+                    out.println ("<!DOCTYPE html>");
+                    out.println ("<html lang=en>");
+                    out.println ("<head>");
+                    out.println ("<link href=Principal/vendors/bootstrap/dist/css/bootstrap.min.css rel=stylesheet>");
+                    out.println ("<link href=Principal/vendors/font-awesome/css/font-awesome.min.css rel=stylesheet>");
+                    out.println ("<link href=Principal/vendors/nprogress/nprogress.css rel=stylesheet>");
+                    out.println ("<link href=Principal/build/css/custom.min.css rel=stylesheet>");
+                    out.println ("</head>");
+                    out.println ("<body class=nav-md>");
+                    out.println ("<div class=right_col role=main>");
+                    out.println ("<div class=container body>");
+                    out.println ("<div class=main_container>");
+                    out.println ("<div class=col-md-12>");
+                    out.println ("<div class=col-middle>");
+                    out.println ("<div class=text-center text-center>");
+                    out.println ("<h1 class=error-number>OK</h1>");
+                    out.println ("<br/>");
+                    out.println ("<p");
+                    out.println ("<h2>Archivo Cargado Correctamente</h2>");
+                    out.println ("<br/>");
+                    out.println ("<br/>");
+                    out.println ("<p>Para retornar al formulario ==> <a href=CargaplanosProduccion.jsp>Principal</a>");
+                    out.println ("</p>");
+                    out.println ("</div>");
+                    out.println ("</div>");
+                    out.println ("</div>");
+                    out.println ("</div>");
+                    out.println ("</div>");
+                    out.println ("</div>");
+                    out.println ("</body>");
+                    out.println ("</html>");
+                }
             }
             else
             {
-                out.println ("<!DOCTYPE html>");
-                out.println ("<html lang=en>");
-                out.println ("<head>");
-                out.println ("<link href=Principal/vendors/bootstrap/dist/css/bootstrap.min.css rel=stylesheet>");
-                out.println ("<link href=Principal/vendors/font-awesome/css/font-awesome.min.css rel=stylesheet>");
-                out.println ("<link href=Principal/vendors/nprogress/nprogress.css rel=stylesheet>");
-                out.println ("<link href=Principal/build/css/custom.min.css rel=stylesheet>");
-                out.println ("</head>");
-                out.println ("<body class=nav-md>");
-                out.println ("<div class=right_col role=main>");
-                out.println ("<div class=container body>");
-                out.println ("<div class=main_container>");
-                out.println ("<div class=col-md-12>");
-                out.println ("<div class=col-middle>");
-                out.println ("<div class=text-center text-center>");
-                out.println ("<h1 class=error-number>Error</h1>");
-                out.println ("<br/>");
-                out.println ("<p");
-                out.println ("<h2>Error en la carga del plano</h2>");
-                out.println ("<br/>");
-                out.println ("<br/>");
-                out.println ("<p>Para retornar al formulario ==> <a href=Cargaplanos.jsp>Principal</a>");
-                out.println ("</p>");
-                out.println ("</div>");
-                out.println ("</div>");
-                out.println ("</div>");
-                out.println ("</div>");
-                out.println ("</div>");
-                out.println ("</div>");
-                out.println ("</body>");
-                out.println ("</html>");
+                if ("CargaplanosCompras".equals (request.getAttribute ("jsp")))
+                {
+                    out.println ("<!DOCTYPE html>");
+                    out.println ("<html lang=en>");
+                    out.println ("<head>");
+                    out.println ("<link href=Principal/vendors/bootstrap/dist/css/bootstrap.min.css rel=stylesheet>");
+                    out.println ("<link href=Principal/vendors/font-awesome/css/font-awesome.min.css rel=stylesheet>");
+                    out.println ("<link href=Principal/vendors/nprogress/nprogress.css rel=stylesheet>");
+                    out.println ("<link href=Principal/build/css/custom.min.css rel=stylesheet>");
+                    out.println ("</head>");
+                    out.println ("<body class=nav-md>");
+                    out.println ("<div class=right_col role=main>");
+                    out.println ("<div class=container body>");
+                    out.println ("<div class=main_container>");
+                    out.println ("<div class=col-md-12>");
+                    out.println ("<div class=col-middle>");
+                    out.println ("<div class=text-center text-center>");
+                    out.println ("<h1 class=error-number>Error</h1>");
+                    out.println ("<br/>");
+                    out.println ("<p");
+                    out.println ("<h2>Error en la carga del plano</h2>");
+                    out.println ("<br/>");
+                    out.println ("<br/>");
+                    out.println ("<p>Para retornar al formulario ==> <a href=CargaplanosCompras.jsp>Principal</a>");
+                    out.println ("</p>");
+                    out.println ("</div>");
+                    out.println ("</div>");
+                    out.println ("</div>");
+                    out.println ("</div>");
+                    out.println ("</div>");
+                    out.println ("</div>");
+                    out.println ("</body>");
+                    out.println ("</html>");
+                }
+                if ("CargaplanosProduccion".equals (request.getAttribute ("jsp")))
+                {
+                    out.println ("<!DOCTYPE html>");
+                    out.println ("<html lang=en>");
+                    out.println ("<head>");
+                    out.println ("<link href=Principal/vendors/bootstrap/dist/css/bootstrap.min.css rel=stylesheet>");
+                    out.println ("<link href=Principal/vendors/font-awesome/css/font-awesome.min.css rel=stylesheet>");
+                    out.println ("<link href=Principal/vendors/nprogress/nprogress.css rel=stylesheet>");
+                    out.println ("<link href=Principal/build/css/custom.min.css rel=stylesheet>");
+                    out.println ("</head>");
+                    out.println ("<body class=nav-md>");
+                    out.println ("<div class=right_col role=main>");
+                    out.println ("<div class=container body>");
+                    out.println ("<div class=main_container>");
+                    out.println ("<div class=col-md-12>");
+                    out.println ("<div class=col-middle>");
+                    out.println ("<div class=text-center text-center>");
+                    out.println ("<h1 class=error-number>Error</h1>");
+                    out.println ("<br/>");
+                    out.println ("<p");
+                    out.println ("<h2>Error en la carga del plano</h2>");
+                    out.println ("<br/>");
+                    out.println ("<br/>");
+                    out.println ("<p>Para retornar al formulario ==> <a href=CargaplanosProduccion.jsp>Principal</a>");
+                    out.println ("</p>");
+                    out.println ("</div>");
+                    out.println ("</div>");
+                    out.println ("</div>");
+                    out.println ("</div>");
+                    out.println ("</div>");
+                    out.println ("</div>");
+                    out.println ("</body>");
+                    out.println ("</html>");
+                }
             }
         }
     }
@@ -167,8 +242,8 @@ public class ServletSunchemical extends HttpServlet
         String evento;
         switch (Accion)
         {
-            case "Planos":
-                ControladorCargaPlanosProduccion controladorCargaPlanos = new ControladorCargaPlanosProduccion ();
+            case "CargarPlanosCompras":
+                ControladorCargaPlanos controladorCargaPlanos = new ControladorCargaPlanos ();
                 {
                     try
                     {
@@ -180,15 +255,32 @@ public class ServletSunchemical extends HttpServlet
                 }
                 respuesta = res;
                 request.setAttribute ("respuesta", res);
+                request.setAttribute ("jsp", "CargaplanosCompras");
+                processRequest (request, response);
+                break;
+            case "CargarPlanosProduccion":
+                ControladorCargaPlanosProduccion controladorCargaPlanosProduccion = new ControladorCargaPlanosProduccion ();
+                {
+                    try
+                    {
+                        res = controladorCargaPlanosProduccion.Upload (request, response);
+                    } catch (SQLException ex)
+                    {
+                        Logger.getLogger (ServletSunchemical.class.getName ()).log (Level.SEVERE, null, ex);
+                    }
+                }
+                respuesta = res;
+                request.setAttribute ("respuesta", res);
+                request.setAttribute ("jsp", "CargaplanosProduccion");
                 processRequest (request, response);
                 break;
             case "ConprasJSP":
                 ControladorEstadoPlanos controladorEstadoPlanos = new ControladorEstadoPlanos ();
                 evento = request.getParameter ("evento");
                 switch (evento)
-                {                    
+                {
                     case "Update":
-                        Resultado = controladorEstadoPlanos.UpdateIncativoEstadoPlanos(request);
+                        Resultado = controladorEstadoPlanos.UpdateIncativoEstadoPlanos (request);
                         break;
                     case "Read":
                         Resultado = controladorEstadoPlanos.ValidarArchivos (request, response);

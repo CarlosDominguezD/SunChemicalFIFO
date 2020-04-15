@@ -36,6 +36,8 @@
                                     String ItemMateriales = "false";
                                     String ItemVendorType = "false";
                                     String ItemCargaPlanos = "false";
+                                    String ItemCargaPlanosCompras = "false";
+                                    String ItemCargaPlanosProduccion = "false";
                                     String ItemCargaPlanosAll = "false";
                                     String ItemPlanos = "false";
                                     String ItemResultados = "false";
@@ -84,6 +86,14 @@
                                             if ("ItemCargaPlanos".equals (modelo.getNombre ()))
                                             {
                                                 ItemCargaPlanos = "true";
+                                            }
+                                            if ("ItemCargaPlanosCompras".equals (modelo.getNombre ()))
+                                            {
+                                                ItemCargaPlanosCompras = "true";
+                                            }
+                                            if ("ItemCargaPlanosProduccion".equals (modelo.getNombre ()))
+                                            {
+                                                ItemCargaPlanosProduccion = "true";
                                             }
                                             if ("ItemPlanos".equals (modelo.getNombre ()))
                                             {
@@ -205,10 +215,16 @@
                                 <ul class="nav child_menu">
 
                                     <%
-                                        if ("true".equals (ItemCargaPlanos))
+                                        if ("true".equals (ItemCargaPlanosCompras))
                                         {
                                     %>
-                                    <li> <a href = "Cargaplanos.jsp" > Carga Planos </a></li>
+                                    <li> <a href = "CargaplanosCompras.jsp" > Carga Planos Compras </a></li>
+
+                                    <%      }
+                                        if ("true".equals (ItemCargaPlanosProduccion))
+                                        {
+                                    %>
+                                    <li> <a href = "CargaplanosProduccion.jsp" > Carga Planos Produccion </a></li>
 
                                     <%      }
                                         if ("true".equals (ItemCargaPlanosAll))

@@ -54,7 +54,7 @@
                                 <!-- Formulario Configuración -->
                                 <form id="demo-form2" data-parsley-validate class="form-horizontal form-label-left">
                                     <div align="center" id="espera" style="display: none">
-                                        <img src="Principal/images/loading_dash.gif">
+                                        <img src="Principal/images/loading.gif">
                                     </div>
                                     <div id="Principal">
                                         <div class="row">

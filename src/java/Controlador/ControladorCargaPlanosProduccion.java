@@ -190,9 +190,12 @@ public class ControladorCargaPlanosProduccion {
          * Variables de Año y Mes
          */
 
-        CONVERSION_LABOR = 1.2;
-        CONVERSION_MACHINE = 1.5;
-        CONVERSION_OVHDS = 1.18;
+//        CONVERSION_LABOR = 1.2;
+//        CONVERSION_MACHINE = 1.5;
+//        CONVERSION_OVHDS = 1.18;
+        CONVERSION_LABOR = Double.parseDouble (request.getParameter ("ConversionLabor"));
+        CONVERSION_MACHINE = Double.parseDouble (request.getParameter ("ConversionMachine"));
+        CONVERSION_OVHDS = Double.parseDouble (request.getParameter ("ConversionOvhds"));
 
         String ano = request.getParameter("Mes");
         String mes = request.getParameter("Ano");

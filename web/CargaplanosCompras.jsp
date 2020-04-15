@@ -20,13 +20,13 @@
                 <div class="row">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>Carga Planos</h2>
+                            <h2>Carga Planos Compras</h2>
                             <div class="clearfix"></div>
                         </div>
                         <div class="x_content">
                             <br />
-                            <form action="ServletSunchemical" method="POST" enctype="multipart/form-data" id="IdCargarPlanoServlet">
-                                <input type="hidden" id="IdAccion" name="Accion" value="Planos">     
+                            <form action="ServletSunchemical" method="POST" enctype="multipart/form-data" id="IdCargarPlanoServlet" name="cargaplanoscompres">
+                                <input type="hidden" id="IdAccion">     
                                 <input type="hidden" id="IdNombrePlano" name="NombrePlano" value=""> 
                                 <div class="row">
                                     <input type="hidden" id="Id" name="Id">
@@ -75,7 +75,7 @@
                                 <br>
                                 <br>
                                 <div align="center" id="botonCargar">
-                                    <input type="submit" value="Cargar" class="btn btn-lg btn-primary" onclick = "enableGif()">       
+                                    <input type="submit" class="btn btn-lg btn-primary" onclick = "enableGif()" name="Accion" value="CargarPlanosCompras">       
                                 </div>
                                 <div align="center" id="espera" style="display: none">
                                     <img src="Principal/images/loading.gif">
