@@ -406,8 +406,8 @@ public class ControladorExcel
                 try
                 {
                     //String UrlArchivo = "C:\\Users\\Carlos A Dominguez D\\GlasFish\\glassfish\\domains\\GlassFish\\config\\SunChemical\\Informe.xls";//request.getParameter("PlantillaUrl");
-                    //String UrlArchivo = "C:\\Zred\\SunChemical\\MacroMB51.xls";//request.getParameter("PlantillaUrl");                
-                    String UrlArchivo = "D:\\Zred\\SunChemical\\MacroMB51.xls";//request.getParameter("PlantillaUrl");                
+                    String UrlArchivo = "C:\\Zred\\SunChemical\\MacroMB51.xls";//request.getParameter("PlantillaUrl");                
+                    //String UrlArchivo = "D:\\Zred\\SunChemical\\MacroMB51.xls";//request.getParameter("PlantillaUrl");                
                     String newQuery = SQLReporte;
                     //ControladorExcel controladorExcel = new ControladorExcel();
                     String archivo = GenerarExcel (UrlArchivo, newQuery);

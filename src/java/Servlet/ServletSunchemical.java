@@ -7,6 +7,7 @@ package Servlet;
 
 import Controlador.ControladorAuditoria;
 import Controlador.ControladorCargaPlanos;
+import Controlador.ControladorCargaPlanosProduccion;
 import Controlador.ControladorEstadoPlanos;
 import Controlador.ControladorExcel;
 import Controlador.ControladorMb51;
@@ -167,7 +168,7 @@ public class ServletSunchemical extends HttpServlet
         switch (Accion)
         {
             case "Planos":
-                ControladorCargaPlanos controladorCargaPlanos = new ControladorCargaPlanos ();
+                ControladorCargaPlanosProduccion controladorCargaPlanos = new ControladorCargaPlanosProduccion ();
                 {
                     try
                     {

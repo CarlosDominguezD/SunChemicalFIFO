@@ -394,7 +394,7 @@ public class ControladorMb51 {
                     + "Compra_valorada_a_Unit_FIFO,"
                     + "Variacion_FIFO_vs_Estandar,"
                     + "NovedadIco"
-                    + " FROM mb51 group by  Material, Batch order by Batch, Material");
+                    + " FROM mb51 WHERE IdArchivo is null group by  Material, Batch order by Batch, Material");
             ResultSet res = SQL.executeQuery();
             while (res.next()) {
                 ModeloMb51 modeloMb51 = new ModeloMb51();
@@ -732,4 +732,83 @@ public class ControladorMb51 {
         }
         return resul;
     }
+    
+     public LinkedList<ModeloMb51> SelectSql(String Sql, Connection con) {
+        LinkedList<ModeloMb51> modeloMb51s = new LinkedList<ModeloMb51>();
+        //ConexionBDMySql conexion = new ConexionBDMySql();
+        //Connection con;
+        //con = conexion.abrirConexion();
+        PreparedStatement SQL;
+        try {
+            SQL = con.prepareStatement(Sql);
+            ResultSet res = SQL.executeQuery();
+            while (res.next()) {
+                ModeloMb51 modeloMb51 = new ModeloMb51();
+                modeloMb51.setId(res.getInt("id"));
+                modeloMb51.setPlant(res.getString("Plant"));
+                modeloMb51.setPurchase_order(res.getString("Purchase_order"));
+                modeloMb51.setMaterial(res.getString("Material"));
+                modeloMb51.setMaterial_Description(res.getString("Material_Description"));
+                modeloMb51.setBatch(res.getString("Batch"));
+                modeloMb51.setMovement_type(res.getString("Movement_type"));
+                modeloMb51.setMovement_Type_Text(res.getString("Movement_Type_Text"));
+                modeloMb51.setItem(res.getString("Item"));
+                modeloMb51.setQuantity(res.getString("Quantity"));
+                modeloMb51.setQty_in_unit_of_entry(res.getString("Qty_in_unit_of_entry"));
+                modeloMb51.setUnit_of_Entry(res.getString("Unit_of_Entry"));
+                modeloMb51.setAmt_in_loc_cur(res.getString("Amt_in_loc_cur"));
+                modeloMb51.setCurrency(res.getString("Currency"));
+                modeloMb51.setStorage_Location(res.getString("Storage_Location"));
+                modeloMb51.setPosting_Date(res.getString("Posting_Date"));
+                modeloMb51.setDocument_Date(res.getString("Document_Date"));
+                modeloMb51.setMaterial_Document(res.getString("Material_Document"));
+                modeloMb51.setUser_Name(res.getString("User_Name"));
+                modeloMb51.setVendor(res.getString("Vendor"));
+                modeloMb51.setVendor_Name(res.getString("Vendor_Name"));
+                modeloMb51.setVendor_Type(res.getString("Vendor_Type"));
+                modeloMb51.setMonth(res.getString("Month"));
+                modeloMb51.setPeriod(res.getString("Period"));
+                modeloMb51.setCost_Unit_SAP_en_KG(res.getString("Cost_Unit_SAP_en_KG"));
+                modeloMb51.setMaterial_Type(res.getString("Material_Type"));
+                modeloMb51.setProfit_Center(res.getString("Profit_Center"));
+                modeloMb51.setLink1_Material_Batch(res.getString("link1_Material_Batch"));
+                modeloMb51.setLink2_PO_position(res.getString("link2_PO_position"));
+                modeloMb51.setReferencia_vendor(res.getString("Referencia_vendor"));
+                modeloMb51.setTotalQ_ME80FN(res.getString("TotalQ_ME80FN"));
+                modeloMb51.setO_Unit_ME80FN(res.getString("O_Unit_ME80FN"));
+                modeloMb51.setTotalQ_Porcentaje(res.getString("TotalQ_Porcentaje"));
+                modeloMb51.setTOTAL_INVOICE_VALUE(res.getString("TOTAL_INVOICE_VALUE"));
+                modeloMb51.setFactura_Value_Unit(res.getString("Factura_Value_Unit"));
+                modeloMb51.setPIR_Porcentaje_del_Costo(res.getString("PIR_Porcentaje_del_Costo"));
+                modeloMb51.setPrecio_Unit_moneda_compra(res.getString("Precio_Unit_moneda_compra"));
+                modeloMb51.setMoneda(res.getString("Moneda"));
+                modeloMb51.setLink3_PO_Item(res.getString("link3_PO_Item"));
+                modeloMb51.setFreight(res.getString("Freight"));
+                modeloMb51.setDutys(res.getString("Dutys"));
+                modeloMb51.setArancel(res.getString("Arancel"));
+                modeloMb51.setTotal_Costos_Adicionales(res.getString("Total_Costos_Adicionales"));
+                modeloMb51.setParticipac_Adicionales(res.getString("Participac_Adicionales"));
+                modeloMb51.setAdicionales_al_CTO_Estandar(res.getString("Adicionales_al_CTO_Estandar"));
+                modeloMb51.setVariance(res.getString("Variance"));
+                modeloMb51.setTotal_Costos(res.getString("Total_Costos"));
+                modeloMb51.setUnitario_Real(res.getString("Unitario_Real"));
+                modeloMb51.setUnitario_Real_adicional_estandar(res.getString("Unitario_Real_adicional_estandar"));
+                modeloMb51.setUnitario_estandar_SAP(res.getString("Unitario_estandar_SAP"));
+                modeloMb51.setUnitario_final_FIFO(res.getString("Unitario_final_FIFO"));
+                modeloMb51.setPorcentaje_Real_Vs_Estandar(res.getString("Porcentaje_Real_Vs_Estandar"));
+                modeloMb51.setPorcentaje_fifo_final_vs_Estandar(res.getString("Porcentaje_fifo_final_vs_Estandar"));
+                modeloMb51.setCompra_valorada_a_Unit_FIFO(res.getString("Compra_valorada_a_Unit_FIFO"));
+                modeloMb51.setVariacion_FIFO_vs_Estandar(res.getString("Variacion_FIFO_vs_Estandar"));
+                modeloMb51.setNovedadIco(res.getString("NovedadIco"));
+                modeloMb51s.add(modeloMb51);
+            }
+            res.close();
+            SQL.close();
+            //con.close();
+        } catch (SQLException e) {
+            System.out.println("Error en la consulta SQL Select " + e);
+        }
+        return modeloMb51s;
+    }
+    
 }
