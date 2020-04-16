@@ -255,7 +255,7 @@ public class ControladorEstadoPlanos
         return modeloEstadoPlanoss;
     }
 
-    public LinkedList<ModeloEstadoPlanos> SelectID (int IdFechas, HttpServletRequest request)
+    public LinkedList<ModeloEstadoPlanos> SelectID (int IdFechas, HttpServletRequest request, String Nombreplano)
     {
         String Estado = request.getParameter ("Estado");
         LinkedList<ModeloEstadoPlanos> modeloEstadoPlanoss = new LinkedList<ModeloEstadoPlanos> ();
@@ -272,9 +272,10 @@ public class ControladorEstadoPlanos
                     + "`FechaCarga`,"
                     + "`Estado` "
                     + "FROM `estadoplanos` "
-                    + "WHERE IdFechas = ? AND Estado = ?");
+                    + "WHERE IdFechas = ? AND Estado = ? AND NombrePlano = ?");
             SQL.setInt (1, IdFechas);
             SQL.setString (2, Estado);
+            SQL.setString (3, Nombreplano);
             ResultSet res = SQL.executeQuery ();
             while (res.next ())
             {
@@ -295,6 +296,7 @@ public class ControladorEstadoPlanos
         }
         return modeloEstadoPlanoss;
     }
+
     public LinkedList<ModeloEstadoPlanos> Select (String IdFechas)
     {
         LinkedList<ModeloEstadoPlanos> modeloEstadoPlanoss = new LinkedList<ModeloEstadoPlanos> ();
@@ -371,16 +373,16 @@ public class ControladorEstadoPlanos
         return modeloEstadoPlanos;
     }
 
-    public String ValidarArchivos (HttpServletRequest request, HttpServletResponse response)
+    public String ValidarArchivos (HttpServletRequest request, HttpServletResponse response, String NombrePlano)
     {
         String out = null;
         try
         {
             LinkedList<ModeloEstadoPlanos> listModelosestadoPlanos;
             //listModelosestadoPlanos = Select(request.getParameter("actividad"));
-            ControladorFechas controladorFechas = new ControladorFechas ();            
+            ControladorFechas controladorFechas = new ControladorFechas ();
             int IdFechas = controladorFechas.getIdFecha (request);
-            listModelosestadoPlanos = SelectID (IdFechas, request);
+            listModelosestadoPlanos = SelectID (IdFechas, request, NombrePlano);
             response.setContentType ("text/html;charset=UTF-8");
             out = "";
             out += "<thead>";
@@ -446,7 +448,7 @@ public class ControladorEstadoPlanos
         return IdEstadoPlanos;
     }
 
-    void UpdateMB51 (ModeloEstadoPlanos modeloEstadoPlanos)
+    void UpdateMB51 (ModeloEstadoPlanos modeloEstadoPlanos, String plano)
     {
         boolean resul = false;
         ConexionBDMySql conexion = new ConexionBDMySql ();
@@ -455,9 +457,18 @@ public class ControladorEstadoPlanos
         PreparedStatement SQL = null;
         try
         {
-            SQL = con.prepareStatement ("UPDATE `mb51`  "
-                    + "SET   `IdArchivo` = ? "
-                    + "WHERE `IdArchivo`  is null;");
+            if ("MB51".equals (plano))
+            {
+                SQL = con.prepareStatement ("UPDATE `mb51`  "
+                        + "SET   `IdArchivo` = ? "
+                        + "WHERE `IdArchivo`  is null;");
+            }
+            if ("KOB1".equals (plano))
+            {
+                SQL = con.prepareStatement ("UPDATE `kob1`  "
+                        + "SET   `IdArchivo` = ? "
+                        + "WHERE `IdArchivo`  is null;");
+            }
 
             SQL.setInt (1, modeloEstadoPlanos.getId ());
             if (SQL.executeUpdate () > 0)

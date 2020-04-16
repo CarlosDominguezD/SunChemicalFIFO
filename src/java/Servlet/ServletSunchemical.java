@@ -240,6 +240,8 @@ public class ServletSunchemical extends HttpServlet
         ControladorMb51 controladorMb51 = new ControladorMb51 ();
         Herramienta herramienta = new Herramienta ();
         String evento;
+        ControladorEstadoPlanos controladorEstadoPlanos = new ControladorEstadoPlanos ();
+        ControladorExcel controladorExcel = new ControladorExcel ();
         switch (Accion)
         {
             case "CargarPlanosCompras":
@@ -275,7 +277,7 @@ public class ServletSunchemical extends HttpServlet
                 processRequest (request, response);
                 break;
             case "ConprasJSP":
-                ControladorEstadoPlanos controladorEstadoPlanos = new ControladorEstadoPlanos ();
+                //ControladorEstadoPlanos controladorEstadoPlanos = new ControladorEstadoPlanos ();
                 evento = request.getParameter ("evento");
                 switch (evento)
                 {
@@ -283,7 +285,23 @@ public class ServletSunchemical extends HttpServlet
                         Resultado = controladorEstadoPlanos.UpdateIncativoEstadoPlanos (request);
                         break;
                     case "Read":
-                        Resultado = controladorEstadoPlanos.ValidarArchivos (request, response);
+                        Resultado = controladorEstadoPlanos.ValidarArchivos (request, response, "MB51");
+                        PrintWriter pwr = response.getWriter ();
+                        pwr.write (Resultado);
+                        System.out.println (pwr.checkError () ? "Error al cargar la lista" : "Tabla Cargada");
+                        break;
+                }
+                break;
+            case "ProduccionJSP":                
+                //ControladorEstadoPlanos controladorEstadoPlanos = new ControladorEstadoPlanos ();
+                evento = request.getParameter ("evento");
+                switch (evento)
+                {
+                    case "Update":
+                        Resultado = controladorEstadoPlanos.UpdateIncativoEstadoPlanos (request);
+                        break;
+                    case "Read":
+                        Resultado = controladorEstadoPlanos.ValidarArchivos (request, response, "KOB1");
                         PrintWriter pwr = response.getWriter ();
                         pwr.write (Resultado);
                         System.out.println (pwr.checkError () ? "Error al cargar la lista" : "Tabla Cargada");
@@ -291,8 +309,12 @@ public class ServletSunchemical extends HttpServlet
                 }
                 break;
             case "GenerarArchivoCompras":
-                ControladorExcel controladorExcel = new ControladorExcel ();
+                //ControladorExcel controladorExcel = new ControladorExcel ();
                 controladorExcel.Select ("GenerarArchivoCompras", request, response);
+                break;
+            case "GenerarArchivoProduccion":
+                //ControladorExcel controladorExcel = new ControladorExcel ();
+                controladorExcel.Select ("GenerarArchivoProduccion", request, response);
                 break;
             case "VendorTypeJSP":
                 ControladorVendorType controladorVendorType = new ControladorVendorType ();

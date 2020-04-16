@@ -78,7 +78,7 @@ public class ControladorCargaPlanos {
                             //Selecionamos el ultimo Id del la tabal estado plano
                             modeloEstadoPlanos.setId(controladorEstadoPlanos.getIdEstadoPlanos());
                             // Update Mb51
-                            controladorEstadoPlanos.UpdateMB51(modeloEstadoPlanos);
+                            controladorEstadoPlanos.UpdateMB51(modeloEstadoPlanos, "MB51");
                         }
                         break;
                     case "FBL3N":
@@ -155,7 +155,7 @@ public class ControladorCargaPlanos {
                         //Selecionamos el ultimo Id del la tabal estado plano
                         modeloEstadoPlanos.setId(controladorEstadoPlanos.getIdEstadoPlanos());
                         // Update Mb51
-                        controladorEstadoPlanos.UpdateMB51(modeloEstadoPlanos);
+                        controladorEstadoPlanos.UpdateMB51(modeloEstadoPlanos, "MB51");
                     }
                     break;
                 case "FBL3N":

@@ -259,7 +259,7 @@
                                         if ("true".equals (ItemProduccion))
                                         {
                                     %>
-                                    <li><a href="#">Produccion</a></li>
+                                    <li><a href="Produccion.jsp">Produccion</a></li>
 
                                     <%      }
                                         if ("true".equals (ItemInventario))

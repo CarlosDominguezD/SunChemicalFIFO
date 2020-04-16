@@ -98,7 +98,7 @@ public class ControladorExcel
         File fileToDownload = new File (filePath);
         FileInputStream fileInputStream = new FileInputStream (fileToDownload);
 
-        ServletOutputStream out = response.getOutputStream ();        
+        ServletOutputStream out = response.getOutputStream ();
         String mimeType = new MimetypesFileTypeMap ().getContentType (filePath);
 
         response.setContentType (mimeType);
@@ -340,11 +340,11 @@ public class ControladorExcel
 
     public void Select (String Archivo, HttpServletRequest request, HttpServletResponse response)
     {
+        String SQLReporte;
         switch (Archivo)
         {
             case "GenerarArchivoCompras":
-
-                String SQLReporte = "SELECT "
+                SQLReporte = "SELECT "
                         + "Id,"
                         + "Plant,"
                         + "Purchase_order,"
@@ -402,7 +402,76 @@ public class ControladorExcel
                         + "Variacion_FIFO_vs_Estandar,"
                         + "NovedadIco,"
                         + "IdArchivo"
-                        + " FROM mb51 WHERE IdArchivo = "+request.getParameter ("IdPlano")+" group by  Material, Batch order by Batch, Material";
+                        + " FROM mb51 WHERE IdArchivo = " + request.getParameter ("IdPlano") + " group by  Material, Batch order by Batch, Material";
+                try
+                {
+                    //String UrlArchivo = "C:\\Users\\Carlos A Dominguez D\\GlasFish\\glassfish\\domains\\GlassFish\\config\\SunChemical\\Informe.xls";//request.getParameter("PlantillaUrl");
+                    String UrlArchivo = "C:\\Zred\\SunChemical\\MacroMB51.xls";//request.getParameter("PlantillaUrl");                
+                    //String UrlArchivo = "D:\\Zred\\SunChemical\\MacroMB51.xls";//request.getParameter("PlantillaUrl");                
+                    String newQuery = SQLReporte;
+                    //ControladorExcel controladorExcel = new ControladorExcel();
+                    String archivo = GenerarExcel (UrlArchivo, newQuery);
+                    downloadFile (response, archivo);
+                    //Auditoria
+                    ModeloAuditoria modeloAuditoria = new ModeloAuditoria ();
+                    modeloAuditoria.setModeloUsuario ((ModeloUsuario) request.getSession ().getAttribute ("user"));
+                    modeloAuditoria.setMensaje ("El Usuario " + modeloAuditoria.getModeloUsuario ().getUsuario () + " a descargado  el plano MB51 del sistema.");
+                    ControladorAuditoria controladorAuditoria = new ControladorAuditoria ();
+                    controladorAuditoria.Insert (modeloAuditoria);
+                } catch (SQLException ex)
+                {
+                    Logger.getLogger (ServletSunchemical.class.getName ()).log (Level.SEVERE, null, ex);
+                } catch (Exception ex)
+                {
+                    Logger.getLogger (ServletSunchemical.class.getName ()).log (Level.SEVERE, null, ex);
+                }
+                break;
+            case "GenerarArchivoProduccion":
+                SQLReporte = "SELECT "
+                        + "`Id`,"
+                        + "`Functional_Area`,"
+                        + "`Company_Code`,"
+                        + "`Order_`,"
+                        + "`CO_object_name`,"
+                        + "`Cost_Element`,"
+                        + "`Cost_element_name`,"
+                        + "`Material`,"
+                        + "`Material_Description`,"
+                        + "`Plant`,"
+                        + "`Period`,"
+                        + "`Fiscal_Year`,"
+                        + "`Dr_Cr_indicator`,"
+                        + "`Total_Quantity`,"
+                        + "`Unit_of_Measure`,"
+                        + "`Value_TranCurr`,"
+                        + "`Transaction_Currency`,"
+                        + "`Value_in_Obj_Crcy`,"
+                        + "`Object_Currency`,"
+                        + "`Document_Number`,"
+                        + "`Link_Plant_Material`,"
+                        + "`Link_Material_orden`,"
+                        + "`Batch_consumo`,"
+                        + "`Link_Material_Batch`,"
+                        + "`Material_Type_Components`,"
+                        + "`Procur_Type`,"
+                        + "`Level_1`,"
+                        + "`Finish_Good_sku`,"
+                        + "`Mat_Type_Unfinish_Goods`,"
+                        + "`Batch_Finish_goods`,"
+                        + "`Link_Terminado_Batch`,"
+                        + "`Cost_Unit_Estandar`,"
+                        + "`Cantidad_Terminada`,"
+                        + "`Cost_Unit_Fifo_Old`,"
+                        + "`Cost_Unit_Fifo_R_Mat_Pack`,"
+                        + "`x`,"
+                        + "`Total_Raw_Material`,"
+                        + "`Manufact_Materials`,"
+                        + "`Packaging_Materials`,"
+                        + "`Conversion_Cost`,"
+                        + "`Nuevo_Valor_Orden`,"
+                        + "`Month`,"
+                        + "`IdArchivo` "
+                        + "FROM `kob1` WHERE IdArchivo = " + request.getParameter ("IdPlano") + " group by  Material order by Material";
                 try
                 {
                     //String UrlArchivo = "C:\\Users\\Carlos A Dominguez D\\GlasFish\\glassfish\\domains\\GlassFish\\config\\SunChemical\\Informe.xls";//request.getParameter("PlantillaUrl");
