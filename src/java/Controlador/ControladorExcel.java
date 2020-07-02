@@ -471,11 +471,11 @@ public class ControladorExcel
                         + "`Nuevo_Valor_Orden`,"
                         + "`Month`,"
                         + "`IdArchivo` "
-                        + "FROM `kob1` WHERE IdArchivo = " + request.getParameter ("IdPlano") + " group by  Material order by Material";
+                        + "FROM `kob1` WHERE IdArchivo = " + request.getParameter ("IdPlano");
                 try
                 {
                     //String UrlArchivo = "C:\\Users\\Carlos A Dominguez D\\GlasFish\\glassfish\\domains\\GlassFish\\config\\SunChemical\\Informe.xls";//request.getParameter("PlantillaUrl");
-                    String UrlArchivo = "C:\\Zred\\SunChemical\\MacroMB51.xls";//request.getParameter("PlantillaUrl");                
+                    String UrlArchivo = "C:\\Zred\\SunChemical\\MacroKOB1.xls";//request.getParameter("PlantillaUrl");                
                     //String UrlArchivo = "D:\\Zred\\SunChemical\\MacroMB51.xls";//request.getParameter("PlantillaUrl");                
                     String newQuery = SQLReporte;
                     //ControladorExcel controladorExcel = new ControladorExcel();
