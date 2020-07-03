@@ -370,6 +370,21 @@ public class ServletSunchemical extends HttpServlet {
                         break;
                 }
                 break;
+            case "InventarioJSP":
+                //ControladorEstadoPlanos controladorEstadoPlanos = new ControladorEstadoPlanos ();
+                evento = request.getParameter("evento");
+                switch (evento) {
+                    case "Update":
+                        Resultado = controladorEstadoPlanos.UpdateIncativoEstadoPlanos(request);
+                        break;
+                    case "Read":
+                        Resultado = controladorEstadoPlanos.ValidarArchivos(request, response, "MCBR");
+                        PrintWriter pwr = response.getWriter();
+                        pwr.write(Resultado);
+                        System.out.println(pwr.checkError() ? "Error al cargar la lista" : "Tabla Cargada");
+                        break;
+                }
+                break;
             case "GenerarArchivoCompras":
                 //ControladorExcel controladorExcel = new ControladorExcel ();
                 controladorExcel.Select("GenerarArchivoCompras", request, response);
@@ -377,6 +392,10 @@ public class ServletSunchemical extends HttpServlet {
             case "GenerarArchivoProduccion":
                 //ControladorExcel controladorExcel = new ControladorExcel ();
                 controladorExcel.Select("GenerarArchivoProduccion", request, response);
+                break;
+            case "GenerarArchivoInventario":
+                //ControladorExcel controladorExcel = new ControladorExcel ();
+                controladorExcel.Select("GenerarArchivoInventario", request, response);
                 break;
             case "VendorTypeJSP":
                 ControladorVendorType controladorVendorType = new ControladorVendorType();

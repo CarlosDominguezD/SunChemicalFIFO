@@ -495,6 +495,54 @@ public class ControladorExcel
                     Logger.getLogger (ServletSunchemical.class.getName ()).log (Level.SEVERE, null, ex);
                 }
                 break;
+            case "GenerarArchivoInventario":
+                SQLReporte = "SELECT "
+                        + "`id`,"
+                        + "`Material`,"
+                        + "`Descripcion`,"
+                        + "`Plant`,"
+                        + "`Batch`,"
+                        + "`Month`,"
+                        + "`Profit_center`,"
+                        + "`Material_Type`,"
+                        + "`Status`,"
+                        + "`Val_stock`,"
+                        + "`Val_stock_Med`,"
+                        + "`ValStckVal`,"
+                        + "`ValStck_Val_Mon`,"
+                        + "`Cost_Unit_Estandar`,"
+                        + "`InventarioInicial_FIFO`,"
+                        + "`Cost_Unit_Purchase`,"
+                        + "`Cost_Unit_KOB1_Piso`,"
+                        + "`Cost_Unit_KOB1_Final`,"
+                        + "`FIFO_Cost_Unit`,"
+                        + "`Inventario_Valorado_a_FIFO`,"
+                        + "`Variacion_FIFO_vs_Estandar`,"
+                        + "`IdArchivo` "
+                        + "FROM `mcbr` WHERE IdArchivo = " + request.getParameter ("IdPlano");
+                try
+                {
+                    //String UrlArchivo = "C:\\Users\\Carlos A Dominguez D\\GlasFish\\glassfish\\domains\\GlassFish\\config\\SunChemical\\Informe.xls";//request.getParameter("PlantillaUrl");
+                    String UrlArchivo = "C:\\Zred\\SunChemical\\MacroMCBR.xls";//request.getParameter("PlantillaUrl");                
+                    //String UrlArchivo = "D:\\Zred\\SunChemical\\MacroMB51.xls";//request.getParameter("PlantillaUrl");                
+                    String newQuery = SQLReporte;
+                    //ControladorExcel controladorExcel = new ControladorExcel();
+                    String archivo = GenerarExcel (UrlArchivo, newQuery);
+                    downloadFile (response, archivo);
+                    //Auditoria
+                    ModeloAuditoria modeloAuditoria = new ModeloAuditoria ();
+                    modeloAuditoria.setModeloUsuario ((ModeloUsuario) request.getSession ().getAttribute ("user"));
+                    modeloAuditoria.setMensaje ("El Usuario " + modeloAuditoria.getModeloUsuario ().getUsuario () + " a descargado  el plano MB51 del sistema.");
+                    ControladorAuditoria controladorAuditoria = new ControladorAuditoria ();
+                    controladorAuditoria.Insert (modeloAuditoria);
+                } catch (SQLException ex)
+                {
+                    Logger.getLogger (ServletSunchemical.class.getName ()).log (Level.SEVERE, null, ex);
+                } catch (Exception ex)
+                {
+                    Logger.getLogger (ServletSunchemical.class.getName ()).log (Level.SEVERE, null, ex);
+                }
+                break;
 
         }
 
