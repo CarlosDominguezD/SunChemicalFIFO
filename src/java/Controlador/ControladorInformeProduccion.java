@@ -19,8 +19,10 @@ import java.util.LinkedList;
  */
 public class ControladorInformeProduccion {
 
+    LinkedList<ModeloInforme_Produccion> LstModeloInforme_Produccion = new LinkedList<ModeloInforme_Produccion>();
     public LinkedList<ModeloInforme_Produccion> SelectSql(String Sql, Connection con) {
-        LinkedList<ModeloInforme_Produccion> LstModeloInforme_Produccion = new LinkedList<ModeloInforme_Produccion>();
+        //LinkedList<ModeloInforme_Produccion> LstModeloInforme_Produccion = new LinkedList<ModeloInforme_Produccion>();
+        LstModeloInforme_Produccion.clear();        
         //ConexionBDMySql conexion = new ConexionBDMySql();
         //Connection con;
         //con = conexion.abrirConexion();

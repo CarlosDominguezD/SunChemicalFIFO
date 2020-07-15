@@ -6,6 +6,7 @@
 package Controlador;
 
 import Conexiones.ConexionBDMySql;
+import Conexiones.Pool;
 import Modelos.ModeloMb51_Consumos;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,11 +20,11 @@ import java.util.LinkedList;
  */
 public class ControladorMb51_Consumos {
 
+    LinkedList<ModeloMb51_Consumos> LstModeloMb51_Consumos = new LinkedList<ModeloMb51_Consumos>();
+
     public LinkedList<ModeloMb51_Consumos> SelectSQL(String Sql, Connection con) throws SQLException {
-        LinkedList<ModeloMb51_Consumos> LstModeloMb51_Consumos = new LinkedList<ModeloMb51_Consumos>();
-//        ConexionBDMySql conexion = new ConexionBDMySql();
-//        Connection con;
-//        con = conexion.abrirConexion();
+
+        LstModeloMb51_Consumos.clear();
         PreparedStatement SQL;
         try {
             SQL = con.prepareStatement(Sql);
@@ -64,5 +65,7 @@ public class ControladorMb51_Consumos {
         }
         return LstModeloMb51_Consumos;
     }
+
+    
 
 }

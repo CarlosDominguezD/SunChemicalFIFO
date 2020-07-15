@@ -41,8 +41,8 @@ public class ConexionBDMySql
     {
         try 
         {            
-            file = new File("SunChemical\\ConBDMySqlWEBFIFO.ini");            
-            //file = new File("C:\\Zred\\ConBDMySqlWEB.ini");            
+            //file = new File("SunChemical\\ConBDMySqlWEBFIFO.ini");            
+            file = new File("C:\\Zred\\SunChemical\\ConBDMySqlWEB_Fifo.ini");            
             BufferedReader filein = null;
             if (file != null)
             {
@@ -66,7 +66,7 @@ public class ConexionBDMySql
                                 st = null;
                                 try 
                                 {
-                                    Url = "jdbc:mysql://"+IpBD+"/" + Bd;
+                                    Url = "jdbc:mysql://"+IpBD+"/" + Bd + "?allowMultiQueries=true";
                                     Class.forName("org.gjt.mm.mysql.Driver");
                                     con = DriverManager.getConnection(Url, User, Pass);
 //                                 if (con != null)

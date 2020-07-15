@@ -491,7 +491,7 @@ public class ControladorVarios {
             //MB51_CONSUMOS
             LinkedList<ModeloMb51_Consumos> LstModeloMb51_Consumos = new LinkedList<ModeloMb51_Consumos>();
 
-            SQL = con.prepareStatement("SELECT * FROM mrpdata WHERE Material = '" + modeloMb51.getMaterial() + "'");
+            //SQL = con.prepareStatement("SELECT * FROM mrpdata WHERE Material = '" + modeloMb51.getMaterial() + "'");
             res = SQL.executeQuery();
             while (res.next()) {
 
@@ -525,7 +525,7 @@ public class ControladorVarios {
             // MPRDATA
             LinkedList<ModeloMrpData> LstModeloMrpData = new LinkedList<ModeloMrpData>();
 
-            SQL = con.prepareStatement("SELECT * FROM mrpdata WHERE Material = '" + modeloMb51.getMaterial() + "'");
+            //SQL = con.prepareStatement("SELECT * FROM mrpdata WHERE Material = '" + modeloMb51.getMaterial() + "'");
             res = SQL.executeQuery();
             while (res.next()) {
 
@@ -622,7 +622,7 @@ public class ControladorVarios {
                 modeloMrpData.setOverhead_Group(res.getString("Overhead_Group"));
                 modeloMrpData.setTDS(res.getString("TDS"));
                 modeloMrpData.setPeriod_Indicator(res.getString("Period_Indicator"));
-                ModeloMrpData.add(modeloMrpData);
+//                ModeloMrpData.add(modeloMrpData);
 
             }
 
@@ -630,7 +630,7 @@ public class ControladorVarios {
 
             LinkedList<ModeloPovr> LstModeloPovr = new LinkedList<ModeloPovr>();
 
-            SQL = con.prepareStatement("SELECT * FROM mrpdata WHERE Material = '" + modeloMb51.getMaterial() + "'");
+//            SQL = con.prepareStatement("SELECT * FROM mrpdata WHERE Material = '" + modeloMb51.getMaterial() + "'");
             res = SQL.executeQuery();
             while (res.next()) {
                 ModeloPovr modeloPovr = new ModeloPovr();
@@ -672,7 +672,7 @@ public class ControladorVarios {
 
             LinkedList<ModeloMb51> LstModeloMb51 = new LinkedList<ModeloMb51>();
 
-            SQL = con.prepareStatement("SELECT * FROM mrpdata WHERE Material = '" + modeloMb51.getMaterial() + "'");
+//            SQL = con.prepareStatement("SELECT * FROM mrpdata WHERE Material = '" + modeloMb51.getMaterial() + "'");
             res = SQL.executeQuery();
             while (res.next()) {
                 ModeloMb51 modeloMb51 = new ModeloMb51();
@@ -741,7 +741,7 @@ public class ControladorVarios {
             System.out.println("Error en la consulta SQL Select " + e);
 
         }
-
+        return null;
     }
 
 }

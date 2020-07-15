@@ -19,8 +19,10 @@ import java.util.LinkedList;
  */
 public class ControladorInventarioInicial {
 
+    LinkedList<ModeloInventarioInicial> Lista_ModeloInventarioInicial = new LinkedList<ModeloInventarioInicial>();
     public LinkedList<ModeloInventarioInicial> SelectListSql(String Sql, Connection con) {
-        LinkedList<ModeloInventarioInicial> Lista_ModeloInventarioInicial = new LinkedList<ModeloInventarioInicial>();
+        //LinkedList<ModeloInventarioInicial> Lista_ModeloInventarioInicial = new LinkedList<ModeloInventarioInicial>();
+        Lista_ModeloInventarioInicial.clear();
         //ConexionBDMySql conexion = new ConexionBDMySql();
         //Connection con;
         //con = conexion.abrirConexion();

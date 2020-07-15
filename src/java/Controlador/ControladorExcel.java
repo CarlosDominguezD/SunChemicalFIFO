@@ -47,8 +47,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  *
  * @author Carlos A Dominguez D
  */
-public class ControladorExcel
-{
+public class ControladorExcel {
 
     public String TEMPLATE_PATH = "./reports/templates/";
     public String TEMPORAL_PATH = "./reports/temporal/";
@@ -62,239 +61,189 @@ public class ControladorExcel
 
     private boolean hideSheet = true;
 
-    public String GenerarExcel (String UrlArchivo, String newQuery) throws Exception
-    {
+    public String GenerarExcel(String UrlArchivo, String newQuery) throws Exception {
         String genFileName = null;
-        try
-        {
-            System.out.println ("Reporte : " + newQuery);
+        try {
+            System.out.println("Reporte : " + newQuery);
 
-            System.out.println ("Reporte : " + newQuery);
+            System.out.println("Reporte : " + newQuery);
             List<LinkedHashMap<String, Object>> records;
-            ConexionBDMySql conexion = new ConexionBDMySql ();
+            ConexionBDMySql conexion = new ConexionBDMySql();
             Connection con;
-            con = conexion.abrirConexion ();
-            ResultSet rs = con.createStatement ().executeQuery (newQuery);
-            records = resultSet2ContextList (rs);
-            rs.close ();
-            con.close ();
+            con = conexion.abrirConexion();
+            ResultSet rs = con.createStatement().executeQuery(newQuery);
+            records = resultSet2ContextList(rs);
+            rs.close();
+            con.close();
 
-            genFileName = generateReport (UrlArchivo, UrlArchivo, records);
-            System.out.println (genFileName);
+            genFileName = generateReport(UrlArchivo, UrlArchivo, records);
+            System.out.println(genFileName);
             //System.out.println(this.getServletContext().getRealPath(genFileName));
             //downloadFile(response, this.getServletContext().getRealPath(genFileName));
             //downloadFile(response, genFileName);
-        } catch (SQLException e)
-        {
-            System.out.println (e);
+        } catch (SQLException e) {
+            System.out.println(e);
         }
         return genFileName;
     }
 
-    protected void downloadFile (HttpServletResponse response, String filePath)
-            throws ServletException, IOException
-    {
+    protected void downloadFile(HttpServletResponse response, String filePath)
+            throws ServletException, IOException {
 
-        File fileToDownload = new File (filePath);
-        FileInputStream fileInputStream = new FileInputStream (fileToDownload);
+        File fileToDownload = new File(filePath);
+        FileInputStream fileInputStream = new FileInputStream(fileToDownload);
 
-        ServletOutputStream out = response.getOutputStream ();
-        String mimeType = new MimetypesFileTypeMap ().getContentType (filePath);
+        ServletOutputStream out = response.getOutputStream();
+        String mimeType = new MimetypesFileTypeMap().getContentType(filePath);
 
-        response.setContentType (mimeType);
-        response.setContentLength (fileInputStream.available ());
-        response.setHeader ("Content-Disposition", "attachment; filename=\""
-                + fileToDownload.getName () + "\"");
+        response.setContentType(mimeType);
+        response.setContentLength(fileInputStream.available());
+        response.setHeader("Content-Disposition", "attachment; filename=\""
+                + fileToDownload.getName() + "\"");
 
         int c;
-        while ((c = fileInputStream.read ()) != -1)
-        {
-            out.write (c);
+        while ((c = fileInputStream.read()) != -1) {
+            out.write(c);
         }
-        out.flush ();
-        out.close ();
-        fileInputStream.close ();
+        out.flush();
+        out.close();
+        fileInputStream.close();
     }
 
-    public LinkedList<LinkedHashMap<String, Object>> resultSet2ContextList (ResultSet rs) throws Exception
-    {
-        LinkedList<LinkedHashMap<String, Object>> records = new LinkedList<LinkedHashMap<String, Object>> ();
-        while (rs.next ())
-        {
-            LinkedHashMap<String, Object> record = new LinkedHashMap<String, Object> ();
-            ResultSetMetaData rsmd = rs.getMetaData ();
-            for (int col = 1; col <= rsmd.getColumnCount (); col++)
-            {
-                record.put (rsmd.getColumnLabel (col), rs.getObject (col));
+    public LinkedList<LinkedHashMap<String, Object>> resultSet2ContextList(ResultSet rs) throws Exception {
+        LinkedList<LinkedHashMap<String, Object>> records = new LinkedList<LinkedHashMap<String, Object>>();
+        while (rs.next()) {
+            LinkedHashMap<String, Object> record = new LinkedHashMap<String, Object>();
+            ResultSetMetaData rsmd = rs.getMetaData();
+            for (int col = 1; col <= rsmd.getColumnCount(); col++) {
+                record.put(rsmd.getColumnLabel(col), rs.getObject(col));
             }
-            records.add (record);
+            records.add(record);
         }
         return records;
     }
 
-    private String generateReport (String plantilla, String reportName, List<LinkedHashMap<String, Object>> records) throws Exception
-    {
+    private String generateReport(String plantilla, String reportName, List<LinkedHashMap<String, Object>> records) throws Exception {
         String generatedFileName = "";
         String generatedFullFileName = "";
 
-        long started = new Date ().getTime ();
+        long started = new Date().getTime();
         File datosXLSFile;
 
-        try
-        {
+        try {
             Workbook wb;
 
-            byte[] dataFile = getFileData (plantilla);
-            ByteArrayInputStream file = new ByteArrayInputStream (dataFile);
-            File tempFile = File.createTempFile ("reportes", null);
-            FileOutputStream fileStreamB = new FileOutputStream (tempFile);
+            byte[] dataFile = getFileData(plantilla);
+            ByteArrayInputStream file = new ByteArrayInputStream(dataFile);
+            File tempFile = File.createTempFile("reportes", null);
+            FileOutputStream fileStreamB = new FileOutputStream(tempFile);
 
-            int line = file.read ();
+            int line = file.read();
 
-            while (line != -1)
-            {
-                fileStreamB.write (line);
-                line = file.read ();
+            while (line != -1) {
+                fileStreamB.write(line);
+                line = file.read();
             }
-            fileStreamB.close ();
-            file.close ();
+            fileStreamB.close();
+            file.close();
 
-            SimpleDateFormat format = new SimpleDateFormat ("yyyy-MM-dd");
-            String dateWithFormat = format.format (started);
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            String dateWithFormat = format.format(started);
 
-            String path = getRealPath (GENERATED_PATH) + "/";
-            if (path.startsWith ("null"))
-            {
+            String path = getRealPath(GENERATED_PATH) + "/";
+            if (path.startsWith("null")) {
                 path = "";
             }
 
             generatedFullFileName = path + reportName + "_" + dateWithFormat + EXCEL_SUFFIX;
             generatedFileName = GENERATED_PATH + reportName + "_" + dateWithFormat + EXCEL_SUFFIX;
 
-            datosXLSFile = new File (generatedFullFileName);
+            datosXLSFile = new File(generatedFullFileName);
 
-            if (datosXLSFile.exists ())
-            {
-                datosXLSFile = new File (generatedFullFileName);
+            if (datosXLSFile.exists()) {
+                datosXLSFile = new File(generatedFullFileName);
             }
 
-            try
-            {
-                if (EXCEL_SUFFIX.endsWith ("x"))
-                {
-                    wb = new XSSFWorkbook (new FileInputStream (tempFile));
+            try {
+                if (EXCEL_SUFFIX.endsWith("x")) {
+                    wb = new XSSFWorkbook(new FileInputStream(tempFile));
+                } else {
+                    POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream(tempFile));
+                    wb = new HSSFWorkbook(fs);
                 }
-                else
-                {
-                    POIFSFileSystem fs = new POIFSFileSystem (new FileInputStream (tempFile));
-                    wb = new HSSFWorkbook (fs);
-                }
-            } catch (IOException e)
-            {
-                if (EXCEL_SUFFIX.endsWith ("x"))
-                {
-                    wb = new XSSFWorkbook ();
-                }
-                else
-                {
-                    wb = new HSSFWorkbook ();
+            } catch (IOException e) {
+                if (EXCEL_SUFFIX.endsWith("x")) {
+                    wb = new XSSFWorkbook();
+                } else {
+                    wb = new HSSFWorkbook();
                 }
             }
             //Se crea la hoja de datos "hoja1"
-            createSheet (DATA_SHEET, records, wb);
-            FileOutputStream fileOut = new FileOutputStream (datosXLSFile);
-            wb.write (fileOut);
-            fileOut.close ();
-        } catch (Exception e)
-        {
-            System.err.println ("Error al Tratar de Generar el Reporte. Causa: " + e.getMessage ());
+            createSheet(DATA_SHEET, records, wb);
+            FileOutputStream fileOut = new FileOutputStream(datosXLSFile);
+            wb.write(fileOut);
+            fileOut.close();
+        } catch (Exception e) {
+            System.err.println("Error al Tratar de Generar el Reporte. Causa: " + e.getMessage());
             throw e;
         }
-        System.gc ();
+        System.gc();
         return generatedFileName;
     }
 
     @SuppressWarnings("deprecation")
-    private void createSheet (String sheetName, List<LinkedHashMap<String, Object>> records, Workbook wb) throws Exception
-    {
-        try
-        {
-            if (records.size () == 0)
-            {
+    private void createSheet(String sheetName, List<LinkedHashMap<String, Object>> records, Workbook wb) throws Exception {
+        try {
+            if (records.size() == 0) {
                 return;
             }
 
             //Se crea la hoja con el nombre de hoja almacenado en la BD
-            Sheet sheet = wb.getSheet (sheetName);
-            if (sheet == null)
-            {
-                sheet = wb.createSheet (sheetName);
-            }
-            else
-            {
-                wb.removeSheetAt (wb.getSheetIndex (sheetName));
-                sheet = wb.createSheet (sheetName);
+            Sheet sheet = wb.getSheet(sheetName);
+            if (sheet == null) {
+                sheet = wb.createSheet(sheetName);
+            } else {
+                wb.removeSheetAt(wb.getSheetIndex(sheetName));
+                sheet = wb.createSheet(sheetName);
             }
 
             Cell celltemp;
-            Set<String> columnNames = (Set<String>) records.get (0).keySet ();
+            Set<String> columnNames = (Set<String>) records.get(0).keySet();
             int colNum = 0;
-            Row row = sheet.createRow (colNum);
-            for (String columnName : columnNames)
-            {
-                celltemp = row.createCell ((short) (colNum++));
-                celltemp.setCellValue (columnName.toUpperCase ());
+            Row row = sheet.createRow(colNum);
+            for (String columnName : columnNames) {
+                celltemp = row.createCell((short) (colNum++));
+                celltemp.setCellValue(columnName.toUpperCase());
             }
             int rowCount = 1;
-            for (HashMap<String, Object> record : records)
-            {
-                row = sheet.createRow (rowCount);
+            for (HashMap<String, Object> record : records) {
+                row = sheet.createRow(rowCount);
                 int cellNum = 0;
-                for (String columnName : columnNames)
-                {
-                    celltemp = row.createCell ((short) (cellNum++));
-                    Object var = record.get (columnName);
-                    if (var instanceof BigDecimal)
-                    {
-                        celltemp.setCellValue (((BigDecimal) var).doubleValue ());
-                    }
-                    else
-                    {
-                        if (var instanceof Calendar)
-                        {
-                            celltemp.setCellValue ((Calendar) var);
-                        }
-                        else
-                        {
-                            if (var instanceof Date)
-                            {
-                                celltemp.setCellValue ((Date) var);
-                            }
-                            else
-                            {
-                                if (var instanceof Long)
-                                {
-                                    celltemp.setCellValue ((Long) var);
-                                }
-                                else
-                                {
-                                    if (var instanceof Integer)
-                                    {
-                                        celltemp.setCellValue ((Integer) var);
-                                    }
-                                    else
-                                    {
-                                        if (var instanceof Double)
-                                        {
-                                            celltemp.setCellValue ((Double) var);
-                                        }
-                                        else
-                                        {
+                for (String columnName : columnNames) {
+                    celltemp = row.createCell((short) (cellNum++));
+                    Object var = record.get(columnName);
+                    if (var instanceof BigDecimal) {
+                        celltemp.setCellValue(((BigDecimal) var).doubleValue());
+                    } else {
+                        if (var instanceof Calendar) {
+                            celltemp.setCellValue((Calendar) var);
+                        } else {
+                            if (var instanceof Date) {
+                                celltemp.setCellValue((Date) var);
+                            } else {
+                                if (var instanceof Long) {
+                                    celltemp.setCellValue((Long) var);
+                                } else {
+                                    if (var instanceof Integer) {
+                                        celltemp.setCellValue((Integer) var);
+                                    } else {
+                                        if (var instanceof Double) {
+                                            celltemp.setCellValue((Double) var);
+                                        } else {
                                             //
-                                            if (var != null)
-                                            {
+                                            if (var != null) {
                                                 //System.out.println(var);
-                                                celltemp.setCellValue ((String) var.toString ());
+                                                celltemp.setCellValue((String) var.toString());
                                             }
                                         }
                                     }
@@ -306,43 +255,36 @@ public class ControladorExcel
                 rowCount++;
             }
 
-            if (hideSheet)
-            {
-                wb.setSheetHidden (wb.getSheetIndex (sheetName), true);
+            if (hideSheet) {
+                wb.setSheetHidden(wb.getSheetIndex(sheetName), true);
             }
-        } catch (Exception e)
-        {
-            System.err.println ("Error al Tratar de Generar el Reporte. Causa: " + e.getMessage ());
+        } catch (Exception e) {
+            System.err.println("Error al Tratar de Generar el Reporte. Causa: " + e.getMessage());
             throw e;
         }
     }
 
-    public static byte[] getFileData (String fileName) throws Exception
-    {
-        File file = new File (fileName);
-        byte[] data = new byte[(int) file.length ()];
-        FileInputStream fis = new FileInputStream (file);
-        fis.read (data);
-        fis.close ();
+    public static byte[] getFileData(String fileName) throws Exception {
+        File file = new File(fileName);
+        byte[] data = new byte[(int) file.length()];
+        FileInputStream fis = new FileInputStream(file);
+        fis.read(data);
+        fis.close();
         return data;
     }
 
     @SuppressWarnings("deprecation")
-    public static String getRealPath (String virtualPath) throws Exception
-    {
+    public static String getRealPath(String virtualPath) throws Exception {
         HttpServletRequest req = null;
-        if (req == null)
-        {
+        if (req == null) {
             return "";
         }
-        return req.getRealPath (virtualPath);
+        return req.getRealPath(virtualPath);
     }
 
-    public void Select (String Archivo, HttpServletRequest request, HttpServletResponse response)
-    {
+    public void Select(String Archivo, HttpServletRequest request, HttpServletResponse response) {
         String SQLReporte;
-        switch (Archivo)
-        {
+        switch (Archivo) {
             case "GenerarArchivoCompras":
                 SQLReporte = "SELECT "
                         + "Id,"
@@ -402,28 +344,25 @@ public class ControladorExcel
                         + "Variacion_FIFO_vs_Estandar,"
                         + "NovedadIco,"
                         + "IdArchivo"
-                        + " FROM mb51 WHERE IdArchivo = " + request.getParameter ("IdPlano") + " group by  Material, Batch order by Batch, Material";
-                try
-                {
+                        + " FROM mb51 WHERE IdArchivo = " + request.getParameter("IdPlano") + " group by  Material, Batch order by Batch, Material";
+                try {
                     //String UrlArchivo = "C:\\Users\\Carlos A Dominguez D\\GlasFish\\glassfish\\domains\\GlassFish\\config\\SunChemical\\Informe.xls";//request.getParameter("PlantillaUrl");
-                    String UrlArchivo = "C:\\Zred\\SunChemical\\MacroMB51.xls";//request.getParameter("PlantillaUrl");                
+                    String UrlArchivo = "E:\\Fifo\\SunChemical\\MacroMB51.xls";//request.getParameter("PlantillaUrl");                
                     //String UrlArchivo = "D:\\Zred\\SunChemical\\MacroMB51.xls";//request.getParameter("PlantillaUrl");                
                     String newQuery = SQLReporte;
                     //ControladorExcel controladorExcel = new ControladorExcel();
-                    String archivo = GenerarExcel (UrlArchivo, newQuery);
-                    downloadFile (response, archivo);
+                    String archivo = GenerarExcel(UrlArchivo, newQuery);
+                    downloadFile(response, archivo);
                     //Auditoria
-                    ModeloAuditoria modeloAuditoria = new ModeloAuditoria ();
-                    modeloAuditoria.setModeloUsuario ((ModeloUsuario) request.getSession ().getAttribute ("user"));
-                    modeloAuditoria.setMensaje ("El Usuario " + modeloAuditoria.getModeloUsuario ().getUsuario () + " a descargado  el plano MB51 del sistema.");
-                    ControladorAuditoria controladorAuditoria = new ControladorAuditoria ();
-                    controladorAuditoria.Insert (modeloAuditoria);
-                } catch (SQLException ex)
-                {
-                    Logger.getLogger (ServletSunchemical.class.getName ()).log (Level.SEVERE, null, ex);
-                } catch (Exception ex)
-                {
-                    Logger.getLogger (ServletSunchemical.class.getName ()).log (Level.SEVERE, null, ex);
+                    ModeloAuditoria modeloAuditoria = new ModeloAuditoria();
+                    modeloAuditoria.setModeloUsuario((ModeloUsuario) request.getSession().getAttribute("user"));
+                    modeloAuditoria.setMensaje("El Usuario " + modeloAuditoria.getModeloUsuario().getUsuario() + " a descargado  el plano MB51 del sistema.");
+                    ControladorAuditoria controladorAuditoria = new ControladorAuditoria();
+                    controladorAuditoria.Insert(modeloAuditoria);
+                } catch (SQLException ex) {
+                    Logger.getLogger(ServletSunchemical.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
+                    Logger.getLogger(ServletSunchemical.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 break;
             case "GenerarArchivoProduccion":
@@ -471,76 +410,69 @@ public class ControladorExcel
                         + "`Nuevo_Valor_Orden`,"
                         + "`Month`,"
                         + "`IdArchivo` "
-                        + "FROM `kob1` WHERE IdArchivo = " + request.getParameter ("IdPlano");
-                try
-                {
+                        + "FROM `kob1` WHERE IdArchivo = " + request.getParameter("IdPlano");
+                try {
                     //String UrlArchivo = "C:\\Users\\Carlos A Dominguez D\\GlasFish\\glassfish\\domains\\GlassFish\\config\\SunChemical\\Informe.xls";//request.getParameter("PlantillaUrl");
                     String UrlArchivo = "C:\\Zred\\SunChemical\\MacroKOB1.xls";//request.getParameter("PlantillaUrl");                
                     //String UrlArchivo = "D:\\Zred\\SunChemical\\MacroMB51.xls";//request.getParameter("PlantillaUrl");                
                     String newQuery = SQLReporte;
                     //ControladorExcel controladorExcel = new ControladorExcel();
-                    String archivo = GenerarExcel (UrlArchivo, newQuery);
-                    downloadFile (response, archivo);
+                    String archivo = GenerarExcel(UrlArchivo, newQuery);
+                    downloadFile(response, archivo);
                     //Auditoria
-                    ModeloAuditoria modeloAuditoria = new ModeloAuditoria ();
-                    modeloAuditoria.setModeloUsuario ((ModeloUsuario) request.getSession ().getAttribute ("user"));
-                    modeloAuditoria.setMensaje ("El Usuario " + modeloAuditoria.getModeloUsuario ().getUsuario () + " a descargado  el plano MB51 del sistema.");
-                    ControladorAuditoria controladorAuditoria = new ControladorAuditoria ();
-                    controladorAuditoria.Insert (modeloAuditoria);
-                } catch (SQLException ex)
-                {
-                    Logger.getLogger (ServletSunchemical.class.getName ()).log (Level.SEVERE, null, ex);
-                } catch (Exception ex)
-                {
-                    Logger.getLogger (ServletSunchemical.class.getName ()).log (Level.SEVERE, null, ex);
+                    ModeloAuditoria modeloAuditoria = new ModeloAuditoria();
+                    modeloAuditoria.setModeloUsuario((ModeloUsuario) request.getSession().getAttribute("user"));
+                    modeloAuditoria.setMensaje("El Usuario " + modeloAuditoria.getModeloUsuario().getUsuario() + " a descargado  el plano MB51 del sistema.");
+                    ControladorAuditoria controladorAuditoria = new ControladorAuditoria();
+                    controladorAuditoria.Insert(modeloAuditoria);
+                } catch (SQLException ex) {
+                    Logger.getLogger(ServletSunchemical.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
+                    Logger.getLogger(ServletSunchemical.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 break;
             case "GenerarArchivoInventario":
-                SQLReporte = "SELECT "
-                        + "`id`,"
-                        + "`Material`,"
-                        + "`Descripcion`,"
-                        + "`Plant`,"
-                        + "`Batch`,"
-                        + "`Month`,"
-                        + "`Profit_center`,"
-                        + "`Material_Type`,"
-                        + "`Status`,"
-                        + "`Val_stock`,"
-                        + "`Val_stock_Med`,"
-                        + "`ValStckVal`,"
-                        + "`ValStck_Val_Mon`,"
-                        + "`Cost_Unit_Estandar`,"
-                        + "`InventarioInicial_FIFO`,"
-                        + "`Cost_Unit_Purchase`,"
-                        + "`Cost_Unit_KOB1_Piso`,"
-                        + "`Cost_Unit_KOB1_Final`,"
-                        + "`FIFO_Cost_Unit`,"
-                        + "`Inventario_Valorado_a_FIFO`,"
-                        + "`Variacion_FIFO_vs_Estandar`,"
-                        + "`IdArchivo` "
-                        + "FROM `mcbr` WHERE IdArchivo = " + request.getParameter ("IdPlano");
-                try
-                {
+                SQLReporte = "SELECT"
+                        + " id,"
+                        + " Material,"
+                        + " Descripcion,"
+                        + " Plant,"
+                        + " Batch,"
+                        + " Month,"
+                        + " Profit_center,"
+                        + " Material_Type,"
+                        + " Status,"
+                        + " REPLACE(Val_stock, '.', ',') as 'Val Stock',"
+                        + " Val_stock_Med,"
+                        + " REPLACE(ValStckVal, '.', ',') as 'Val Stck Val',"
+                        + " ValStck_Val_Mon,"
+                        + " REPLACE(Cost_Unit_Estandar, '.', ',') as 'Cost Unit Estandar',"
+                        + " REPLACE(InventarioInicial_FIFO, '.', ',') as 'Inventario Inicial FIFO',"
+                        + " REPLACE(Cost_Unit_Purchase, '.', ',') as 'Cost Unit Purchase',"
+                        + " REPLACE(Cost_Unit_KOB1_Final, '.', ',') as 'Cost Unit KOB1',"
+                        + " REPLACE(FIFO_Cost_Unit, '.', ',') as 'FIFO Cost Unit',"
+                        + " REPLACE(Inventario_Valorado_a_FIFO, '.', ',') as 'Inventario Valorado a FIFO',"
+                        + " REPLACE(Variacion_FIFO_vs_Estandar, '.', ',') as 'Variacion FIFO vs Estandar',"
+                        + " IdArchivo"
+                        + " FROM mcbr WHERE IdArchivo = " + request.getParameter("IdPlano");
+                try {
                     //String UrlArchivo = "C:\\Users\\Carlos A Dominguez D\\GlasFish\\glassfish\\domains\\GlassFish\\config\\SunChemical\\Informe.xls";//request.getParameter("PlantillaUrl");
                     String UrlArchivo = "C:\\Zred\\SunChemical\\MacroMCBR.xls";//request.getParameter("PlantillaUrl");                
                     //String UrlArchivo = "D:\\Zred\\SunChemical\\MacroMB51.xls";//request.getParameter("PlantillaUrl");                
                     String newQuery = SQLReporte;
                     //ControladorExcel controladorExcel = new ControladorExcel();
-                    String archivo = GenerarExcel (UrlArchivo, newQuery);
-                    downloadFile (response, archivo);
+                    String archivo = GenerarExcel(UrlArchivo, newQuery);
+                    downloadFile(response, archivo);
                     //Auditoria
-                    ModeloAuditoria modeloAuditoria = new ModeloAuditoria ();
-                    modeloAuditoria.setModeloUsuario ((ModeloUsuario) request.getSession ().getAttribute ("user"));
-                    modeloAuditoria.setMensaje ("El Usuario " + modeloAuditoria.getModeloUsuario ().getUsuario () + " a descargado  el plano MB51 del sistema.");
-                    ControladorAuditoria controladorAuditoria = new ControladorAuditoria ();
-                    controladorAuditoria.Insert (modeloAuditoria);
-                } catch (SQLException ex)
-                {
-                    Logger.getLogger (ServletSunchemical.class.getName ()).log (Level.SEVERE, null, ex);
-                } catch (Exception ex)
-                {
-                    Logger.getLogger (ServletSunchemical.class.getName ()).log (Level.SEVERE, null, ex);
+                    ModeloAuditoria modeloAuditoria = new ModeloAuditoria();
+                    modeloAuditoria.setModeloUsuario((ModeloUsuario) request.getSession().getAttribute("user"));
+                    modeloAuditoria.setMensaje("El Usuario " + modeloAuditoria.getModeloUsuario().getUsuario() + " a descargado  el plano MB51 del sistema.");
+                    ControladorAuditoria controladorAuditoria = new ControladorAuditoria();
+                    controladorAuditoria.Insert(modeloAuditoria);
+                } catch (SQLException ex) {
+                    Logger.getLogger(ServletSunchemical.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
+                    Logger.getLogger(ServletSunchemical.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 break;
 

@@ -5,6 +5,7 @@
  */
 package Controlador;
 
+import Conexiones.Pool;
 import Modelos.ModeloInventario;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,8 +19,10 @@ import java.util.LinkedList;
  */
 public class ControladorInventario {
 
+    LinkedList<ModeloInventario> LstModeloInventario = new LinkedList<ModeloInventario>();
+
     public LinkedList<ModeloInventario> SelectSQL(String Sql, Connection con) throws SQLException {
-        LinkedList<ModeloInventario> LstModeloInventario = new LinkedList<ModeloInventario>();
+        LstModeloInventario.clear();
         PreparedStatement SQL;
         try {
             SQL = con.prepareStatement(Sql);
@@ -48,4 +51,5 @@ public class ControladorInventario {
         return LstModeloInventario;
     }
 
+    
 }

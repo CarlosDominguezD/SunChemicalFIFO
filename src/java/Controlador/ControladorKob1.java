@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.LinkedList;
 
 /**
@@ -90,6 +91,8 @@ public class ControladorKob1 {
 //        ConexionBDMySql conexion = new ConexionBDMySql();
 //        Connection con;
 //        con = conexion.abrirConexion();
+
+        int Contador = 0;
         PreparedStatement SQL = null;
         try {
             SQL = con.prepareStatement("UPDATE KOB1 SET "
@@ -181,6 +184,15 @@ public class ControladorKob1 {
                 if (SQL.executeUpdate() > 0) {
                     resul = true;
                 }
+
+                Contador++;
+                if (Contador == 1000) {
+
+                    System.out.println("Vuelta " + Contador + " - " + new Date());
+
+                    Contador = 0;
+                }
+
             }
             SQL.close();
 //            con.close();
@@ -190,6 +202,99 @@ public class ControladorKob1 {
 //            con.close();
         }
         return resul;
+    }
+
+    public boolean UpdateList_Masivo(LinkedList<ModeloKob1> listModeloKob1, Connection con) throws SQLException {
+        boolean resul = false;
+
+        StringBuilder Cadena = new StringBuilder();
+
+        int Contador = 0;
+        PreparedStatement SQL = null;
+        try {
+            for (ModeloKob1 modeloKob1 : listModeloKob1) {
+                Cadena
+                        .append("UPDATE KOB1 ")
+                        .append("SET Functional_Area = ").append(Valor(modeloKob1.getFunctional_Area())).append(", ")
+                        .append("Company_Code = ").append(Valor(modeloKob1.getCompany_Code())).append(", ")
+                        .append("Order_ = ").append(Valor(modeloKob1.getOrder_())).append(", ")
+                        .append("CO_object_name = ").append(Valor(modeloKob1.getCO_object_name())).append(", ")
+                        .append("Cost_Element = ").append(Valor(modeloKob1.getCost_Element())).append(", ")
+                        .append("Cost_element_name = ").append(Valor(modeloKob1.getCost_element_name())).append(", ")
+                        .append("Material = ").append(Valor(modeloKob1.getMaterial())).append(", ")
+                        .append("Material_Description = ").append(Valor(modeloKob1.getMaterial_Description())).append(", ")
+                        .append("Plant = ").append(Valor(modeloKob1.getPlant())).append(", ")
+                        .append("Period = ").append(Valor(modeloKob1.getPeriod())).append(", ")
+                        .append("Fiscal_Year = ").append(Valor(modeloKob1.getFiscal_Year())).append(", ")
+                        .append("Dr_Cr_indicator = ").append(Valor(modeloKob1.getDr_Cr_indicator())).append(", ")
+                        .append("Total_Quantity = ").append(Valor(modeloKob1.getTotal_Quantity())).append(", ")
+                        .append("Unit_of_Measure = ").append(Valor(modeloKob1.getUnit_of_Measure())).append(", ")
+                        .append("Value_TranCurr = ").append(Valor(modeloKob1.getValue_TranCurr())).append(", ")
+                        .append("Transaction_Currency = ").append(Valor(modeloKob1.getTransaction_Currency())).append(", ")
+                        .append("Value_in_Obj_Crcy = ").append(Valor(modeloKob1.getValue_in_Obj_Crcy())).append(", ")
+                        .append("Object_Currency = ").append(Valor(modeloKob1.getObject_Currency())).append(", ")
+                        .append("Document_Number = ").append(Valor(modeloKob1.getDocument_Number())).append(", ")
+                        .append("Link_Plant_Material = ").append(Valor(modeloKob1.getLink_Plant_Material())).append(", ")
+                        .append("Link_Material_orden = ").append(Valor(modeloKob1.getLink_Material_orden())).append(", ")
+                        .append("Batch_consumo = ").append(Valor(modeloKob1.getBatch_consumo())).append(", ")
+                        .append("Link_Material_Batch = ").append(Valor(modeloKob1.getLink_Material_Batch())).append(", ")
+                        .append("Material_Type_Components = ").append(Valor(modeloKob1.getMaterial_Type_Components())).append(", ")
+                        .append("Procur_Type = ").append(Valor(modeloKob1.getProcur_Type())).append(", ")
+                        .append("Level_1 = ").append(Valor(modeloKob1.getLevel_1())).append(", ")
+                        .append("Finish_Good_sku = ").append(Valor(modeloKob1.getFinish_Good_sku())).append(", ")
+                        .append("Mat_Type_Unfinish_Goods = ").append(Valor(modeloKob1.getMat_Type_Unfinish_Goods())).append(", ")
+                        .append("Batch_Finish_goods = ").append(Valor(modeloKob1.getBatch_Finish_goods())).append(", ")
+                        .append("Link_Terminado_Batch = ").append(Valor(modeloKob1.getLink_Terminado_Batch())).append(", ")
+                        .append("Cost_Unit_Estandar = ").append(Valor(modeloKob1.getCost_Unit_Estandar())).append(", ")
+                        .append("Cantidad_Terminada = ").append(Valor(modeloKob1.getCantidad_Terminada())).append(", ")
+                        .append("Cost_Unit_Fifo_Old = ").append(Valor(modeloKob1.getCost_Unit_Fifo_Old())).append(", ")
+                        .append("Cost_Unit_Fifo_R_Mat_Pack = ").append(Valor(modeloKob1.getCost_Unit_Fifo_R_Mat_Pack())).append(", ")
+                        .append("X = ").append(Valor(modeloKob1.getX())).append(", ")
+                        .append("Total_Raw_Material = ").append(Valor(modeloKob1.getTotal_Raw_Material())).append(", ")
+                        .append("Manufact_Materials = ").append(Valor(modeloKob1.getManufact_Materials())).append(", ")
+                        .append("Packaging_Materials = ").append(Valor(modeloKob1.getPackaging_Materials())).append(", ")
+                        .append("Conversion_Cost = ").append(Valor(modeloKob1.getConversion_Cost())).append(", ")
+                        .append("Nuevo_Valor_Orden = ").append(Valor(modeloKob1.getNuevo_Valor_Orden())).append(", ")
+                        .append("Month = ").append(Valor(modeloKob1.getMonth())).append(" ")
+                        .append(" WHERE Id = ").append(modeloKob1.getId()).append("; ");
+
+                Contador++;
+                if (Contador == 100) {
+
+                    System.out.println("Vuelta " + Contador + " - " + new Date());
+
+                    Contador = 0;
+
+                    SQL = con.prepareStatement(Cadena + "");
+
+                    if (SQL.execute()) {
+                        resul = true;
+                        Cadena.delete(0, Cadena.length());
+                    }
+
+                }
+
+            }
+            SQL.close();
+        } catch (SQLException e) {
+            System.out.println("Error en la consulta SQL Update " + e);
+            SQL.close();
+        }
+
+        return resul;
+    }
+
+    public StringBuilder Valor(String Valor) {
+        StringBuilder Cadena = new StringBuilder();
+
+        if (Valor == null) {
+            Cadena.append(Valor);
+
+        } else {
+            Cadena.append("'").append(Valor).append("'");
+        }
+
+        return Cadena;
     }
 
 }

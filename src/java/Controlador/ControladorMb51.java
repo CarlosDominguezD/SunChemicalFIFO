@@ -733,8 +733,10 @@ public class ControladorMb51 {
         return resul;
     }
     
+    LinkedList<ModeloMb51> modeloMb51s = new LinkedList<ModeloMb51>();
      public LinkedList<ModeloMb51> SelectSql(String Sql, Connection con) {
-        LinkedList<ModeloMb51> modeloMb51s = new LinkedList<ModeloMb51>();
+    //    LinkedList<ModeloMb51> modeloMb51s = new LinkedList<ModeloMb51>();
+        modeloMb51s.clear();
         //ConexionBDMySql conexion = new ConexionBDMySql();
         //Connection con;
         //con = conexion.abrirConexion();

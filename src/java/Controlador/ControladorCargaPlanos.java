@@ -62,6 +62,40 @@ public class ControladorCargaPlanos {
                 String nombre = listModeloArchivose.getNombre();
                 StringTokenizer st = new StringTokenizer(nombre, ".");
                 nombre = st.nextToken();
+                if (listModeloArchivose.getNombre().contains("EINE")) {
+                    nombre = "EINE";
+                }
+                if (nombre.contains("MRPDATA")) {
+                    nombre = "MRPDATA";
+                }
+                if (nombre.contains("Proveedores")) {
+                    nombre = "PROVEEDORES";
+                }
+                if (listModeloArchivose.getNombre().contains("ICO")) {
+                    nombre = "ICO";
+                }
+                if (nombre.contains("FBL3N")) {
+                    nombre = "FBL3N";
+                }
+                if (nombre.contains("MB51_Compras")) {
+                    nombre = "MB51";
+                }
+                if (nombre.contains("Z39")) {
+                    nombre = "Z39";
+                }
+                if (nombre.contains("ME80FN")) {
+                    nombre = "ME80FN";
+                }
+                if (nombre.contains("MB51_Consumos")) {
+                    nombre = "MB51_CONSUMOS";
+                }
+                if (nombre.contains("POVR")) {
+                    nombre = "POVR";
+                }
+                if (nombre.contains("INVENTARIO")) {
+                    nombre = "INVENTARIO";
+                }
+
                 switch (nombre) {
                     case "MB51":
                         resultado = CargarCSV_MB51_INFILE(RutaDispo, request);
@@ -96,8 +130,20 @@ public class ControladorCargaPlanos {
                     case "EINE":
                         resultado = CargarCSV_EINE_INFILE(RutaDispo, request);
                         break;
+                    case "ICO":
+                        resultado = CargarCSV_ICO_INFILE(RutaDispo, request);
+                        break;
                     case "Z39":
                         resultado = CargarCSV_Z39_INFILE(RutaDispo, request);
+                        break;
+                    case "MB51_CONSUMOS":
+                        resultado = CargarCSV_MB51_CONSUMOS_INFILE(RutaDispo, request);
+                        break;
+                    case "POVR":
+                        resultado = CargarCSV_POVR_INFILE(RutaDispo, request);
+                        break;
+                    case "INVENTARIO":
+                        resultado = CargarCSV_INVENTARIO_INFILE(RutaDispo, request);
                         break;
                 }
             } catch (IOException | SQLException ex) {
@@ -139,7 +185,43 @@ public class ControladorCargaPlanos {
             }
             String d = request.getParameter("IdNombrePlano");
             System.out.println(d);
-            switch (request.getParameter("NombrePlano")) {
+            String nombre = request.getParameter("NombrePlano");
+
+            if (nombre.contains("EINE")) {
+                nombre = "EINE";
+            }
+            if (nombre.contains("MRPDATA")) {
+                nombre = "MRPDATA";
+            }
+            if (nombre.contains("Proveedores")) {
+                nombre = "PROVEEDORES";
+            }
+            if (nombre.contains("ICO")) {
+                nombre = "ICO";
+            }
+            if (nombre.contains("FBL3N")) {
+                nombre = "FBL3N";
+            }
+            if (nombre.contains("MB51_Compras")) {
+                nombre = "MB51";
+            }
+            if (nombre.contains("Z39")) {
+                nombre = "Z39";
+            }
+            if (nombre.contains("ME80FN")) {
+                nombre = "ME80FN";
+            }
+            if (nombre.contains("MB51_Consumos")) {
+                nombre = "MB51_CONSUMOS";
+            }
+            if (nombre.contains("POVR")) {
+                nombre = "POVR";
+            }
+            if (nombre.contains("INVENTARIO")) {
+                nombre = "INVENTARIO";
+            }
+
+            switch (nombre) {
                 case "MB51":
                     resultado = CargarCSV_MB51_INFILE(RutaDispo, request);
                     if ("true".equals(resultado)) {
@@ -171,6 +253,9 @@ public class ControladorCargaPlanos {
                     resultado = CargarCSV_PROVEEDORES_INFILE(RutaDispo, request);
                     break;
                 case "EINE":
+                    resultado = CargarCSV_EINE_INFILE(RutaDispo, request);
+                    break;
+                case "ICO":
                     resultado = CargarCSV_EINE_INFILE(RutaDispo, request);
                     break;
                 case "Z39":
@@ -210,7 +295,6 @@ public class ControladorCargaPlanos {
 //            //Realizado = "true";
 //
 //        }
-
         if (controladorMrpdata.Insert(SqlInsertMasivo)) {
             //Auditoria
             ModeloAuditoria modeloAuditoria = new ModeloAuditoria();
@@ -446,6 +530,44 @@ public class ControladorCargaPlanos {
         return Realizado;
     }
 
+    public String CargarCSV_ICO_INFILE(String Ruta, HttpServletRequest request) throws IOException {
+        /*
+         * Variables de Año y Mes
+         */
+        String ano = request.getParameter("Mes");
+        String mes = request.getParameter("Ano");
+        String Realizado = "false";
+        Ruta = Ruta.replace("\\", "/");
+        String SqlInsertMasivo
+                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE EINE"
+                + " FIELDS TERMINATED BY ','"
+                + " ENCLOSED BY '\"'"
+                + " LINES TERMINATED BY '\\r\\n'"
+                + " IGNORE 1 LINES"
+                + " (Link_Material_vendor,Porcentaje_Additional)";
+
+        System.out.println("Consulta: " + SqlInsertMasivo);
+
+        ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
+
+//        String Sqlborrar = "delete from EINE";
+//
+//        if (controladorMrpdata.Insert(Sqlborrar)) {
+//            //Realizado = "true";
+//        }
+        if (controladorMrpdata.Insert(SqlInsertMasivo)) {
+            Realizado = "true";
+            //Auditoria
+            ModeloAuditoria modeloAuditoria = new ModeloAuditoria();
+            modeloAuditoria.setModeloUsuario((ModeloUsuario) request.getSession().getAttribute("user"));
+            modeloAuditoria.setMensaje("El Usuario " + modeloAuditoria.getModeloUsuario().getUsuario() + " a cargado el plano EINE en el sistema.");
+            ControladorAuditoria controladorAuditoria = new ControladorAuditoria();
+            controladorAuditoria.Insert(modeloAuditoria);
+
+        }
+        return Realizado;
+    }
+
     public String CargarCSV_Z39_INFILE(String Ruta, HttpServletRequest request) throws IOException {
         /*
          * Variables de Año y Mes
@@ -480,6 +602,122 @@ public class ControladorCargaPlanos {
             modeloAuditoria.setMensaje("El Usuario " + modeloAuditoria.getModeloUsuario().getUsuario() + " a cargado el plano Z39 en el sistema.");
             ControladorAuditoria controladorAuditoria = new ControladorAuditoria();
             controladorAuditoria.Insert(modeloAuditoria);
+        }
+        return Realizado;
+    }
+
+    public String CargarCSV_MB51_CONSUMOS_INFILE(String Ruta, HttpServletRequest request) throws IOException {
+        /*
+         * Variables de Año y Mes
+         */
+        String ano = request.getParameter("Mes");
+        String mes = request.getParameter("Ano");
+        String Realizado = "false";
+        Ruta = Ruta.replace("\\", "/");
+        String SqlInsertMasivo
+                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE MB51_CONSUMOS"
+                + " FIELDS TERMINATED BY ','"
+                + " ENCLOSED BY '\"'"
+                + " LINES TERMINATED BY '\\r\\n'"
+                + " IGNORE 1 LINES"
+                + " (Plant,Purchase_order,Material,Material_Description,Batch,Movement_type,Movement_Type_Text,Item,Quantity,Qty_in_unit_of_entry,Unit_of_Entry,Amt_in_loc_cur,Currency,Storage_Location,Posting_Date,Document_Date,Material_Document,User_Name,Vendor,Order_)";
+
+        ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
+
+        System.out.println("Consulta: " + SqlInsertMasivo);
+
+        //ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
+        String Sqlborrar = "delete from MB51_CONSUMOS";
+
+        if (controladorMrpdata.Insert(Sqlborrar)) {
+            //Realizado = "true";
+        }
+
+        if (controladorMrpdata.Insert(SqlInsertMasivo)) {
+            Realizado = "true";
+            //Auditoria
+            ModeloAuditoria modeloAuditoria = new ModeloAuditoria();
+            modeloAuditoria.setModeloUsuario((ModeloUsuario) request.getSession().getAttribute("user"));
+            modeloAuditoria.setMensaje("El Usuario " + modeloAuditoria.getModeloUsuario().getUsuario() + " a cargado el plano EINE en el sistema.");
+            ControladorAuditoria controladorAuditoria = new ControladorAuditoria();
+            controladorAuditoria.Insert(modeloAuditoria);
+
+        }
+        return Realizado;
+    }
+
+    public String CargarCSV_POVR_INFILE(String Ruta, HttpServletRequest request) throws IOException {
+        /*
+         * Variables de Año y Mes
+         */
+        String ano = request.getParameter("Mes");
+        String mes = request.getParameter("Ano");
+        String Realizado = "false";
+        Ruta = Ruta.replace("\\", "/");
+        String SqlInsertMasivo
+                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE POVR"
+                + " FIELDS TERMINATED BY ','"
+                + " ENCLOSED BY '\"'"
+                + " LINES TERMINATED BY '\\r\\n'"
+                + " IGNORE 1 LINES"
+                + " (Plant,Material,Material_Description,Process_Order_Number,Process_Order_Type,Material_Group_Packaging,Profit_Center,UOM,Material_type,Existing_Material_Costing_Lot_Size,MRP_Planned_Quantity,Consumption_Qty_Actual_I_P,Delivered_Qty_Actual_O_P,Yield_Variance_Qty,Yield_Variance_Porcentaje,Actual_Material_Cost,Labor_Cost_Actual,Machine_Cost_Actual,Overhead_Cost_Actual,Total_Cost_Actual_Output,Physical_Inventory_Yield_Loss_cost_Actu,Standard_Price,Calculated_Production_Variance,Conversion_Cost_Per_Unit,Display_Currency,Batch_Number,Product_Hierarchy,Actual_Start_Date,Actual_Finish_Date)";
+
+        System.out.println("Consulta: " + SqlInsertMasivo);
+
+        ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
+        String Sqlborrar = "delete from POVR";
+
+        if (controladorMrpdata.Insert(Sqlborrar)) {
+            //Realizado = "true";
+        }
+
+        if (controladorMrpdata.Insert(SqlInsertMasivo)) {
+            Realizado = "true";
+            //Auditoria
+            ModeloAuditoria modeloAuditoria = new ModeloAuditoria();
+            modeloAuditoria.setModeloUsuario((ModeloUsuario) request.getSession().getAttribute("user"));
+            modeloAuditoria.setMensaje("El Usuario " + modeloAuditoria.getModeloUsuario().getUsuario() + " a cargado el plano EINE en el sistema.");
+            ControladorAuditoria controladorAuditoria = new ControladorAuditoria();
+            controladorAuditoria.Insert(modeloAuditoria);
+
+        }
+        return Realizado;
+    }
+
+    public String CargarCSV_INVENTARIO_INFILE(String Ruta, HttpServletRequest request) throws IOException {
+        /*
+         * Variables de Año y Mes
+         */
+        String ano = request.getParameter("Mes");
+        String mes = request.getParameter("Ano");
+        String Realizado = "false";
+        Ruta = Ruta.replace("\\", "/");
+        String SqlInsertMasivo
+                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE INVENTARIO"
+                + " FIELDS TERMINATED BY ','"
+                + " ENCLOSED BY '\"'"
+                + " LINES TERMINATED BY '\\r\\n'"
+                + " IGNORE 1 LINES"
+                + " (Material,Material_Description,Batch,Link_Material_Batch,FIFO_Cost_UNIT)";
+
+        System.out.println("Consulta: " + SqlInsertMasivo);
+
+        ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
+        String Sqlborrar = "delete from INVENTARIO";
+
+        if (controladorMrpdata.Insert(Sqlborrar)) {
+            //Realizado = "true";
+        }
+
+        if (controladorMrpdata.Insert(SqlInsertMasivo)) {
+            Realizado = "true";
+            //Auditoria
+            ModeloAuditoria modeloAuditoria = new ModeloAuditoria();
+            modeloAuditoria.setModeloUsuario((ModeloUsuario) request.getSession().getAttribute("user"));
+            modeloAuditoria.setMensaje("El Usuario " + modeloAuditoria.getModeloUsuario().getUsuario() + " a cargado el plano INVENTARIO en el sistema.");
+            ControladorAuditoria controladorAuditoria = new ControladorAuditoria();
+            controladorAuditoria.Insert(modeloAuditoria);
+
         }
         return Realizado;
     }

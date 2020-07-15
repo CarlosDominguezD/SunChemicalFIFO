@@ -33,7 +33,7 @@
                             <div>
                                 <input type="hidden" id="IdAccion" name="Accion" >                                    
                             </div>
-                            <h1>Login GT-40</h1>
+                            <h1>Login</h1>
                             <div>
                                 <input type="text" class="form-control" placeholder="Usuario" name="Usuario" id="Idusuario" required="" />
                             </div>

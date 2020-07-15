@@ -14,7 +14,7 @@
             <div class="left_col scroll-view">
                 <br>
                 <div class="navbar nav_title" style="border: 0;">
-                    <!--a href="Dashboard.jsp" class="site_title"><span><img src="Principal/images/sunchemical-logo.png"  width="180" height="50" class="responsive-img"/></span> </a -->
+                    <!--a href="Dashboard.jsp" class="site_title"><span><img src="Principal/images/sunchemical-logo.png"  width="180" height="50" class="responsive-img"/></span> </a-->
                     <a href="Dashboard.jsp" class="site_title"><span><img src="Principal/images/menu_bg.png"  width="180" height="50" class="responsive-img"/></span> </a>
                 </div>
                 <div class="clearfix"></div>

@@ -35,6 +35,10 @@ import javax.servlet.http.Part;
  */
 public class ControladorCargarPlanosInventario {
 
+    ControladorInventarioInicial controladorInventarioInicial = new ControladorInventarioInicial();
+    ControladorMb51 controladorMb51 = new ControladorMb51();
+    ControladorInformeProduccion controladorInformeProduccion = new ControladorInformeProduccion();
+
     public String Upload(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
         String resultado = "false";
         String formato = "";
@@ -64,7 +68,20 @@ public class ControladorCargarPlanosInventario {
             }
             String d = request.getParameter("IdNombrePlano");
             System.out.println(d);
-            switch (request.getParameter("NombrePlano")) {
+
+            String nombre = request.getParameter("NombrePlano");
+
+            if (nombre.contains("InventarioInicial")) {
+                nombre = "InventarioInicial";
+            }
+            if (nombre.contains("MCBR")) {
+                nombre = "MCBR";
+            }
+            if (nombre.contains("Valuacion")) {
+                nombre = "Valuacion";
+            }
+
+            switch (nombre) {
                 case "InventarioInicial":
                     resultado = CargarCSV_InventarioInicial_INFILE(RutaDispo, request);
                     break;
@@ -221,177 +238,163 @@ public class ControladorCargarPlanosInventario {
             con = conexion.abrirConexion();
             Informe_Produccion();
 
+            int Contador = 0;
+
             System.out.println("INICIA RECORRIDO DEL LISTADO CON TODOS LOS REGISTROS DE MCBR: " + new Date());
-            for (ModeloMcbr modeloMcbr : Lista_ModeloMcbr) {                
+            for (ModeloMcbr modeloMcbr : Lista_ModeloMcbr) {
+
                 modeloMcbr = LlenarModeloMcbr(modeloMcbr, con);
                 Lista_ModeloMcbr_Upd.add(modeloMcbr);
+
+                Contador++;
+                if (Contador == 1000) {
+                    System.out.println("Vuelta de Procesados Fase 1: " + Contador + " - " + new Date());
+                    Contador = 1;
+                }
+
             }
             System.out.println("FINALIZA RECORRIDO DEL LISTADO CON TODOS LOS REGISTROS DE MCBR: " + new Date());
             System.out.println("INICIA ACTUALIZACION DEL LISTADO CON TODOS LOS REGISTROS DE MCBR: " + new Date());
-            controladorMcbr.UpdateList(Lista_ModeloMcbr_Upd , con);
+            controladorMcbr.UpdateList(Lista_ModeloMcbr_Upd, con);
             System.out.println("FINALIZA ACTUALIZACION DEL LISTADO CON TODOS LOS REGISTROS DE MCBR: " + new Date());
             con.close();
-            
+
             Realizado = "true";
         }
 
         return Realizado;
     }
-    
-    public boolean Informe_Produccion()
-    {
+
+    public boolean Informe_Produccion() {
         ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
         controladorMrpdata.Insert("Delete from informe_produccion");
 
-            String SqlInformeProduccionPiso = "INSERT INTO "
-                    + "informe_produccion "
-                    + "(Finish_Good_sku, "
-                    + "CO_object_name, "
-                    + "Batch_Finish_goods, "
-                    + "Link_Terminado_Batch, "
-                    + "Cantidad, "
-                    + "Total_Raw_Material, "
-                    + "Manufact, "
-                    + "Packaging, "
-                    + "Conversion, "
-                    + "Nuevo_Valor_Orden) "
-                    + "(select "
-                    + "Finish_Good_sku, "
-                    + "CO_object_name, "
-                    + "Batch_Finish_goods, "
-                    + "Link_Terminado_Batch, "
-                    + "Cantidad_Terminada, "
-                    + "sum(Total_Raw_Material) as Total_Raw_Material_, "
-                    + "sum(Manufact_Materials) as Manufact_Materials_, "
-                    + "sum(Packaging_Materials) as Packaging_Materials_, "
-                    + "sum(Conversion_Cost) as Conversion_Cost_, "
-                    + "sum(Nuevo_Valor_Orden) as Nuevo_Valor_Orden_ "
-                    + "from kob1 group by Finish_Good_sku)";
+        String SqlInformeProduccionPiso = "INSERT INTO "
+                + "informe_produccion "
+                + "(Finish_Good_sku, "
+                + "CO_object_name, "
+                + "Batch_Finish_goods, "
+                + "Link_Terminado_Batch, "
+                + "Cantidad, "
+                + "Total_Raw_Material, "
+                + "Manufact, "
+                + "Packaging, "
+                + "Conversion, "
+                + "Nuevo_Valor_Orden) "
+                + "(select "
+                + "Finish_Good_sku, "
+                + "CO_object_name, "
+                + "Batch_Finish_goods, "
+                + "Link_Terminado_Batch, "
+                + "Cantidad_Terminada, "
+                + "sum(Total_Raw_Material) as Total_Raw_Material_, "
+                + "sum(Manufact_Materials) as Manufact_Materials_, "
+                + "sum(Packaging_Materials) as Packaging_Materials_, "
+                + "sum(Conversion_Cost) as Conversion_Cost_, "
+                + "sum(Nuevo_Valor_Orden) as Nuevo_Valor_Orden_ "
+                + "from kob1 group by Finish_Good_sku)";
 
-            controladorMrpdata.Insert(SqlInformeProduccionPiso);
+        controladorMrpdata.Insert(SqlInformeProduccionPiso);
 
-            String ActualizacionInformePiso = "update "
-                    + "informe_produccion "
-                    + "set Costo_unitario_FIFO = (Nuevo_Valor_Orden / Cantidad)";
+        String ActualizacionInformePiso = "update "
+                + "informe_produccion "
+                + "set Costo_unitario_FIFO = (Nuevo_Valor_Orden / Cantidad)";
 
-            return controladorMrpdata.Insert(ActualizacionInformePiso);
+        return controladorMrpdata.Insert(ActualizacionInformePiso);
     }
 
     public ModeloMcbr LlenarModeloMcbr(ModeloMcbr modeloMcbr, Connection con) throws SQLException {
-        
-        
-        Double Val_Stck = 0.0;
-        if(modeloMcbr.getVal_stock() != null)
-        {
+
+        double Val_Stck = 0.0;
+        if (modeloMcbr.getVal_stock() != null) {
             Val_Stck = Double.valueOf(modeloMcbr.getVal_stock());
         }
-        Double Val_Stck_Val = 0.0;
-        if(modeloMcbr.getValStckVal()!= null)
-        {
+        double Val_Stck_Val = 0.0;
+        if (modeloMcbr.getValStckVal() != null) {
             Val_Stck_Val = Double.valueOf(modeloMcbr.getValStckVal());
         }
-        Double Cost_Unit_Estandar = 0.0;
-        if(Val_Stck != 0.0)
-        {
+        double Cost_Unit_Estandar = 0.0;
+        if (Val_Stck != 0.0) {
             Cost_Unit_Estandar = Val_Stck_Val / Val_Stck;
         }
         //LLENAMOS COLUMNA Cost Unit Estándar
         modeloMcbr.setCost_Unit_Estandar(String.format("%.5f", Cost_Unit_Estandar).replace(",", "."));
-        
-        LinkedList<ModeloInventarioInicial> Lista_ModeloInventarioInicial = new LinkedList<ModeloInventarioInicial>();
-        
-        ControladorInventarioInicial controladorInventarioInicial = new ControladorInventarioInicial();
+
+        LinkedList<ModeloInventarioInicial> Lista_ModeloInventarioInicial;// = new LinkedList<ModeloInventarioInicial>();
+
+        //controladorInventarioInicial = new ControladorInventarioInicial();
         Lista_ModeloInventarioInicial = controladorInventarioInicial.SelectListSql("SELECT * FROM inventarioinicial WHERE Link_Material_Batch = '" + modeloMcbr.getMaterial() + modeloMcbr.getBatch() + "'", con);
-        
-        Double InventarioInicial_FIFO = 0.0;
-        
-        for(ModeloInventarioInicial modeloInventarioInicial : Lista_ModeloInventarioInicial)
-        {
+
+        double InventarioInicial_FIFO = 0.0;
+
+        for (ModeloInventarioInicial modeloInventarioInicial : Lista_ModeloInventarioInicial) {
             InventarioInicial_FIFO = Double.valueOf(modeloInventarioInicial.getFIFO_Cost_UNIT());
         }
         //LLENAMOS COLUMNA InventarioInicial_FIFO
         modeloMcbr.setInventarioInicial_FIFO(String.format("%.5f", InventarioInicial_FIFO).replace(",", "."));
-        
-        
-        ControladorMb51 controladorMb51 = new ControladorMb51();
-        LinkedList<ModeloMb51> Lista_modeloMb51s = new LinkedList<ModeloMb51>();
-        
+
+        //controladorMb51 = new ControladorMb51();
+        LinkedList<ModeloMb51> Lista_modeloMb51s;// = new LinkedList<ModeloMb51>();
+
         String Sql1 = "SELECT * FROM mb51 where Material = '" + modeloMcbr.getMaterial() + "' and Batch = '" + modeloMcbr.getBatch() + "'";
-        
-        Double Cost_Unit_Purchase = 0.0;
-        
-        
-        
-        Lista_modeloMb51s = controladorMb51.SelectSql(Sql1 , con);
+
+        double Cost_Unit_Purchase = 0.0;
+
+        Lista_modeloMb51s = controladorMb51.SelectSql(Sql1, con);
         if (Lista_modeloMb51s.size() > 0) {
             for (ModeloMb51 modeloMb51 : Lista_modeloMb51s) {
                 Cost_Unit_Purchase = Double.valueOf(modeloMb51.getUnitario_final_FIFO());
             }
-        
-        } 
+
+        }
         //LLENAMOS LA Cost_Unit_Purchase
         modeloMcbr.setCost_Unit_Purchase(String.format("%.5f", Cost_Unit_Purchase).replace(",", "."));
-        
-        
-        //Double Cost_Unit_KOB1_Piso = 0.0;
-        
-        
-        
-        //LLENAMOS COLUMNA Cost_Unit_KOB1_Piso
-        //modeloMcbr.setCost_Unit_KOB1_Piso(String.format("%.5f", Cost_Unit_KOB1_Piso).replace(",", "."));        
-        
-        
-        Double Cost_Unit_KOB1_Final = 0.0;
-        
-        modeloMcbr = Produccion(modeloMcbr, con);
-        
+
+        double Cost_Unit_KOB1_Final = 0.0;
+
         //LLENAMOS COLUMNA Cost_Unit_KOB1_Final
-        modeloMcbr.setCost_Unit_KOB1_Final(String.format("%.5f", Cost_Unit_KOB1_Final).replace(",", "."));        
-        
-        
-        Double FIFO_Cost_Unit = InventarioInicial_FIFO + Cost_Unit_Purchase + Cost_Unit_KOB1_Final;
-        
+        modeloMcbr = Produccion(modeloMcbr, con);
+        Cost_Unit_KOB1_Final = Double.valueOf(modeloMcbr.getCost_Unit_KOB1_Final());
+        //modeloMcbr.setCost_Unit_KOB1_Final(String.format("%.5f", Cost_Unit_KOB1_Final).replace(",", "."));        
+
+        double FIFO_Cost_Unit = InventarioInicial_FIFO + Cost_Unit_Purchase + Cost_Unit_KOB1_Final;
+
         //LLENAMOS COLUMNA FIFO Cost Unit
-        modeloMcbr.setFIFO_Cost_Unit(String.format("%.5f", FIFO_Cost_Unit).replace(",", "."));  
-        
-        Double Inventario_Valorado_a_FIFO = FIFO_Cost_Unit * Val_Stck;
-        
+        modeloMcbr.setFIFO_Cost_Unit(String.format("%.5f", FIFO_Cost_Unit).replace(",", "."));
+
+        double Inventario_Valorado_a_FIFO = FIFO_Cost_Unit * Val_Stck;
+
         //LLENAMOS COLUMNA Inventario_Valorado_a_FIFO
-        modeloMcbr.setInventario_Valorado_a_FIFO(String.format("%.5f", Inventario_Valorado_a_FIFO).replace(",", "."));  
-        
-        Double ValStckVal = Double.valueOf(modeloMcbr.getValStckVal());
-                
-        Double Variacion_FIFO_vs_Estandar = Inventario_Valorado_a_FIFO - ValStckVal;
-        
+        modeloMcbr.setInventario_Valorado_a_FIFO(String.format("%.5f", Inventario_Valorado_a_FIFO).replace(",", "."));
+
+        double ValStckVal = Double.valueOf(modeloMcbr.getValStckVal());
+
+        double Variacion_FIFO_vs_Estandar = Inventario_Valorado_a_FIFO - ValStckVal;
+
         //LLENAMOS LA COLUMNA Variacion_FIFO_vs_Estandar
-        modeloMcbr.setVariacion_FIFO_vs_Estandar(String.format("%.5f", Variacion_FIFO_vs_Estandar).replace(",", "."));  
-        
-        
-        
-        
+        modeloMcbr.setVariacion_FIFO_vs_Estandar(String.format("%.5f", Variacion_FIFO_vs_Estandar).replace(",", "."));
+
         return modeloMcbr;
     }
-    
+
     public ModeloMcbr Produccion(ModeloMcbr modeloMcbr, Connection con) throws SQLException {
 
-        ControladorInformeProduccion controladorInformeProduccion = new ControladorInformeProduccion();
         String Sql = "SELECT * FROM informe_produccion where Link_Terminado_Batch = '" + modeloMcbr.getMaterial() + modeloMcbr.getBatch() + "'";
         LinkedList<ModeloInforme_Produccion> LstModeloInforme_Produccion = controladorInformeProduccion.SelectSql(Sql, con);
 
         if (LstModeloInforme_Produccion.size() > 0) {
             for (ModeloInforme_Produccion modeloInforme_Produccion : LstModeloInforme_Produccion) {
-                Double Cantidad = 0.0;
-                Double Total_Raw_Material = 0.0;
-                Double Manufact = 0.0;
-                Double Packaging = 0.0;
-                Double Conversion = 0.0;
-                Double Nuevo_Valor_Orden = 0.0;
-                
-                                
-                if (modeloInforme_Produccion.getCantidad()!= null) {
+                double Cantidad = 0.0;
+                double Total_Raw_Material = 0.0;
+                double Manufact = 0.0;
+                double Packaging = 0.0;
+                double Conversion = 0.0;
+                double Nuevo_Valor_Orden = 0.0;
+
+                if (modeloInforme_Produccion.getCantidad() != null) {
                     Cantidad = Double.valueOf(modeloInforme_Produccion.getCantidad());
                 }
-                
+
                 if (modeloInforme_Produccion.getTotal_Raw_Material() != null) {
                     Total_Raw_Material = Double.valueOf(modeloInforme_Produccion.getTotal_Raw_Material());
                 }
@@ -404,14 +407,12 @@ public class ControladorCargarPlanosInventario {
                 if (modeloInforme_Produccion.getConversion() != null) {
                     Conversion = Double.valueOf(modeloInforme_Produccion.getConversion());
                 }
-                
-                
+
                 Nuevo_Valor_Orden = Total_Raw_Material + Manufact + Packaging + Conversion;
-                Double Costo_unitario_FIFO = Nuevo_Valor_Orden / Cantidad;
-                
+                double Costo_unitario_FIFO = Nuevo_Valor_Orden / Cantidad;
 
                 //if (modeloInforme_Produccion.getCosto_unitario_FIFO() != null) {
-                    modeloMcbr.setCost_Unit_KOB1_Final(String.format("%.5f", Costo_unitario_FIFO).replace(",", "."));
+                modeloMcbr.setCost_Unit_KOB1_Final(String.format("%.5f", Costo_unitario_FIFO).replace(",", "."));
                 //} else {
                 //    modeloKob1.setCost_Unit_Fifo_R_Mat_Pack("0.0");
                 //}

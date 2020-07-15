@@ -5,6 +5,7 @@
  */
 package Controlador;
 
+import Conexiones.Pool;
 import Modelos.ModeloPovr;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,8 +19,11 @@ import java.util.LinkedList;
  */
 public class ControladorPovr {
 
+    LinkedList<ModeloPovr> LstModeloPovr = new LinkedList<ModeloPovr>();
+
     public LinkedList<ModeloPovr> SelectSQL(String Sql, Connection con) throws SQLException {
-        LinkedList<ModeloPovr> LstModeloPovr = new LinkedList<ModeloPovr>();
+        //LinkedList<ModeloPovr> LstModeloPovr = new LinkedList<ModeloPovr>();
+        LstModeloPovr.clear();
         PreparedStatement SQL;
         try {
             SQL = con.prepareStatement(Sql);
@@ -71,4 +75,6 @@ public class ControladorPovr {
 
         return LstModeloPovr;
     }
+
+    
 }

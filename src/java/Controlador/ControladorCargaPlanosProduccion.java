@@ -9,30 +9,19 @@ import Conexiones.ConexionBDMySql;
 import Herramienta.Herramienta;
 import Modelos.ModeloArchivos;
 import Modelos.ModeloAuditoria;
-import Modelos.ModeloEine;
 import Modelos.ModeloEstadoPlanos;
-import Modelos.ModeloFbl3m;
 import Modelos.ModeloInforme_Produccion;
 import Modelos.ModeloInventario;
 import Modelos.ModeloKob1;
 import Modelos.ModeloMb51;
 import Modelos.ModeloMb51_Consumos;
-import Modelos.ModeloMe80fn;
 import Modelos.ModeloMrpData;
 import Modelos.ModeloPovr;
-import Modelos.ModeloProveedor;
 import Modelos.ModeloUsuario;
-import Modelos.ModeloVarios;
-import Modelos.ModeloVendorType;
-import Modelos.ModeloZ39;
 import static Servlet.ServletSunchemical.ObtenerFecha;
 import java.io.File;
-import java.io.FileInputStream;
-import com.opencsv.CSVReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
@@ -40,20 +29,10 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
-
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import sun.util.calendar.CalendarUtils;
 
 /**
  *
@@ -65,6 +44,14 @@ public class ControladorCargaPlanosProduccion {
     Double CONVERSION_MACHINE = 0.0;
     Double CONVERSION_OVHDS = 0.0;
 
+    ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
+    ControladorMb51_Consumos controladorMb51_Consumos = new ControladorMb51_Consumos();
+    ControladorPovr controladorPovr = new ControladorPovr();
+    ControladorInventario controladorInventario = new ControladorInventario();
+    ControladorKob1 controladorKob1 = new ControladorKob1();
+    ControladorMb51 controladorMb51 = new ControladorMb51();
+    ControladorInformeProduccion controladorInformeProduccion = new ControladorInformeProduccion();
+
     public String procesarCarga(LinkedList<ModeloArchivos> listModeloArchivoses, HttpServletRequest request, HttpServletResponse response) {
         String resultado = "false";
         for (ModeloArchivos listModeloArchivose : listModeloArchivoses) {
@@ -73,6 +60,17 @@ public class ControladorCargaPlanosProduccion {
                 String nombre = listModeloArchivose.getNombre();
                 StringTokenizer st = new StringTokenizer(nombre, ".");
                 nombre = st.nextToken();
+
+                if (nombre.contains("MB51_Consumos")) {
+                    nombre = "MB51_CONSUMOS";
+                }
+                if (nombre.contains("POVR")) {
+                    nombre = "POVR";
+                }
+                if (nombre.contains("KOB1")) {
+                    nombre = "KOB1";
+                }
+
                 switch (nombre) {
 
                     case "MB51_CONSUMOS":
@@ -139,7 +137,20 @@ public class ControladorCargaPlanosProduccion {
             }
             String d = request.getParameter("IdNombrePlano");
             System.out.println(d);
-            switch (request.getParameter("NombrePlano")) {
+
+            String nombre = request.getParameter("NombrePlano");
+
+            if (nombre.contains("MB51_Consumos")) {
+                nombre = "MB51_CONSUMOS";
+            }
+            if (nombre.contains("POVR")) {
+                nombre = "POVR";
+            }
+            if (nombre.contains("KOB1")) {
+                nombre = "KOB1";
+            }
+
+            switch (nombre) {
                 case "MB51_CONSUMOS":
                     resultado = CargarCSV_MB51_CONSUMOS_INFILE(RutaDispo, request);
                     break;
@@ -194,8 +205,7 @@ public class ControladorCargaPlanosProduccion {
 
         System.out.println("Consulta: " + SqlInsertMasivo);
 
-        ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
-
+        //ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
         String Sqlborrar = "delete from MB51_CONSUMOS";
 
         if (controladorMrpdata.Insert(Sqlborrar)) {
@@ -241,8 +251,7 @@ public class ControladorCargaPlanosProduccion {
 
         System.out.println("Consulta: " + SqlInsertMasivo);
 
-        ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
-
+        //ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
         String Sqlborrar = "delete from KOB1 WHERE IdArchivo is null";
 
         if (controladorMrpdata.Insert(Sqlborrar)) {
@@ -251,9 +260,9 @@ public class ControladorCargaPlanosProduccion {
         if (controladorMrpdata.Insert(SqlInsertMasivo)) {
 
             //LLENO CONVERSIONES
-            String Sql_CONVERSION_LABOR = "UPDATE KOB1 set Conversion_Cost = Value_TranCurr * " + CONVERSION_LABOR + " where Cost_Element = '80004'";
-            String Sql_CONVERSION_MACHINE = "UPDATE KOB1 set Conversion_Cost = Value_TranCurr * " + CONVERSION_MACHINE + " where Cost_Element = '80005'";
-            String Sql_CONVERSION_OVHDS = "UPDATE KOB1 set Conversion_Cost = Value_TranCurr * " + CONVERSION_OVHDS + " where Cost_Element = '80015'";
+            String Sql_CONVERSION_LABOR = "UPDATE KOB1 set Conversion_Cost = Value_TranCurr * " + CONVERSION_LABOR + " where Cost_Element = '80004' and IdArchivo is null";
+            String Sql_CONVERSION_MACHINE = "UPDATE KOB1 set Conversion_Cost = Value_TranCurr * " + CONVERSION_MACHINE + " where Cost_Element = '80005' and IdArchivo is null";
+            String Sql_CONVERSION_OVHDS = "UPDATE KOB1 set Conversion_Cost = Value_TranCurr * " + CONVERSION_OVHDS + " where Cost_Element = '80015' and IdArchivo is null";
 
             System.out.println("INICIA ACTUALIZACION DE CONVERSIONES: " + new Date());
             controladorMrpdata.Insert(Sql_CONVERSION_LABOR);
@@ -269,7 +278,7 @@ public class ControladorCargaPlanosProduccion {
             ControladorAuditoria controladorAuditoria = new ControladorAuditoria();
             controladorAuditoria.Insert(modeloAuditoria);
 
-            ControladorKob1 controladorKob1 = new ControladorKob1();
+//            ControladorKob1 controladorKob1 = new ControladorKob1();
             System.out.println("INICIA CARGA AL LISTADO CON TODOS LOS REGISTROS DE KOB1: " + new Date());
             LinkedList<ModeloKob1> lstModeloKob1 = new LinkedList<ModeloKob1>();
             lstModeloKob1 = controladorKob1.Select("SELECT * from KOB1 WHERE IdArchivo is null");
@@ -283,8 +292,10 @@ public class ControladorCargaPlanosProduccion {
             Connection con;
             con = conexion.abrirConexion();
 
+            StringBuilder Cadena = new StringBuilder();
+
             for (ModeloKob1 modeloKob1 : lstModeloKob1) {
-                modeloKob1 = LlenarMrpdata(modeloKob1, con);
+                modeloKob1 = LlenarMrpdata_Original(modeloKob1, con);
 
 //            //LLENO CONVERSIONES
 //            if (modeloKob1.getCost_Element().contentEquals("80004") || modeloKob1.getCost_Element().contentEquals("80005") || modeloKob1.getCost_Element().contentEquals("80015")) {
@@ -292,6 +303,11 @@ public class ControladorCargaPlanosProduccion {
 //            }
                 lstModeloKob1Upd.add(modeloKob1);
                 Contador++;
+                if (Contador == 1000) {
+                    System.out.println("Vuelta de Procesados Fase 1: " + Contador + " - " + new Date());
+                    Contador = 1;
+                }
+                Cadena.delete(0, Cadena.length());
             }
             System.out.println("FINALIZA RECORRIDO Y LLENADO DEL MODELO LISTADO NUMERO 1: " + new Date());
 
@@ -332,6 +348,7 @@ public class ControladorCargaPlanosProduccion {
             System.out.println("FINALIZA ACTUALIZACION DE REGISTROS DE PRODUCCION PISO: " + new Date());
 
             System.out.println("INICIA CONSULTAS SQL : " + new Date());
+
             controladorMrpdata.Insert("update kob1 set Total_Raw_Material = '' where Total_Raw_Material is null and IdArchivo is null");
             controladorMrpdata.Insert("update kob1 set Manufact_Materials = '' where Manufact_Materials is null and IdArchivo is null");
             controladorMrpdata.Insert("update kob1 set Packaging_Materials = '' where Packaging_Materials is null and IdArchivo is null");
@@ -339,7 +356,7 @@ public class ControladorCargaPlanosProduccion {
 
             //controladorMrpdata.Insert("update kob1 set Nuevo_Valor_Orden = Total_Raw_Material + Manufact_Materials + Packaging_Materials + Conversion_Cost where Cost_Element <> '50440' and Cost_Element <> '50400' and IdArchivo is null");
             controladorMrpdata.Insert("update kob1 set Nuevo_Valor_Orden = Total_Raw_Material + Manufact_Materials + Packaging_Materials + Conversion_Cost where IdArchivo is null");
-            
+
             controladorMrpdata.Insert("Delete from informe_produccion");
 
             String SqlInformeProduccionPiso = "INSERT INTO "
@@ -441,8 +458,7 @@ public class ControladorCargaPlanosProduccion {
 
         System.out.println("Consulta: " + SqlInsertMasivo);
 
-        ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
-
+        //ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
         String Sqlborrar = "delete from POVR";
 
         if (controladorMrpdata.Insert(Sqlborrar)) {
@@ -480,8 +496,7 @@ public class ControladorCargaPlanosProduccion {
 
         System.out.println("Consulta: " + SqlInsertMasivo);
 
-        ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
-
+        //ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
         String Sqlborrar = "delete from INVENTARIO";
 
         if (controladorMrpdata.Insert(Sqlborrar)) {
@@ -501,11 +516,99 @@ public class ControladorCargaPlanosProduccion {
         return Realizado;
     }
 
-    public ModeloKob1 LlenarMrpdata(ModeloKob1 modeloKob1, Connection con) throws SQLException {
+    public ModeloKob1 LlenarMrpdata(ModeloKob1 modeloKob1, Connection con, StringBuilder Cadena) throws SQLException {
 
-        ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
-        ControladorMb51_Consumos controladorMb51_Consumos = new ControladorMb51_Consumos();
-        ControladorPovr controladorPovr = new ControladorPovr();
+        Cadena.delete(0, Cadena.length());
+        Cadena.append("SELECT * FROM mb51_Consumos where Material = '").append(modeloKob1.getMaterial()).append("' and Order_ = '").append(modeloKob1.getOrder_()).append("'");
+        LinkedList<ModeloMb51_Consumos> LstModeloMb51_Consumos = controladorMb51_Consumos.SelectSQL(Cadena + "", con);
+
+        Cadena.delete(0, Cadena.length());
+        Cadena.append("SELECT * FROM mrpdata WHERE Material = '").append(modeloKob1.getMaterial()).append("'");
+        ModeloMrpData modeloMrpData = controladorMrpdata.SelectSQL(Cadena + "", con);
+
+        Cadena.delete(0, Cadena.length());
+        Cadena.append("SELECT * FROM povr where Process_Order_Number = '").append(modeloKob1.getOrder_()).append("'");
+        LinkedList<ModeloPovr> LstModeloPovr = controladorPovr.SelectSQL(Cadena + "", con);
+
+        modeloKob1 = CostoInventario_Copia(modeloKob1, con, Cadena);
+
+        return modeloKob1;
+    }
+
+    public ModeloKob1 CostoInventario_Copia(ModeloKob1 modeloKob1, Connection con, StringBuilder Cadena) throws SQLException {
+
+        Cadena.delete(0, Cadena.length());
+        Cadena.append("SELECT * FROM INVENTARIO where Link_Material_Batch = '").append(modeloKob1.getLink_Material_Batch()).append("'");
+        LinkedList<ModeloInventario> LstModeloInventario = controladorInventario.SelectSQL(Cadena + "", con);
+
+        return modeloKob1;
+    }
+
+    public ModeloKob1 LlenarMrpdata_Copia(ModeloKob1 modeloKob1, Connection con) throws SQLException {
+
+        if (!modeloKob1.getMaterial().contentEquals("")) {
+            //LLENAMOS CULUMNA Link ( Plant & Material)
+            modeloKob1.setLink_Plant_Material(modeloKob1.getPlant() + modeloKob1.getMaterial());
+            //LLENAMOS COLUMNA Link ( Material & orden)
+            modeloKob1.setLink_Material_orden(modeloKob1.getMaterial() + modeloKob1.getOrder_());
+            LinkedList<ModeloMb51_Consumos> LstModeloMb51_Consumos = controladorMb51_Consumos.SelectSQL("SELECT * FROM mb51_Consumos where Material = '" + modeloKob1.getMaterial() + "' and Order_ = '" + modeloKob1.getOrder_() + "'", con);
+            for (ModeloMb51_Consumos modeloMb51_Consumos : LstModeloMb51_Consumos) {
+                //LLENAMOS COLUMNA Batch consumo
+                if (modeloMb51_Consumos.getBatch() != null) {
+                    modeloKob1.setBatch_consumo(modeloMb51_Consumos.getBatch());
+                }
+            }
+            if (modeloKob1.getBatch_consumo() == null) {
+                //LLENAMOS COLUMNA Batch consumo
+                modeloKob1.setBatch_consumo("");
+            }
+            //LLENAMOS COLUMNA Link (Material & Batch)
+            modeloKob1.setLink_Material_Batch(modeloKob1.getMaterial() + modeloKob1.getBatch_consumo());
+
+            ModeloMrpData modeloMrpData = controladorMrpdata.SelectSQL("SELECT * FROM mrpdata WHERE Material = '" + modeloKob1.getMaterial() + "'", con);
+
+            //LLENAMOS COLUMNA Material Type Components
+            modeloKob1.setMaterial_Type_Components(modeloMrpData.getMaterial_Type());
+
+            if (!modeloKob1.getCost_Element().contentEquals("50440")) {
+                //LLENAMOS COLUMNA Procur Type
+                modeloKob1.setProcur_Type(modeloMrpData.getProcurement_type());
+            }
+
+            Double Value_TranCurr = Double.valueOf(modeloKob1.getValue_TranCurr());
+            Double Total_Quantity = Double.valueOf(modeloKob1.getTotal_Quantity());
+            Double Cost_Unit_Estandar = 0.0;
+            if (Total_Quantity != 0.0) {
+                Cost_Unit_Estandar = Value_TranCurr / Total_Quantity;
+            }
+            //LLENAMOS COLUMNA Cost Unit Estándar
+            modeloKob1.setCost_Unit_Estandar(String.format("%.5f", Cost_Unit_Estandar).replace(",", "."));
+
+        }
+        //LLENAMOS COLUMNA Level 1 es = Columna C
+        modeloKob1.setLevel_1(modeloKob1.getOrder_());
+        LinkedList<ModeloPovr> LstModeloPovr = controladorPovr.SelectSQL("SELECT * FROM povr where Process_Order_Number = '" + modeloKob1.getOrder_() + "'", con);
+        for (ModeloPovr modeloPovr : LstModeloPovr) {
+            //LLENAMOS COLUMNA Finish Good sku
+            modeloKob1.setFinish_Good_sku(modeloPovr.getMaterial());
+
+            //LLENAMOS COLUMNA Batch Finish goods
+            modeloKob1.setBatch_Finish_goods(modeloPovr.getBatch_Number());
+
+            //LLENAMOS COLUMNA Link (Terminado & Batch)
+            modeloKob1.setLink_Terminado_Batch(modeloPovr.getMaterial() + modeloPovr.getBatch_Number());
+
+            //LLENAMOS COLUMNA Cantidad Terminada
+            modeloKob1.setCantidad_Terminada(modeloPovr.getDelivered_Qty_Actual_O_P());
+        }
+
+        //LLENAMOS COLUMNA Cost Unit Fifo old
+        modeloKob1 = CostoInventario(modeloKob1, con);
+
+        return modeloKob1;
+    }
+
+    public ModeloKob1 LlenarMrpdata_Original(ModeloKob1 modeloKob1, Connection con) throws SQLException {
 
         if (!modeloKob1.getMaterial().contentEquals("")) {
             //LLENAMOS CULUMNA Link ( Plant & Material)
@@ -571,7 +674,6 @@ public class ControladorCargaPlanosProduccion {
 
     public ModeloKob1 CostoInventario(ModeloKob1 modeloKob1, Connection con) throws SQLException {
 
-        ControladorInventario controladorInventario = new ControladorInventario();
         String Sql = "SELECT * FROM INVENTARIO where Link_Material_Batch = '" + modeloKob1.getLink_Material_Batch() + "'";
         LinkedList<ModeloInventario> LstModeloInventario = controladorInventario.SelectSQL(Sql, con);
         if (LstModeloInventario.size() > 0) {
@@ -586,7 +688,7 @@ public class ControladorCargaPlanosProduccion {
 
     public ModeloKob1 CostoCompras(ModeloKob1 modeloKob1, Connection con) throws SQLException {
 
-        ControladorMb51 controladorMb51 = new ControladorMb51();
+//        ControladorMb51 controladorMb51 = new ControladorMb51();
         String Sql = "SELECT * FROM mb51 where link1_Material_Batch = '" + modeloKob1.getLink_Material_Batch() + "'";
 
         String Sql1 = "SELECT * FROM mb51 where Material = '" + modeloKob1.getMaterial() + "' and Batch = '" + modeloKob1.getBatch_consumo() + "'";
@@ -604,7 +706,7 @@ public class ControladorCargaPlanosProduccion {
 
     public ModeloKob1 ProduccionPiso(ModeloKob1 modeloKob1, Connection con) throws SQLException {
 
-        ControladorInformeProduccion controladorInformeProduccion = new ControladorInformeProduccion();
+//        ControladorInformeProduccion controladorInformeProduccion = new ControladorInformeProduccion();
         String Sql = "SELECT * FROM informe_produccion where Link_Terminado_Batch = '" + modeloKob1.getLink_Material_Batch() + "'";
         LinkedList<ModeloInforme_Produccion> LstModeloInforme_Produccion = controladorInformeProduccion.SelectSql(Sql, con);
 
@@ -616,12 +718,11 @@ public class ControladorCargaPlanosProduccion {
                 Double Packaging = 0.0;
                 Double Conversion = 0.0;
                 Double Nuevo_Valor_Orden = 0.0;
-                
-                                
-                if (modeloInforme_Produccion.getCantidad()!= null) {
+
+                if (modeloInforme_Produccion.getCantidad() != null) {
                     Cantidad = Double.valueOf(modeloInforme_Produccion.getCantidad());
                 }
-                
+
                 if (modeloInforme_Produccion.getTotal_Raw_Material() != null) {
                     Total_Raw_Material = Double.valueOf(modeloInforme_Produccion.getTotal_Raw_Material());
                 }
@@ -634,14 +735,12 @@ public class ControladorCargaPlanosProduccion {
                 if (modeloInforme_Produccion.getConversion() != null) {
                     Conversion = Double.valueOf(modeloInforme_Produccion.getConversion());
                 }
-                
-                
+
                 Nuevo_Valor_Orden = Total_Raw_Material + Manufact + Packaging + Conversion;
                 Double Costo_unitario_FIFO = Nuevo_Valor_Orden / Cantidad;
-                
 
                 //if (modeloInforme_Produccion.getCosto_unitario_FIFO() != null) {
-                    modeloKob1.setCost_Unit_Fifo_R_Mat_Pack(String.format("%.5f", Costo_unitario_FIFO).replace(",", "."));
+                modeloKob1.setCost_Unit_Fifo_R_Mat_Pack(String.format("%.5f", Costo_unitario_FIFO).replace(",", "."));
                 //} else {
                 //    modeloKob1.setCost_Unit_Fifo_R_Mat_Pack("0.0");
                 //}
