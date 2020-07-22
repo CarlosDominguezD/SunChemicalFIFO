@@ -255,7 +255,7 @@ public class ControladorCargarPlanosInventario {
             }
             System.out.println("FINALIZA RECORRIDO DEL LISTADO CON TODOS LOS REGISTROS DE MCBR: " + new Date());
             System.out.println("INICIA ACTUALIZACION DEL LISTADO CON TODOS LOS REGISTROS DE MCBR: " + new Date());
-            controladorMcbr.UpdateList(Lista_ModeloMcbr_Upd, con);
+            controladorMcbr.UpdateList_Masivo(Lista_ModeloMcbr_Upd, con);
             System.out.println("FINALIZA ACTUALIZACION DEL LISTADO CON TODOS LOS REGISTROS DE MCBR: " + new Date());
             con.close();
 
@@ -292,15 +292,24 @@ public class ControladorCargarPlanosInventario {
                 + "sum(Packaging_Materials) as Packaging_Materials_, "
                 + "sum(Conversion_Cost) as Conversion_Cost_, "
                 + "sum(Nuevo_Valor_Orden) as Nuevo_Valor_Orden_ "
-                + "from kob1 group by Finish_Good_sku)";
+                + "from kob1 group by Link_Terminado_Batch)";
+        
+        System.out.println("INICIA INSERSION PRODUCCION: " + new Date());
 
         controladorMrpdata.Insert(SqlInformeProduccionPiso);
-
+        
+        System.out.println("FINALIZA INSERSION PRODUCCION: " + new Date());
+        
+        
         String ActualizacionInformePiso = "update "
                 + "informe_produccion "
                 + "set Costo_unitario_FIFO = (Nuevo_Valor_Orden / Cantidad)";
 
-        return controladorMrpdata.Insert(ActualizacionInformePiso);
+        System.out.println("INICIA CALCULO DE PRODUCCION: " + new Date());        
+        boolean rs = controladorMrpdata.Insert(ActualizacionInformePiso);
+        System.out.println("FINALIZA CALCULO DE PRODUCCION: " + new Date());
+        
+        return rs;
     }
 
     public ModeloMcbr LlenarModeloMcbr(ModeloMcbr modeloMcbr, Connection con) throws SQLException {
