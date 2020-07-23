@@ -15,36 +15,43 @@ import java.util.Date;
  *
  * @author Carlos A Dominguez D
  */
-public class Herramienta
-{
+public class Herramienta {
 
-    public String sDate ()
-    {
-        java.util.Date uDate = new java.util.Date ();
-        Format formatter = new SimpleDateFormat ("yyyy-MM-dd");
-        System.out.println (formatter.format (uDate));
-        return formatter.format (uDate);
+    static String  EventoProcesado;
+
+    public String getEventoProcesado() {
+        if (EventoProcesado == null) {
+            EventoProcesado = "Iniciando Proceso";
+        }
+        return EventoProcesado;
     }
 
-    private static java.sql.Date convertUtilToSql (java.util.Date uDate)
-    {
-        java.sql.Date sDate = new java.sql.Date (uDate.getTime ());
+    public void setEventoProcesado(String EventoProcesado) {
+        this.EventoProcesado = EventoProcesado;
+    }
+
+    public String sDate() {
+        java.util.Date uDate = new java.util.Date();
+        Format formatter = new SimpleDateFormat("yyyy-MM-dd");
+        System.out.println(formatter.format(uDate));
+        return formatter.format(uDate);
+    }
+
+    private static java.sql.Date convertUtilToSql(java.util.Date uDate) {
+        java.sql.Date sDate = new java.sql.Date(uDate.getTime());
         return sDate;
     }
 
-    public Date getDate ()
-    {
-        Date utilDate = new Date (); //fecha actual
-        long lnMilisegundos = utilDate.getTime ();
-        Date sqlDate = new Date (lnMilisegundos);
+    public Date getDate() {
+        Date utilDate = new Date(); //fecha actual
+        long lnMilisegundos = utilDate.getTime();
+        Date sqlDate = new Date(lnMilisegundos);
         return sqlDate;
     }
 
-    public String GetDescrpCode (String cod)
-    {
+    public String GetDescrpCode(String cod) {
         String resp = "Error";
-        switch (cod)
-        {
+        switch (cod) {
             case "0":
                 resp = "Falla general del sistema contacte su proveedro";
                 break;
@@ -79,17 +86,15 @@ public class Herramienta
         return resp;
     }
 
-    public Timestamp getDateTimestamp ()
-    {
-        Timestamp timestamp = new Timestamp (System.currentTimeMillis ());
+    public Timestamp getDateTimestamp() {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         return timestamp;
     }
 
-    public String sTime ()
-    {
-        java.util.Date uDate = new java.util.Date ();
-        Format formatter = new SimpleDateFormat ("HH:mm:ss");
-        System.out.println (formatter.format (uDate));
-        return formatter.format (uDate);
+    public String sTime() {
+        java.util.Date uDate = new java.util.Date();
+        Format formatter = new SimpleDateFormat("HH:mm:ss");
+        System.out.println(formatter.format(uDate));
+        return formatter.format(uDate);
     }
 }

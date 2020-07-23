@@ -53,7 +53,7 @@ public class ControladorCargaPlanosProduccion {
     ControladorKob1 controladorKob1 = new ControladorKob1();
     ControladorMb51 controladorMb51 = new ControladorMb51();
     ControladorInformeProduccion controladorInformeProduccion = new ControladorInformeProduccion();
-    
+    Herramienta herramienta = new Herramienta();
 
     String MES = "";
     String ANO = "";
@@ -96,9 +96,9 @@ public class ControladorCargaPlanosProduccion {
                             modeloEstadoPlanos.setEstado("Activo");
                             modeloEstadoPlanos.setIdFechas(controladorFechas.getIdFecha(request));
                             ControladorEstadoPlanos controladorEstadoPlanos = new ControladorEstadoPlanos();
-                            
+
                             controladorEstadoPlanos.Insert(modeloEstadoPlanos);
-                            
+
                             //Selecionamos el ultimo Id del la tabal estado plano
                             modeloEstadoPlanos.setId(controladorEstadoPlanos.getIdEstadoPlanos());
                             // Update Mb51
@@ -183,8 +183,11 @@ public class ControladorCargaPlanosProduccion {
                         modeloEstadoPlanos.setId(controladorEstadoPlanos.getIdEstadoPlanos());
                         // Update Mb51
                         Progreso("Actualizando Archivo Cargado", "95");
+                        herramienta.setEventoProcesado("Actualizando Archivo Cargado 95%");
+                        
                         controladorEstadoPlanos.UpdateMB51(modeloEstadoPlanos, "KOB1");
                         Progreso("Procesamiento de Archivo de Produccin Finalizado", "100");
+                        herramienta.setEventoProcesado("Procesamiento de Archivo de Produccin Finalizado 100%");
                     }
                     break;
                 case "INVENTARIO":
@@ -238,7 +241,6 @@ public class ControladorCargaPlanosProduccion {
 
         mes(request);
 
-
         CONVERSION_LABOR = Double.parseDouble(request.getParameter("ConversionLabor"));
         CONVERSION_MACHINE = Double.parseDouble(request.getParameter("ConversionMachine"));
         CONVERSION_OVHDS = Double.parseDouble(request.getParameter("ConversionOvhds"));
@@ -257,13 +259,13 @@ public class ControladorCargaPlanosProduccion {
 
         System.out.println("Consulta: " + SqlInsertMasivo);
 
-        
         String Sqlborrar = "delete from KOB1 WHERE IdArchivo is null";
 
         if (controladorMrpdata.Insert(Sqlborrar)) {
-            
+
         }
         Progreso("Cargando Archivo ", "1");
+        herramienta.setEventoProcesado("Cargando Archivo 1%");
         if (controladorMrpdata.Insert(SqlInsertMasivo)) {
 
             ConexionBDMySql conexion = new ConexionBDMySql();
@@ -278,11 +280,11 @@ public class ControladorCargaPlanosProduccion {
             ControladorAuditoria controladorAuditoria = new ControladorAuditoria();
             controladorAuditoria.Insert(modeloAuditoria);
 
-
 //            System.out.println("INICIA CARGA AL LISTADO CON TODOS LOS REGISTROS DE KOB1: " + new Date());
             LinkedList<ModeloKob1> lstModeloKob1 = new LinkedList<ModeloKob1>();
 
             Progreso("LLenando Listado de Produccion ", "5");
+            herramienta.setEventoProcesado("LLenando Listado de Produccion  5%");
             lstModeloKob1 = Select("SELECT * from KOB1 WHERE IdArchivo is null", con);
 //            System.out.println("FINALIZA CARGA AL LISTADO CON TODOS LOS REGISTROS DE KOB1: " + new Date());
             LinkedList<ModeloKob1> lstModeloKob1Upd = new LinkedList<ModeloKob1>();
@@ -309,6 +311,7 @@ public class ControladorCargaPlanosProduccion {
 //            System.out.println("FINALIZA RECORRIDO Y LLENADO DEL MODELO LISTADO NUMERO 1: " + new Date());
 //            System.out.println("INICIA ACTUALIZACION DEL LISTADO NUMERO 1: " + new Date());
             Progreso("Actualizacion Listado Para Produccion Piso", "10");
+            herramienta.setEventoProcesado("Actualizacion Listado Para Produccion Piso 10%");
             controladorKob1.UpdateList_Carlos(lstModeloKob1, con, "Actualizacion Listado Para Produccion Piso", "10");
             lstModeloKob1Upd = null;
             lstModeloKob1Upd = new LinkedList<ModeloKob1>();
@@ -317,6 +320,7 @@ public class ControladorCargaPlanosProduccion {
             //BUSCO ORDENES QUE NO CONTENGAN E
 //            System.out.println("INICIA DEPURACION DE REGISTROS CON ORDENES NO PISO: " + new Date());
             Progreso("Depurando registros con ordenes No Piso", "20");
+            herramienta.setEventoProcesado("Depurando registros con ordenes No Piso 20%");
             lstModeloKob1 = controladorKob1.Select("SELECT * from kob1 where Procur_Type = 'E' and IdArchivo is null GROUP by Order_");
             String SqlConOrdenes = "SELECT * from kob1 where Procur_Type is not null and IdArchivo is null";
             for (ModeloKob1 modeloKob1 : lstModeloKob1) {
@@ -326,6 +330,8 @@ public class ControladorCargaPlanosProduccion {
 //            System.out.println("FINALIZA DEPURACION DE REGISTROS CON ORDENES NO PISO: " + new Date());
 //            System.out.println("INICIA PROCESO DE LLENADO DE REGISTROS PARA PRODUCCION PISO: " + new Date());
             Progreso("Llenado de registros Produccion Piso", "30");
+            herramienta.setEventoProcesado("Llenado de registros Produccion Piso 30%");
+
             for (ModeloKob1 modeloKob1 : lstModeloKob1) {
 
                 //BUSCO EN COMPRAS
@@ -345,22 +351,21 @@ public class ControladorCargaPlanosProduccion {
 //            System.out.println("FINALIZA PROCESO DE LLENADO DE REGISTROS PARA PRODUCCION PISO: " + new Date());
 //            System.out.println("INICIA ACTUALIZACION DE REGISTROS DE PRODUCCION PISO: " + new Date());
             Progreso("Actualizacio registros Produccion Piso", "40");
+            herramienta.setEventoProcesado("Actualizacio registros Produccion Piso 40%");
             controladorKob1.UpdateList_Carlos(lstModeloKob1Upd, con, "Actualizacio registros Produccion Piso", "40");
 //            System.out.println("FINALIZA ACTUALIZACION DE REGISTROS DE PRODUCCION PISO: " + new Date());
 
 //            System.out.println("INICIA CONSULTAS SQL : " + new Date());
-
-
 //            System.out.println(" ---------------- INICIA SUMA DE VALORES SQL : " + new Date());
             //controladorMrpdata.Insert("update kob1 set Nuevo_Valor_Orden = Total_Raw_Material + Manufact_Materials + Packaging_Materials + Conversion_Cost where Cost_Element <> '50440' and Cost_Element <> '50400' and IdArchivo is null");
             Progreso("Calculando Valor Produccion Piso", "60");
+            herramienta.setEventoProcesado("Calculando Valor Produccion Piso 60%");
             controladorMrpdata.Insert("update kob1 set Nuevo_Valor_Orden = Total_Raw_Material + Manufact_Materials + Packaging_Materials + Conversion_Cost where IdArchivo is null");
 
 //            System.out.println(" ---------------- FINALIZA SUMA DE VALORES SQL : " + new Date());
             controladorMrpdata.Insert("Delete from informe_produccion");
 
 //            System.out.println(" ---------------- INICIA INSERSION DE INFORME DE PRODUCCION PISO : " + new Date());
-
             String SqlInformeProduccionPiso = "INSERT INTO "
                     + "informe_produccion "
                     + "(Finish_Good_sku, "
@@ -388,20 +393,20 @@ public class ControladorCargaPlanosProduccion {
                     + "group by Link_Terminado_Batch)";
 
             Progreso("Generando Informe de Produccion Piso", "70");
+            herramienta.setEventoProcesado("Generando Informe de Produccion Piso 70%");
             controladorMrpdata.Insert(SqlInformeProduccionPiso);
 
 //            System.out.println(" ---------------- FINALIZA INSERSION DE INFORME DE PRODUCCION PISO : " + new Date());
-
 //            System.out.println(" ---------------- INICIA CALCULO EN INFORME DE PRODUCCION PISO : " + new Date());
             String ActualizacionInformePiso = "update "
                     + "informe_produccion "
                     + "set Costo_unitario_FIFO = (Nuevo_Valor_Orden / Cantidad)";
 
             Progreso("Generando Informe de Produccion Piso", "73");
+            herramienta.setEventoProcesado("Generando Informe de Produccion Piso 73%");
             controladorMrpdata.Insert(ActualizacionInformePiso);
 
 //            System.out.println(" ---------------- FINALIZA CALCULO EN INFORME DE PRODUCCION PISO : " + new Date());
-
             String ActualizacionProcur_Type = "update "
                     + "kob1 "
                     + "set Procur_Type = '' where Procur_Type is null and IdArchivo is null";
@@ -409,16 +414,17 @@ public class ControladorCargaPlanosProduccion {
             controladorMrpdata.Insert(ActualizacionProcur_Type);
 
 //            System.out.println("FINALIZA CONSULTAS SQL : " + new Date());
-
 //            System.out.println("INICIA LLENADO DEL MODELO LISTADO NUMERO 2: " + new Date());
             lstModeloKob1 = null;
             Progreso("Inicia Llenado de Listado General", "75");
+            herramienta.setEventoProcesado("Inicia Llenado de Listado General 75%");
             lstModeloKob1 = controladorKob1.Select("SELECT * from KOB1 where IdArchivo is null");
 //            System.out.println("FINALIZA LLENADO DEL MODELO LISTADO NUMERO 2: " + new Date());
             lstModeloKob1Upd = null;
             lstModeloKob1Upd = new LinkedList<ModeloKob1>();
 //            System.out.println("INICIA RECORRIDO DEL LISTADO NUMERO 2: " + new Date());
             Progreso("Inicia Recorrido de Listado General", "80");
+            herramienta.setEventoProcesado("Inicia Recorrido de Listado General 80%");
             for (ModeloKob1 modeloKob1 : lstModeloKob1) {
 
                 if (!modeloKob1.getMaterial().contentEquals("")) {
@@ -443,11 +449,13 @@ public class ControladorCargaPlanosProduccion {
 //            System.out.println("FINALIZA RECORRIDO DEL LISTADO NUMERO 2: " + new Date());
 //            System.out.println("INICIA ACTUALIZACION DEL LISTADO NUMERO 2: " + new Date());
             Progreso("Inicia Actualizacion de Listado General", "85");
+            herramienta.setEventoProcesado("Inicia Actualizacion de Listado General 85%");
             controladorKob1.UpdateList_Carlos(lstModeloKob1Upd, con, "Inicia Actualizacion de Listado General", "85");
 //            System.out.println("FINALIZA ACTUALIZACION DEL LISTADO NUMERO 2: " + new Date());
 
 //            System.out.println(" ---------------- INICIA SUMA DE VALORES SQL : " + new Date());
             Progreso("Actualizando Calculo Final", "95");
+            herramienta.setEventoProcesado("Actualizando Calculo Final 95%");
             controladorMrpdata.Insert("update kob1 set Nuevo_Valor_Orden = Total_Raw_Material + Manufact_Materials + Packaging_Materials + Conversion_Cost where IdArchivo is null");
 //            System.out.println(" ---------------- FINALIZA SUMA DE VALORES SQL : " + new Date());
 
@@ -1072,11 +1080,10 @@ public class ControladorCargaPlanosProduccion {
         }
 
     }
-    
-    public void Progreso(String Proceso, String Porcentaje)
-    {
+
+    public void Progreso(String Proceso, String Porcentaje) {
         System.out.println("Porcentaje " + Porcentaje + "% Proceso: " + Proceso);
-        
+
     }
 
 }

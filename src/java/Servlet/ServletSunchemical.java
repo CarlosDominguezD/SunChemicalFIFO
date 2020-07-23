@@ -298,6 +298,10 @@ public class ServletSunchemical extends HttpServlet {
         ControladorEstadoPlanos controladorEstadoPlanos = new ControladorEstadoPlanos();
         ControladorExcel controladorExcel = new ControladorExcel();
         switch (Accion) {
+            case "GetSolicitudEvento":
+                Resultado = herramienta.getEventoProcesado();
+                response.getWriter().write(Resultado);
+                break;
             case "CargarPlanosCompras":
                 ControladorCargaPlanos controladorCargaPlanos = new ControladorCargaPlanos();
                  {
@@ -501,7 +505,7 @@ public class ServletSunchemical extends HttpServlet {
                 }
                 break;
         }
-        if (!"GenerarArchivoCompras".equals(Accion)) {
+        if ((!"GenerarArchivoCompras".equals(Accion)) & (!"GetSolicitudEvento".equals(Accion))) {
             String respuesta = herramienta.GetDescrpCode(Resultado);
             response.setCharacterEncoding("UTF-8");
             response.setContentType("text/plain");

@@ -25,7 +25,7 @@
                         </div>
                         <div class="x_content">
                             <br />
-                            <form action="ServletSunchemical" method="POST" enctype="multipart/form-data" id="IdCargarPlanoServlet">
+                            <form action="ServletSunchemical" method="POST" enctype="multipart/form-data" id="IdCargarPlanoServlet" name="CargarPlanoServlet">
                                 <input type="hidden" id="IdAccion" >     
                                 <input type="hidden" id="IdNombrePlano" name="NombrePlano" value=""> 
                                 <div class="row">
@@ -87,13 +87,60 @@
                                 <br>
                                 <br>
                                 <div align="center" id="botonCargar">
-                                    <input type="submit" class="btn btn-lg btn-primary" onclick = "enableGif()"  name="Accion" value="CargarPlanosProduccion">       
+                                    <input type="submit" class="btn btn-lg btn-primary" onclick = "GetEventos()"  name="Accion" value="CargarPlanosProduccion">       
                                 </div>
                                 <div align="center" id="espera" style="display: none">
                                     <img src="Principal/images/loading.gif">
                                 </div>
-                            </form>
+                                <div class="col-md-12 col-sm-12 col-xs-12 form-group has-feedback" align = "center">
+                                    <label for="ListaEventos">Lista de Eventos</label>
+                                    <textarea class="form-control" id="IdlistaEventos" name="listaEventos" rows="3"></textarea>
+                                </div>
+                            </form>                            
                             <script type="text/javascript">
+                                var dato = 'Ininciando';
+                                function GetEventos() {
+                                    setInterval(StartSolicitudEvento, 100);
+                                }
+                                function StartSolicitudEvento()
+                                {
+                                    var Accion = "GetSolicitudEvento";
+                                    var data = {
+                                        Accion: Accion
+                                    };
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "ServletSunchemical",
+                                        data: data,
+                                        success: function (resul, textStatus, jqXHR) {
+                                            if (dato !== resul)
+                                            {
+                                                document.CargarPlanoServlet.listaEventos.value += resul + '\n';
+                                                dato = resul;
+                                            }
+                                        },
+                                        error: function (jqXHR, textStatus, errorThrown) {
+                                            if (jqXHR.status === 0) {
+                                                alert('Not connect: Verify Network.');
+                                            } else if (jqXHR.status === 404) {
+                                                alert('Requested page not found [404]');
+                                            } else if (jqXHR.status === 500) {
+                                                alert('Internal Server Error [500].');
+                                            } else if (textStatus === 'parsererror') {
+                                                alert('Requested JSON parse failed.');
+                                            } else if (textStatus === 'timeout') {
+                                                alert('Time out error.');
+                                            } else if (textStatus === 'abort') {
+                                                alert('Ajax request aborted.');
+                                            } else {
+                                                alert('Uncaught Error: ' + jqXHR.responseText);
+                                            }
+                                        }
+                                    });
+
+                                }
+
+
                                 function enableGif()
                                 {
                                     window.onload = document.getElementById("espera").style = "display: block";
