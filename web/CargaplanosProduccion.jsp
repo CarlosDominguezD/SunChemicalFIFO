@@ -99,11 +99,12 @@
                             </form>                            
                             <script type="text/javascript">
                                 var dato = 'Ininciando';
-                                function GetEventos() {
+                                function GetEventos() {                                    
                                     setInterval(StartSolicitudEvento, 100);
                                 }
                                 function StartSolicitudEvento()
                                 {
+                                    document.CargarPlanoServlet.Accion.disabled=true;                                    
                                     var Accion = "GetSolicitudEvento";
                                     var data = {
                                         Accion: Accion
