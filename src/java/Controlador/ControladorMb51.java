@@ -336,8 +336,65 @@ public class ControladorMb51 {
         Connection con;
         con = conexion.abrirConexion();
         PreparedStatement SQL;
-        try {
-            SQL = con.prepareStatement("SELECT "
+//        String Sql = "SELECT "
+//                    + "Id,"
+//                    + "Plant,"
+//                    + "Purchase_order,"
+//                    + "Material,"
+//                    + "Material_Description,"
+//                    + "Batch,"
+//                    + "Movement_type,"
+//                    + "Movement_Type_Text,"
+//                    + "Item,"
+//                    + "SUM(Quantity) AS 'Quantity',"
+//                    + "SUM(Qty_in_unit_of_entry) AS 'Qty_in_unit_of_entry',"
+//                    + "Unit_of_Entry,"
+//                    + "SUM(Amt_in_loc_cur) AS 'Amt_in_loc_cur',"
+//                    + "Currency,"
+//                    + "Storage_Location,"
+//                    + "Posting_Date,"
+//                    + "Document_Date,"
+//                    + "Material_Document,"
+//                    + "User_Name,"
+//                    + "Vendor,"
+//                    + "Vendor_Name,"
+//                    + "Vendor_Type,"
+//                    + "Month,"
+//                    + "Period,"
+//                    + "Cost_Unit_SAP_en_KG,"
+//                    + "Material_Type,"
+//                    + "Profit_Center,"
+//                    + "link1_Material_Batch,"
+//                    + "link2_PO_position,"
+//                    + "Referencia_vendor,"
+//                    + "TotalQ_ME80FN,"
+//                    + "O_Unit_ME80FN,"
+//                    + "TotalQ_Porcentaje,"
+//                    + "TOTAL_INVOICE_VALUE,"
+//                    + "Factura_Value_Unit,"
+//                    + "PIR_Porcentaje_del_Costo,"
+//                    + "Precio_Unit_moneda_compra,"
+//                    + "Moneda,"
+//                    + "link3_PO_Item,"
+//                    + "Freight,"
+//                    + "Dutys,"
+//                    + "Arancel,"
+//                    + "Total_Costos_Adicionales,"
+//                    + "Participac_Adicionales,"
+//                    + "Adicionales_al_CTO_Estandar,"
+//                    + "Variance,"
+//                    + "Total_Costos,"
+//                    + "Unitario_Real,"
+//                    + "Unitario_Real_adicional_estandar,"
+//                    + "Unitario_estandar_SAP,"
+//                    + "Unitario_final_FIFO,"
+//                    + "Porcentaje_Real_Vs_Estandar,"
+//                    + "Porcentaje_fifo_final_vs_Estandar,"
+//                    + "Compra_valorada_a_Unit_FIFO,"
+//                    + "Variacion_FIFO_vs_Estandar,"
+//                    + "NovedadIco"
+//                    + " FROM mb51 WHERE IdArchivo is null group by  Material, Batch order by Batch, Material";
+        String Sql = "SELECT "
                     + "Id,"
                     + "Plant,"
                     + "Purchase_order,"
@@ -394,7 +451,12 @@ public class ControladorMb51 {
                     + "Compra_valorada_a_Unit_FIFO,"
                     + "Variacion_FIFO_vs_Estandar,"
                     + "NovedadIco"
-                    + " FROM mb51 WHERE IdArchivo is null group by  Material, Batch order by Batch, Material");
+                    //+ " FROM mb51 WHERE IdArchivo is null group by  Purchase_order, Material, Batch order by Batch, Material";        
+                    + " FROM MB51_planos group by Purchase_order, Material, Batch order by Batch, Material";        
+        
+        
+        try {
+            SQL = con.prepareStatement(Sql);
             ResultSet res = SQL.executeQuery();
             while (res.next()) {
                 ModeloMb51 modeloMb51 = new ModeloMb51();

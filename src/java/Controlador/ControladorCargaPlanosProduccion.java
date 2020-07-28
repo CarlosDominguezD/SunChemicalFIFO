@@ -170,24 +170,7 @@ public class ControladorCargaPlanosProduccion {
                 case "KOB1":
                     resultado = CargarCSV_KOB1_INFILE(RutaDispo, request);
                     if ("true".equals(resultado)) {
-                        Herramienta herramientas = new Herramienta();
-                        ControladorFechas controladorFechas = new ControladorFechas();
-                        ModeloEstadoPlanos modeloEstadoPlanos = new ModeloEstadoPlanos();
-                        modeloEstadoPlanos.setNombrePlano("KOB1");
-                        modeloEstadoPlanos.setFechaCarga(herramientas.sDate());
-                        modeloEstadoPlanos.setEstado("Activo");
-                        modeloEstadoPlanos.setIdFechas(controladorFechas.getIdFecha(request));
-                        ControladorEstadoPlanos controladorEstadoPlanos = new ControladorEstadoPlanos();
-                        controladorEstadoPlanos.Insert(modeloEstadoPlanos);
-                        //Selecionamos el ultimo Id del la tabal estado plano
-                        modeloEstadoPlanos.setId(controladorEstadoPlanos.getIdEstadoPlanos());
-                        // Update Mb51
-                        Progreso("Actualizando Archivo Cargado", "95");
-                        herramienta.setEventoProcesado("Actualizando Archivo Cargado 95%");
-                        
-                        controladorEstadoPlanos.UpdateMB51(modeloEstadoPlanos, "KOB1");
-                        Progreso("Procesamiento de Archivo de Produccin Finalizado", "100");
-                        herramienta.setEventoProcesado("Procesamiento de Archivo de Produccin Finalizado 100%");
+
                     }
                     break;
                 case "INVENTARIO":
@@ -247,6 +230,10 @@ public class ControladorCargaPlanosProduccion {
 
         String ano = request.getParameter("Mes");
         String mes = request.getParameter("Ano");
+        
+        ANO = mes + "-" + ano;
+        
+        
         String Realizado = "false";
         Ruta = Ruta.replace("\\", "/");
         String SqlInsertMasivo
@@ -283,44 +270,24 @@ public class ControladorCargaPlanosProduccion {
 //            System.out.println("INICIA CARGA AL LISTADO CON TODOS LOS REGISTROS DE KOB1: " + new Date());
             LinkedList<ModeloKob1> lstModeloKob1 = new LinkedList<ModeloKob1>();
 
-            Progreso("LLenando Listado de Produccion ", "5");
-            herramienta.setEventoProcesado("LLenando Listado de Produccion  5%");
+            Progreso("LLenando Listado de Produccion ", "10");
+            herramienta.setEventoProcesado("LLenando Listado de Produccion  10%");
             lstModeloKob1 = Select("SELECT * from KOB1 WHERE IdArchivo is null", con);
 //            System.out.println("FINALIZA CARGA AL LISTADO CON TODOS LOS REGISTROS DE KOB1: " + new Date());
             LinkedList<ModeloKob1> lstModeloKob1Upd = new LinkedList<ModeloKob1>();
 
-//            System.out.println("INICIA RECORRIDO Y LLENADO DEL MODELO LISTADO NUMERO 1: " + new Date());
-//            int Contador = 1;
-//            int cantidad = 1;
-//
-//            StringBuilder Cadena = new StringBuilder();
-//
-//            for (ModeloKob1 modeloKob1 : lstModeloKob1) {
-//                modeloKob1 = LlenarMrpdata_Original(modeloKob1, con);
-//
-//                lstModeloKob1Upd.add(modeloKob1);
-//                Contador++;
-//
-//                if (Contador == 1000) {
-//                    System.out.println("Vuelta de Procesados Fase 1: " + cantidad + " - " + new Date());
-//                    cantidad++;
-//                    Contador = 1;
-//                }
-//                Cadena.delete(0, Cadena.length());
-//            }
-//            System.out.println("FINALIZA RECORRIDO Y LLENADO DEL MODELO LISTADO NUMERO 1: " + new Date());
 //            System.out.println("INICIA ACTUALIZACION DEL LISTADO NUMERO 1: " + new Date());
-            Progreso("Actualizacion Listado Para Produccion Piso", "10");
-            herramienta.setEventoProcesado("Actualizacion Listado Para Produccion Piso 10%");
-            controladorKob1.UpdateList_Carlos(lstModeloKob1, con, "Actualizacion Listado Para Produccion Piso", "10");
+            Progreso("Actualizacion Listado Para Produccion Piso", "20");
+            herramienta.setEventoProcesado("Actualizacion Listado Para Produccion Piso 20%");
+            controladorKob1.UpdateList_Carlos(lstModeloKob1, con, "Actualizacion Listado Para Produccion Piso", "20");
             lstModeloKob1Upd = null;
             lstModeloKob1Upd = new LinkedList<ModeloKob1>();
 //            System.out.println("FINALIZA ACTUALIZACION DEL LISTADO NUMERO 1: " + new Date());
 
             //BUSCO ORDENES QUE NO CONTENGAN E
 //            System.out.println("INICIA DEPURACION DE REGISTROS CON ORDENES NO PISO: " + new Date());
-            Progreso("Depurando registros con ordenes No Piso", "20");
-            herramienta.setEventoProcesado("Depurando registros con ordenes No Piso 20%");
+            Progreso("Depurando registros con ordenes No Piso", "30");
+            herramienta.setEventoProcesado("Depurando registros con ordenes No Piso 30%");
             lstModeloKob1 = controladorKob1.Select("SELECT * from kob1 where Procur_Type = 'E' and IdArchivo is null GROUP by Order_");
             String SqlConOrdenes = "SELECT * from kob1 where Procur_Type is not null and IdArchivo is null";
             for (ModeloKob1 modeloKob1 : lstModeloKob1) {
@@ -329,10 +296,22 @@ public class ControladorCargaPlanosProduccion {
             lstModeloKob1 = controladorKob1.Select(SqlConOrdenes);
 //            System.out.println("FINALIZA DEPURACION DE REGISTROS CON ORDENES NO PISO: " + new Date());
 //            System.out.println("INICIA PROCESO DE LLENADO DE REGISTROS PARA PRODUCCION PISO: " + new Date());
-            Progreso("Llenado de registros Produccion Piso", "30");
-            herramienta.setEventoProcesado("Llenado de registros Produccion Piso 30%");
+            Progreso("Llenado de registros Produccion Piso", "40");
+            herramienta.setEventoProcesado("Llenado de registros Produccion Piso 40%");
+
+            int Porcentaje = 40;
+            int VUeltas = lstModeloKob1.size() / 10;
+            int sumador = 1;
 
             for (ModeloKob1 modeloKob1 : lstModeloKob1) {
+
+                if (sumador == VUeltas) {
+                    herramienta.setEventoProcesado("Progreso " + Porcentaje + "%");
+                    System.err.println("Progreso " + Porcentaje + "%");
+                    Porcentaje++;
+                    sumador = 1;
+                }
+                sumador++;
 
                 //BUSCO EN COMPRAS
                 modeloKob1 = CostoCompras(modeloKob1, con);
@@ -343,16 +322,24 @@ public class ControladorCargaPlanosProduccion {
                     modeloKob1 = Packaging_Materials(modeloKob1, con);
                 }
 
-                //UpdateModeloKob1(modeloKob1, con);
+                double Nuevo_Valor_Orden = 0.0;
+
+                Nuevo_Valor_Orden = Double.valueOf(modeloKob1.getTotal_Raw_Material())
+                        + Double.valueOf(modeloKob1.getManufact_Materials())
+                        + Double.valueOf(modeloKob1.getPackaging_Materials())
+                        + Double.valueOf(modeloKob1.getConversion_Cost());
+
+                modeloKob1.setNuevo_Valor_Orden(String.format("%.5f", Nuevo_Valor_Orden).replace(",", "."));
+
                 lstModeloKob1Upd.add(modeloKob1);
 
             }
 
 //            System.out.println("FINALIZA PROCESO DE LLENADO DE REGISTROS PARA PRODUCCION PISO: " + new Date());
 //            System.out.println("INICIA ACTUALIZACION DE REGISTROS DE PRODUCCION PISO: " + new Date());
-            Progreso("Actualizacio registros Produccion Piso", "40");
-            herramienta.setEventoProcesado("Actualizacio registros Produccion Piso 40%");
-            controladorKob1.UpdateList_Carlos(lstModeloKob1Upd, con, "Actualizacio registros Produccion Piso", "40");
+            Progreso("Actualizacio registros Produccion Piso", "50");
+            herramienta.setEventoProcesado("Actualizacio registros Produccion Piso 50%");
+            controladorKob1.UpdateList_Carlos(lstModeloKob1Upd, con, "Actualizacio registros Produccion Piso", "50");
 //            System.out.println("FINALIZA ACTUALIZACION DE REGISTROS DE PRODUCCION PISO: " + new Date());
 
 //            System.out.println("INICIA CONSULTAS SQL : " + new Date());
@@ -360,13 +347,13 @@ public class ControladorCargaPlanosProduccion {
             //controladorMrpdata.Insert("update kob1 set Nuevo_Valor_Orden = Total_Raw_Material + Manufact_Materials + Packaging_Materials + Conversion_Cost where Cost_Element <> '50440' and Cost_Element <> '50400' and IdArchivo is null");
             Progreso("Calculando Valor Produccion Piso", "60");
             herramienta.setEventoProcesado("Calculando Valor Produccion Piso 60%");
-            controladorMrpdata.Insert("update kob1 set Nuevo_Valor_Orden = Total_Raw_Material + Manufact_Materials + Packaging_Materials + Conversion_Cost where IdArchivo is null");
+            //controladorMrpdata.Insert("update kob1 set Nuevo_Valor_Orden = Total_Raw_Material + Manufact_Materials + Packaging_Materials + Conversion_Cost where IdArchivo is null");
 
 //            System.out.println(" ---------------- FINALIZA SUMA DE VALORES SQL : " + new Date());
             controladorMrpdata.Insert("Delete from informe_produccion");
 
 //            System.out.println(" ---------------- INICIA INSERSION DE INFORME DE PRODUCCION PISO : " + new Date());
-            String SqlInformeProduccionPiso = "INSERT INTO "
+            String SqlInformeProduccionPiso = "SET sql_mode = '';INSERT INTO "
                     + "informe_produccion "
                     + "(Finish_Good_sku, "
                     + "CO_object_name, "
@@ -390,7 +377,7 @@ public class ControladorCargaPlanosProduccion {
                     + "sum(Conversion_Cost) as Conversion_Cost_, "
                     + "sum(Nuevo_Valor_Orden) as Nuevo_Valor_Orden_ "
                     + "from kob1 where IdArchivo is null "
-                    + "group by Link_Terminado_Batch)";
+                    + "group by Link_Terminado_Batch);";
 
             Progreso("Generando Informe de Produccion Piso", "70");
             herramienta.setEventoProcesado("Generando Informe de Produccion Piso 70%");
@@ -402,8 +389,8 @@ public class ControladorCargaPlanosProduccion {
                     + "informe_produccion "
                     + "set Costo_unitario_FIFO = (Nuevo_Valor_Orden / Cantidad)";
 
-            Progreso("Generando Informe de Produccion Piso", "73");
-            herramienta.setEventoProcesado("Generando Informe de Produccion Piso 73%");
+            Progreso("Generando Calculo de Informe de Produccion Piso", "73");
+            herramienta.setEventoProcesado("Generando Calculo de Informe de Produccion Piso 73%");
             controladorMrpdata.Insert(ActualizacionInformePiso);
 
 //            System.out.println(" ---------------- FINALIZA CALCULO EN INFORME DE PRODUCCION PISO : " + new Date());
@@ -423,9 +410,23 @@ public class ControladorCargaPlanosProduccion {
             lstModeloKob1Upd = null;
             lstModeloKob1Upd = new LinkedList<ModeloKob1>();
 //            System.out.println("INICIA RECORRIDO DEL LISTADO NUMERO 2: " + new Date());
+
+            ModeloEstadoPlanos modeloEstadoPlanos = Archivo(request);
+            Porcentaje = 80;
+            VUeltas = lstModeloKob1.size() / 10;
+            sumador = 1;
+
             Progreso("Inicia Recorrido de Listado General", "80");
             herramienta.setEventoProcesado("Inicia Recorrido de Listado General 80%");
             for (ModeloKob1 modeloKob1 : lstModeloKob1) {
+
+                if (sumador == VUeltas) {
+                    herramienta.setEventoProcesado("Progreso " + Porcentaje + "%");
+                    System.err.println("Progreso " + Porcentaje + "%");
+                    Porcentaje++;
+                    sumador = 1;
+                }
+                sumador++;
 
                 if (!modeloKob1.getMaterial().contentEquals("")) {
                     //LLENAMOS COLUMNA Cost Unit Fifo R.Mat y Pack
@@ -441,24 +442,33 @@ public class ControladorCargaPlanosProduccion {
                     }
                 }
 
+                double Nuevo_Valor_Orden = 0.0;
+
+                Nuevo_Valor_Orden = Double.valueOf(modeloKob1.getTotal_Raw_Material())
+                        + Double.valueOf(modeloKob1.getManufact_Materials())
+                        + Double.valueOf(modeloKob1.getPackaging_Materials())
+                        + Double.valueOf(modeloKob1.getConversion_Cost());
+
+                modeloKob1.setNuevo_Valor_Orden(String.format("%.5f", Nuevo_Valor_Orden).replace(",", "."));
+
+                modeloKob1.setIdArchivo(modeloEstadoPlanos.getId());
+
                 lstModeloKob1Upd.add(modeloKob1);
             }
 
-            controladorMrpdata.Insert("update kob1 set Nuevo_Valor_Orden = Total_Raw_Material + Manufact_Materials + Packaging_Materials + Conversion_Cost where Cost_Element <> '50440' and Cost_Element <> '50400' and IdArchivo is null");
-
+            //controladorMrpdata.Insert("update kob1 set Nuevo_Valor_Orden = Total_Raw_Material + Manufact_Materials + Packaging_Materials + Conversion_Cost where Cost_Element <> '50440' and Cost_Element <> '50400' and IdArchivo is null");
 //            System.out.println("FINALIZA RECORRIDO DEL LISTADO NUMERO 2: " + new Date());
 //            System.out.println("INICIA ACTUALIZACION DEL LISTADO NUMERO 2: " + new Date());
-            Progreso("Inicia Actualizacion de Listado General", "85");
-            herramienta.setEventoProcesado("Inicia Actualizacion de Listado General 85%");
-            controladorKob1.UpdateList_Carlos(lstModeloKob1Upd, con, "Inicia Actualizacion de Listado General", "85");
+            Progreso("Inicia Actualizacion de Listado General", "90");
+            herramienta.setEventoProcesado("Inicia Actualizacion de Listado General 90%");
+            controladorKob1.UpdateList_Carlos(lstModeloKob1Upd, con, "Inicia Actualizacion de Listado General", "90");
 //            System.out.println("FINALIZA ACTUALIZACION DEL LISTADO NUMERO 2: " + new Date());
 
 //            System.out.println(" ---------------- INICIA SUMA DE VALORES SQL : " + new Date());
-            Progreso("Actualizando Calculo Final", "95");
-            herramienta.setEventoProcesado("Actualizando Calculo Final 95%");
-            controladorMrpdata.Insert("update kob1 set Nuevo_Valor_Orden = Total_Raw_Material + Manufact_Materials + Packaging_Materials + Conversion_Cost where IdArchivo is null");
+            //Progreso("Actualizando Calculo Final", "95");
+            //herramienta.setEventoProcesado("Actualizando Calculo Final 95%");
+            //controladorMrpdata.Insert("update kob1 set Nuevo_Valor_Orden = Total_Raw_Material + Manufact_Materials + Packaging_Materials + Conversion_Cost where IdArchivo is null");
 //            System.out.println(" ---------------- FINALIZA SUMA DE VALORES SQL : " + new Date());
-
             con.close();
         }
         return Realizado;
@@ -541,94 +551,11 @@ public class ControladorCargaPlanosProduccion {
         return Realizado;
     }
 
-    public ModeloKob1 LlenarMrpdata(ModeloKob1 modeloKob1, Connection con, StringBuilder Cadena) throws SQLException {
-
-        Cadena.delete(0, Cadena.length());
-        Cadena.append("SELECT * FROM mb51_Consumos where Material = '").append(modeloKob1.getMaterial()).append("' and Order_ = '").append(modeloKob1.getOrder_()).append("'");
-        LinkedList<ModeloMb51_Consumos> LstModeloMb51_Consumos = controladorMb51_Consumos.SelectSQL(Cadena + "", con);
-
-        Cadena.delete(0, Cadena.length());
-        Cadena.append("SELECT * FROM mrpdata WHERE Material = '").append(modeloKob1.getMaterial()).append("'");
-        ModeloMrpData modeloMrpData = controladorMrpdata.SelectSQL(Cadena + "", con);
-
-        Cadena.delete(0, Cadena.length());
-        Cadena.append("SELECT * FROM povr where Process_Order_Number = '").append(modeloKob1.getOrder_()).append("'");
-        LinkedList<ModeloPovr> LstModeloPovr = controladorPovr.SelectSQL(Cadena + "", con);
-
-        modeloKob1 = CostoInventario_Copia(modeloKob1, con, Cadena);
-
-        return modeloKob1;
-    }
-
     public ModeloKob1 CostoInventario_Copia(ModeloKob1 modeloKob1, Connection con, StringBuilder Cadena) throws SQLException {
 
         Cadena.delete(0, Cadena.length());
         Cadena.append("SELECT * FROM INVENTARIO where Link_Material_Batch = '").append(modeloKob1.getLink_Material_Batch()).append("'");
         LinkedList<ModeloInventario> LstModeloInventario = controladorInventario.SelectSQL(Cadena + "", con);
-
-        return modeloKob1;
-    }
-
-    public ModeloKob1 LlenarMrpdata_Copia(ModeloKob1 modeloKob1, Connection con) throws SQLException {
-
-        if (!modeloKob1.getMaterial().contentEquals("")) {
-            //LLENAMOS CULUMNA Link ( Plant & Material)
-            modeloKob1.setLink_Plant_Material(modeloKob1.getPlant() + modeloKob1.getMaterial());
-            //LLENAMOS COLUMNA Link ( Material & orden)
-            modeloKob1.setLink_Material_orden(modeloKob1.getMaterial() + modeloKob1.getOrder_());
-            LinkedList<ModeloMb51_Consumos> LstModeloMb51_Consumos = controladorMb51_Consumos.SelectSQL("SELECT * FROM mb51_Consumos where Material = '" + modeloKob1.getMaterial() + "' and Order_ = '" + modeloKob1.getOrder_() + "'", con);
-            for (ModeloMb51_Consumos modeloMb51_Consumos : LstModeloMb51_Consumos) {
-                //LLENAMOS COLUMNA Batch consumo
-                if (modeloMb51_Consumos.getBatch() != null) {
-                    modeloKob1.setBatch_consumo(modeloMb51_Consumos.getBatch());
-                }
-            }
-            if (modeloKob1.getBatch_consumo() == null) {
-                //LLENAMOS COLUMNA Batch consumo
-                modeloKob1.setBatch_consumo("");
-            }
-            //LLENAMOS COLUMNA Link (Material & Batch)
-            modeloKob1.setLink_Material_Batch(modeloKob1.getMaterial() + modeloKob1.getBatch_consumo());
-
-            ModeloMrpData modeloMrpData = controladorMrpdata.SelectSQL("SELECT * FROM mrpdata WHERE Material = '" + modeloKob1.getMaterial() + "'", con);
-
-            //LLENAMOS COLUMNA Material Type Components
-            modeloKob1.setMaterial_Type_Components(modeloMrpData.getMaterial_Type());
-
-            if (!modeloKob1.getCost_Element().contentEquals("50440")) {
-                //LLENAMOS COLUMNA Procur Type
-                modeloKob1.setProcur_Type(modeloMrpData.getProcurement_type());
-            }
-
-            Double Value_TranCurr = Double.valueOf(modeloKob1.getValue_TranCurr());
-            Double Total_Quantity = Double.valueOf(modeloKob1.getTotal_Quantity());
-            Double Cost_Unit_Estandar = 0.0;
-            if (Total_Quantity != 0.0) {
-                Cost_Unit_Estandar = Value_TranCurr / Total_Quantity;
-            }
-            //LLENAMOS COLUMNA Cost Unit Estándar
-            modeloKob1.setCost_Unit_Estandar(String.format("%.5f", Cost_Unit_Estandar).replace(",", "."));
-
-        }
-        //LLENAMOS COLUMNA Level 1 es = Columna C
-        modeloKob1.setLevel_1(modeloKob1.getOrder_());
-        LinkedList<ModeloPovr> LstModeloPovr = controladorPovr.SelectSQL("SELECT * FROM povr where Process_Order_Number = '" + modeloKob1.getOrder_() + "'", con);
-        for (ModeloPovr modeloPovr : LstModeloPovr) {
-            //LLENAMOS COLUMNA Finish Good sku
-            modeloKob1.setFinish_Good_sku(modeloPovr.getMaterial());
-
-            //LLENAMOS COLUMNA Batch Finish goods
-            modeloKob1.setBatch_Finish_goods(modeloPovr.getBatch_Number());
-
-            //LLENAMOS COLUMNA Link (Terminado & Batch)
-            modeloKob1.setLink_Terminado_Batch(modeloPovr.getMaterial() + modeloPovr.getBatch_Number());
-
-            //LLENAMOS COLUMNA Cantidad Terminada
-            modeloKob1.setCantidad_Terminada(modeloPovr.getDelivered_Qty_Actual_O_P());
-        }
-
-        //LLENAMOS COLUMNA Cost Unit Fifo old
-        modeloKob1 = CostoInventario(modeloKob1, con);
 
         return modeloKob1;
     }
@@ -711,7 +638,7 @@ public class ControladorCargaPlanosProduccion {
         return modeloKob1;
     }
 
-    public ModeloKob1 CostoCompras(ModeloKob1 modeloKob1, Connection con) throws SQLException {
+    public ModeloKob1 CostoCompras_org(ModeloKob1 modeloKob1, Connection con) throws SQLException {
 
 //        ControladorMb51 controladorMb51 = new ControladorMb51();
 //        String Sql = "SELECT * FROM mb51 where link1_Material_Batch = '" + modeloKob1.getLink_Material_Batch() + "'";
@@ -723,6 +650,33 @@ public class ControladorCargaPlanosProduccion {
         if (LstModeloMb51.size() > 0) {
             for (ModeloMb51 modeloMb51 : LstModeloMb51) {
                 modeloKob1.setCost_Unit_Fifo_R_Mat_Pack(modeloMb51.getUnitario_final_FIFO());
+            }
+        } else {
+            modeloKob1.setCost_Unit_Fifo_R_Mat_Pack("0.0");
+        }
+        return modeloKob1;
+    }
+
+    public ModeloKob1 CostoCompras(ModeloKob1 modeloKob1, Connection con) throws SQLException {
+
+//        ControladorMb51 controlado rMb51 = new ControladorMb51();
+//        String Sql = "SELECT * FROM mb51 where link1_Material_Batch = '" + modeloKob1.getLink_Material_Batch() + "'";
+//        String Sql = "SELECT * FROM mb51 where link1_Material_Batch = '" + modeloKob1.getLink_Material_Batch() + "' AND Posting_Date like '%" + MES + "%'";
+//        String Sql = "SELECT * FROM mb51 where link1_Material_Batch = '" + modeloKob1.getLink_Material_Batch() + "' AND Month <= '" + MES + "' AND fecha = '" + ANO + "'";
+        String Sql = "SELECT * FROM mb51 where link1_Material_Batch = '" + modeloKob1.getLink_Material_Batch() + "' AND fecha = '" + ANO + "' ORDER BY Month";
+
+        LinkedList<ModeloMb51> LstModeloMb51 = controladorMb51.SelectSql(Sql, con);
+        if (LstModeloMb51.size() > 0) {
+            for (ModeloMb51 modeloMb51 : LstModeloMb51) {
+                if (Integer.valueOf(modeloMb51.getMonth()) == Integer.valueOf(modeloKob1.getPeriod())) {
+                    if (Double.valueOf(modeloMb51.getQuantity()) > -1) {
+                        modeloKob1.setCost_Unit_Fifo_R_Mat_Pack(modeloMb51.getUnitario_final_FIFO());
+                        break;
+                    }
+                } else {
+                    modeloKob1.setCost_Unit_Fifo_R_Mat_Pack(modeloMb51.getUnitario_final_FIFO());
+                    //break;
+                }
             }
         } else {
             modeloKob1.setCost_Unit_Fifo_R_Mat_Pack("0.0");
@@ -744,6 +698,7 @@ public class ControladorCargaPlanosProduccion {
                 Double Packaging = 0.0;
                 Double Conversion = 0.0;
                 Double Nuevo_Valor_Orden = 0.0;
+                Double Costo_unitario_FIFO = 0.0;
 
                 if (modeloInforme_Produccion.getCantidad() != null) {
                     Cantidad = Double.valueOf(modeloInforme_Produccion.getCantidad());
@@ -763,7 +718,9 @@ public class ControladorCargaPlanosProduccion {
                 }
 
                 Nuevo_Valor_Orden = Total_Raw_Material + Manufact + Packaging + Conversion;
-                Double Costo_unitario_FIFO = Nuevo_Valor_Orden / Cantidad;
+                if (Cantidad != 0.0) {
+                    Costo_unitario_FIFO = Nuevo_Valor_Orden / Cantidad;
+                }
 
                 //if (modeloInforme_Produccion.getCosto_unitario_FIFO() != null) {
                 modeloKob1.setCost_Unit_Fifo_R_Mat_Pack(String.format("%.5f", Costo_unitario_FIFO).replace(",", "."));
@@ -785,6 +742,10 @@ public class ControladorCargaPlanosProduccion {
 
         if (modeloKob1.getCost_Unit_Fifo_Old() == null) {
             modeloKob1.setCost_Unit_Fifo_Old("0.0");
+        }
+
+        if (modeloKob1.getCost_Unit_Fifo_R_Mat_Pack() == null || modeloKob1.getCost_Unit_Fifo_R_Mat_Pack().contentEquals("")) {
+            modeloKob1.setCost_Unit_Fifo_R_Mat_Pack("0.0");
         }
 
         if (modeloKob1.getCost_Unit_Fifo_Old().contentEquals("0.0")) {
@@ -847,7 +808,26 @@ public class ControladorCargaPlanosProduccion {
         try {
             SQL = con.prepareStatement(Sql);
             ResultSet res = SQL.executeQuery();
+            int cantFilas = 0;
+            if (res.last()) {//Nos posicionamos al final
+                cantFilas = res.getRow();//sacamos la cantidad de filas/registros
+                res.beforeFirst();//nos posicionamos antes del inicio (como viene por defecto)
+            }
+
+            int Porcentaje = 10;
+            int VUeltas = cantFilas / 10;
+            int sumador = 1;
+
             while (res.next()) {
+
+                if (sumador == VUeltas) {
+                    herramienta.setEventoProcesado("Progreso " + Porcentaje + "%");
+                    System.err.println("Progreso " + Porcentaje + "%");
+                    Porcentaje++;
+                    sumador = 1;
+                }
+                sumador++;
+
                 ModeloKob1 modeloKob1 = new ModeloKob1();
                 modeloKob1.setId(res.getInt("Id"));
                 modeloKob1.setFunctional_Area(res.getString("Functional_Area"));
@@ -893,16 +873,16 @@ public class ControladorCargaPlanosProduccion {
                 modeloKob1.setMonth(res.getString("Month"));
 
                 if (modeloKob1.getTotal_Raw_Material() == null) {
-                    modeloKob1.setTotal_Raw_Material("");
+                    modeloKob1.setTotal_Raw_Material("0.0");
                 }
                 if (modeloKob1.getManufact_Materials() == null) {
-                    modeloKob1.setManufact_Materials("");
+                    modeloKob1.setManufact_Materials("0.0");
                 }
                 if (modeloKob1.getPackaging_Materials() == null) {
-                    modeloKob1.setPackaging_Materials("");
+                    modeloKob1.setPackaging_Materials("0.0");
                 }
                 if (modeloKob1.getConversion_Cost() == null) {
-                    modeloKob1.setConversion_Cost("");
+                    modeloKob1.setConversion_Cost("0.0");
                 }
 
                 if (modeloKob1.getCost_Element().contentEquals("80004")) {
@@ -1039,42 +1019,44 @@ public class ControladorCargaPlanosProduccion {
         String mes = request.getParameter("Mes");
         String ano = request.getParameter("Ano");
 
+        ANO = mes + "-" + ano;
+
         switch (mes) {
             case "Enero":
-                MES = "/01/" + ano;
+                MES = "01";
                 break;
             case "Febrero":
-                MES = "/02/" + ano;
+                MES = "02";
                 break;
             case "Marzo":
-                MES = "/03/" + ano;
+                MES = "03";
                 break;
             case "Abril":
-                MES = "/04/" + ano;
+                MES = "04";
                 break;
             case "Mayo":
-                MES = "/05/" + ano;
+                MES = "05";
                 break;
             case "Junio":
-                MES = "/06/" + ano;
+                MES = "06";
                 break;
             case "Julio":
-                MES = "/07/" + ano;
+                MES = "07";
                 break;
             case "Agosto":
-                MES = "/08/" + ano;
+                MES = "08";
                 break;
             case "Septiembre":
-                MES = "/09/" + ano;
+                MES = "09";
                 break;
             case "Octubre":
-                MES = "/10/" + ano;
+                MES = "10";
                 break;
             case "Noviembre":
-                MES = "/11/" + ano;
+                MES = "11";
                 break;
             case "Diciembre":
-                MES = "/12/" + ano;
+                MES = "12";
                 break;
 
         }
@@ -1084,6 +1066,22 @@ public class ControladorCargaPlanosProduccion {
     public void Progreso(String Proceso, String Porcentaje) {
         System.out.println("Porcentaje " + Porcentaje + "% Proceso: " + Proceso);
 
+    }
+
+    public ModeloEstadoPlanos Archivo(HttpServletRequest request) {
+        Herramienta herramientas = new Herramienta();
+        ControladorFechas controladorFechas = new ControladorFechas();
+        ModeloEstadoPlanos modeloEstadoPlanos = new ModeloEstadoPlanos();
+        modeloEstadoPlanos.setNombrePlano("KOB1");
+        modeloEstadoPlanos.setFechaCarga(herramientas.sDate());
+        modeloEstadoPlanos.setEstado("Activo");
+        modeloEstadoPlanos.setIdFechas(controladorFechas.getIdFecha(request));
+        ControladorEstadoPlanos controladorEstadoPlanos = new ControladorEstadoPlanos();
+        controladorEstadoPlanos.Insert(modeloEstadoPlanos);
+        //Selecionamos el ultimo Id del la tabal estado plano
+        modeloEstadoPlanos.setId(controladorEstadoPlanos.getIdEstadoPlanos());
+
+        return modeloEstadoPlanos;
     }
 
 }

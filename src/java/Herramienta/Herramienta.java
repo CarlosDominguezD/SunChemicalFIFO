@@ -33,7 +33,7 @@ public class Herramienta {
     public String sDate() {
         java.util.Date uDate = new java.util.Date();
         Format formatter = new SimpleDateFormat("yyyy-MM-dd");
-        System.out.println(formatter.format(uDate));
+        //System.out.println(formatter.format(uDate));
         return formatter.format(uDate);
     }
 

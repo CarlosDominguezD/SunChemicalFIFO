@@ -6,6 +6,7 @@
 package Controlador;
 
 import Conexiones.ConexionBDMySql;
+import Herramienta.Herramienta;
 import Modelos.ModeloMcbr;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,6 +19,8 @@ import java.util.LinkedList;
  * @author Diego Fdo Guzman B
  */
 public class ControladorMcbr {
+    
+    Herramienta herramienta = new Herramienta();
 
     public boolean InsertList(LinkedList<ModeloMcbr> listModeloMcbr) throws SQLException {
         boolean resul = false;
@@ -222,7 +225,7 @@ public class ControladorMcbr {
         return resul;
     }
 
-    public boolean UpdateList_Masivo(LinkedList<ModeloMcbr> listModeloMcbr, Connection con) throws SQLException {
+    public boolean UpdateList_Masivo(LinkedList<ModeloMcbr> listModeloMcbr, Connection con, String Porcentaje) throws SQLException {
         boolean resul = false;
 
         StringBuilder Material = new StringBuilder();
@@ -245,6 +248,7 @@ public class ControladorMcbr {
         StringBuilder FIFO_Cost_Unit = new StringBuilder();
         StringBuilder Inventario_Valorado_a_FIFO = new StringBuilder();
         StringBuilder Variacion_FIFO_vs_Estandar = new StringBuilder();
+        StringBuilder IdArchivo = new StringBuilder();
         StringBuilder Id = new StringBuilder();
 
         Material.append("(CASE id ");
@@ -267,6 +271,7 @@ public class ControladorMcbr {
         FIFO_Cost_Unit.append("(CASE id ");
         Inventario_Valorado_a_FIFO.append("(CASE id ");
         Variacion_FIFO_vs_Estandar.append("(CASE id ");
+        IdArchivo.append("(CASE id ");
         //Id.append("(CASE id ");
         int Contador = 0;
         PreparedStatement SQL = null;
@@ -277,7 +282,20 @@ public class ControladorMcbr {
             int c = 1, contt = 0;
             int v = 1;
 
+            int Porcentaje1 = Integer.valueOf(Porcentaje);
+            int VUeltas = listModeloMcbr.size() / 30;
+            int sumador = 1;
+
             for (ModeloMcbr modeloMcbr : listModeloMcbr) {
+
+                if (sumador == VUeltas) {
+                    herramienta.setEventoProcesado("Progreso " + Porcentaje1 + "%");
+                    System.err.println("Progreso " + Porcentaje1 + "%");
+                    Porcentaje1++;
+                    sumador = 1;
+                }
+                sumador++;
+
                 contt++;
                 if (c == 2) {
                     Id.append(",");
@@ -303,6 +321,7 @@ public class ControladorMcbr {
                 FIFO_Cost_Unit.append("WHEN ").append(modeloMcbr.getId()).append(" THEN '").append(Valor(modeloMcbr.getFIFO_Cost_Unit())).append("' ");
                 Inventario_Valorado_a_FIFO.append("WHEN ").append(modeloMcbr.getId()).append(" THEN '").append(Valor(modeloMcbr.getInventario_Valorado_a_FIFO())).append("' ");
                 Variacion_FIFO_vs_Estandar.append("WHEN ").append(modeloMcbr.getId()).append(" THEN '").append(Valor(modeloMcbr.getVariacion_FIFO_vs_Estandar())).append("' ");
+                IdArchivo.append("WHEN ").append(modeloMcbr.getId()).append(" THEN ").append(modeloMcbr.getIdArchivo()).append(" ");
                 Id.append(modeloMcbr.getId());
                 c = 2;
                 if (contt == 1000) {
@@ -326,6 +345,7 @@ public class ControladorMcbr {
                     FIFO_Cost_Unit.append("END)");
                     Inventario_Valorado_a_FIFO.append("END)");
                     Variacion_FIFO_vs_Estandar.append("END)");
+                    IdArchivo.append("END)");
 
                     SQLl.append("UPDATE mcbr SET ")
                             .append("Material = ").append(Material).append(", ")
@@ -347,14 +367,15 @@ public class ControladorMcbr {
                             .append("Cost_Unit_KOB1_Final = ").append(Cost_Unit_KOB1_Final).append(", ")
                             .append("FIFO_Cost_Unit = ").append(FIFO_Cost_Unit).append(", ")
                             .append("Inventario_Valorado_a_FIFO = ").append(Inventario_Valorado_a_FIFO).append(", ")
-                            .append("Variacion_FIFO_vs_Estandar = ").append(Variacion_FIFO_vs_Estandar).append("")
+                            .append("Variacion_FIFO_vs_Estandar = ").append(Variacion_FIFO_vs_Estandar).append(", ")
+                            .append("IdArchivo = ").append(IdArchivo).append("")
                             .append(" WHERE Id IN (").append(Id).append(") ");
                     //Paso el Sql al statement
                     SQL = con.prepareStatement(SQLl + "");
                     //ejecuto el SQL
                     if (SQL.executeUpdate() > 0) {
 
-                        System.out.println("Vuelta registros " + v);
+                        //System.out.println("Vuelta registros " + v);
                         v++;
 
                         resul = true;
@@ -380,6 +401,7 @@ public class ControladorMcbr {
                         FIFO_Cost_Unit.delete(0, FIFO_Cost_Unit.length());
                         Inventario_Valorado_a_FIFO.delete(0, Inventario_Valorado_a_FIFO.length());
                         Variacion_FIFO_vs_Estandar.delete(0, Variacion_FIFO_vs_Estandar.length());
+                        IdArchivo.delete(0, IdArchivo.length());
                         Id.delete(0, Id.length());
 
                         Material.append("(CASE id ");
@@ -402,6 +424,7 @@ public class ControladorMcbr {
                         FIFO_Cost_Unit.append("(CASE id ");
                         Inventario_Valorado_a_FIFO.append("(CASE id ");
                         Variacion_FIFO_vs_Estandar.append("(CASE id ");
+                        IdArchivo.append("(CASE id ");
                         //Id.append("(CASE id ");
 
                     }
@@ -430,6 +453,7 @@ public class ControladorMcbr {
             FIFO_Cost_Unit.append("END)");
             Inventario_Valorado_a_FIFO.append("END)");
             Variacion_FIFO_vs_Estandar.append("END)");
+            IdArchivo.append("END)");
             //Id.append("END)");
             //Armo el Sql 
             SQLl.delete(0, SQLl.length());
@@ -453,7 +477,8 @@ public class ControladorMcbr {
                     .append("Cost_Unit_KOB1_Final = ").append(Cost_Unit_KOB1_Final).append(", ")
                     .append("FIFO_Cost_Unit = ").append(FIFO_Cost_Unit).append(", ")
                     .append("Inventario_Valorado_a_FIFO = ").append(Inventario_Valorado_a_FIFO).append(", ")
-                    .append("Variacion_FIFO_vs_Estandar = ").append(Variacion_FIFO_vs_Estandar).append("")
+                    .append("Variacion_FIFO_vs_Estandar = ").append(Variacion_FIFO_vs_Estandar).append(", ")
+                    .append("IdArchivo = ").append(IdArchivo).append("")
                     .append(" WHERE Id IN (").append(Id).append(") ");
             //Paso el Sql al statement
             SQL = con.prepareStatement(SQLl + "");
@@ -471,8 +496,8 @@ public class ControladorMcbr {
         return resul;
 
     }
-    
-        public StringBuilder Valor(String Valor) {
+
+    public StringBuilder Valor(String Valor) {
         StringBuilder Cadena = new StringBuilder();
 
         if (Valor == null) {
@@ -482,7 +507,7 @@ public class ControladorMcbr {
         } else {
             //Cadena.append("'").append(Valor).append("'");
             Cadena.append(Valor);
-            
+
         }
 
         return Cadena;

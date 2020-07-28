@@ -6,6 +6,7 @@
 package Controlador;
 
 import Conexiones.ConexionBDMySql;
+import Herramienta.Herramienta;
 import Modelos.ModeloKob1;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,10 +20,9 @@ import java.util.LinkedList;
  * @author Diego Fdo Guzman B
  */
 public class ControladorKob1 {
-    
-    
-            
 
+    Herramienta herramienta = new Herramienta();
+    
     public LinkedList<ModeloKob1> Select(String Sql) {
         LinkedList<ModeloKob1> lstModeloKob1 = new LinkedList<ModeloKob1>();
         ConexionBDMySql conexion = new ConexionBDMySql();
@@ -297,7 +297,7 @@ public class ControladorKob1 {
         } else {
             //Cadena.append("'").append(Valor).append("'");
             Cadena.append(Valor);
-            
+
         }
 
         return Cadena;
@@ -309,9 +309,7 @@ public class ControladorKob1 {
 //        Connection con;
 //        con = conexion.abrirConexion();
 
-
         int CantidadRegistros = listModeloKob1.size();
-
 
         ControladorCargaPlanosProduccion cargaPlanosProduccion = new ControladorCargaPlanosProduccion();
 // CADD Creo las variables Pendiente OJO
@@ -356,6 +354,7 @@ public class ControladorKob1 {
         StringBuilder Conversion_Cost = new StringBuilder();
         StringBuilder Nuevo_Valor_Orden = new StringBuilder();
         StringBuilder Month = new StringBuilder();
+        StringBuilder IdArchivo = new StringBuilder();
         StringBuilder Id = new StringBuilder();
 //CADD Inicno las Variables con el formato predefinido Ojo si se puede unir con el codigo de arriba 
         Functional_Area.append("(CASE id ");
@@ -399,6 +398,7 @@ public class ControladorKob1 {
         Conversion_Cost.append("(CASE id ");
         Nuevo_Valor_Orden.append("(CASE id ");
         Month.append("(CASE id ");
+        IdArchivo.append("(CASE id ");
         //Id.append("(CASE id ");
         int Contador = 0;
         PreparedStatement SQL = null;
@@ -409,7 +409,20 @@ public class ControladorKob1 {
             int c = 1, contt = 0;
             int v = 1;
 
+            int Porcentaje1 = Integer.valueOf(Porcentaje);
+            int VUeltas = listModeloKob1.size() / 10;
+            int sumador = 1;
+
             for (ModeloKob1 modeloKob1 : listModeloKob1) {
+
+                if (sumador == VUeltas) {
+                    herramienta.setEventoProcesado("Progreso " + Porcentaje1 + "%");
+                    System.err.println("Progreso " + Porcentaje1 + "%");
+                    Porcentaje1++;
+                    sumador = 1;
+                }
+                sumador++;
+
                 contt++;
                 if (c == 2) {
                     Id.append(",");
@@ -455,19 +468,14 @@ public class ControladorKob1 {
                 Conversion_Cost.append("WHEN ").append(modeloKob1.getId()).append(" THEN '").append(Valor(modeloKob1.getConversion_Cost())).append("' ");
                 Nuevo_Valor_Orden.append("WHEN ").append(modeloKob1.getId()).append(" THEN '").append(Valor(modeloKob1.getNuevo_Valor_Orden())).append("' ");
                 Month.append("WHEN ").append(modeloKob1.getId()).append(" THEN '").append(Valor(modeloKob1.getMonth())).append("' ");
+                IdArchivo.append("WHEN ").append(modeloKob1.getId()).append(" THEN ").append(modeloKob1.getIdArchivo()).append(" ");
                 Id.append(modeloKob1.getId());
                 c = 2;
-                
-                
-                if(false)
-                {
-                    cargaPlanosProduccion.Progreso(Proceso, Porcentaje);
-                }
+
+
 
                 if (contt == 1000) {
-                    
-                    
-                    
+
                     Functional_Area.append("END)");
                     Company_Code.append("END)");
                     Order_.append("END)");
@@ -509,6 +517,7 @@ public class ControladorKob1 {
                     Conversion_Cost.append("END)");
                     Nuevo_Valor_Orden.append("END)");
                     Month.append("END)");
+                    IdArchivo.append("END)");
                     //Armo el Sql 
                     SQLl.append("UPDATE KOB1 SET ")
                             .append("Functional_Area = ").append(Functional_Area).append(", ")
@@ -551,18 +560,17 @@ public class ControladorKob1 {
                             .append("Packaging_Materials = ").append(Packaging_Materials).append(", ")
                             .append("Conversion_Cost = ").append(Conversion_Cost).append(", ")
                             .append("Nuevo_Valor_Orden = ").append(Nuevo_Valor_Orden).append(", ")
-                            .append("Month = ").append(Month).append("")
+                            .append("Month = ").append(Month).append(", ")
+                            .append("IdArchivo = ").append(IdArchivo).append("")
                             .append(" WHERE Id IN (").append(Id).append(") ");
                     //Paso el Sql al statement
                     SQL = con.prepareStatement(SQLl + "");
                     //ejecuto el SQL
                     if (SQL.executeUpdate() > 0) {
-                        
-                        
-                        
+
                         //System.out.println("Vuelta registros " + v);
                         v++;
-                        
+
                         resul = true;
                         // limpiamos los datos
                         SQLl.delete(0, SQLl.length());
@@ -607,6 +615,7 @@ public class ControladorKob1 {
                         Conversion_Cost.delete(0, Conversion_Cost.length());
                         Nuevo_Valor_Orden.delete(0, Nuevo_Valor_Orden.length());
                         Month.delete(0, Month.length());
+                        IdArchivo.delete(0, IdArchivo.length());
                         Id.delete(0, Id.length());
                         //----//
 
@@ -651,6 +660,7 @@ public class ControladorKob1 {
                         Conversion_Cost.append("(CASE id ");
                         Nuevo_Valor_Orden.append("(CASE id ");
                         Month.append("(CASE id ");
+                        IdArchivo.append("(CASE id ");
                         //Id.append("(CASE id ");
 
                     }
@@ -700,6 +710,7 @@ public class ControladorKob1 {
             Conversion_Cost.append("END)");
             Nuevo_Valor_Orden.append("END)");
             Month.append("END)");
+            IdArchivo.append("END)");
             //Armo el Sql 
             SQLl.delete(0, SQLl.length());
             SQLl.append("UPDATE KOB1 SET ")
@@ -743,7 +754,8 @@ public class ControladorKob1 {
                     .append("Packaging_Materials = ").append(Packaging_Materials).append(", ")
                     .append("Conversion_Cost = ").append(Conversion_Cost).append(", ")
                     .append("Nuevo_Valor_Orden = ").append(Nuevo_Valor_Orden).append(", ")
-                    .append("Month = ").append(Month).append("")
+                    .append("Month = ").append(Month).append(", ")
+                    .append("IdArchivo = ").append(IdArchivo).append("")
                     .append(" WHERE Id IN (").append(Id).append(") ");
             //Paso el Sql al statement
             SQL = con.prepareStatement(SQLl + "");

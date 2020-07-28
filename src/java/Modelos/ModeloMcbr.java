@@ -32,8 +32,9 @@ public class ModeloMcbr {
     String FIFO_Cost_Unit;
     String Inventario_Valorado_a_FIFO;
     String Variacion_FIFO_vs_Estandar;
+    Integer IdArchivo;
 
-    public ModeloMcbr(Integer id, String Material, String Descripcion, String Plant, String Batch, String Month, String Profit_center, String Material_Type, String Status, String Val_stock, String Val_stock_Med, String ValStckVal, String ValStck_Val_Mon, String Cost_Unit_Estandar, String InventarioInicial_FIFO, String Cost_Unit_Purchase, String Cost_Unit_KOB1_Piso, String Cost_Unit_KOB1_Final, String FIFO_Cost_Unit, String Inventario_Valorado_a_FIFO, String Variacion_FIFO_vs_Estandar) {
+    public ModeloMcbr(Integer id, String Material, String Descripcion, String Plant, String Batch, String Month, String Profit_center, String Material_Type, String Status, String Val_stock, String Val_stock_Med, String ValStckVal, String ValStck_Val_Mon, String Cost_Unit_Estandar, String InventarioInicial_FIFO, String Cost_Unit_Purchase, String Cost_Unit_KOB1_Piso, String Cost_Unit_KOB1_Final, String FIFO_Cost_Unit, String Inventario_Valorado_a_FIFO, String Variacion_FIFO_vs_Estandar, Integer IdArchivo) {
         this.id = id;
         this.Material = Material;
         this.Descripcion = Descripcion;
@@ -55,6 +56,7 @@ public class ModeloMcbr {
         this.FIFO_Cost_Unit = FIFO_Cost_Unit;
         this.Inventario_Valorado_a_FIFO = Inventario_Valorado_a_FIFO;
         this.Variacion_FIFO_vs_Estandar = Variacion_FIFO_vs_Estandar;
+        this.IdArchivo = IdArchivo;
     }
 
     public ModeloMcbr() {
@@ -226,6 +228,14 @@ public class ModeloMcbr {
 
     public void setVariacion_FIFO_vs_Estandar(String Variacion_FIFO_vs_Estandar) {
         this.Variacion_FIFO_vs_Estandar = Variacion_FIFO_vs_Estandar;
+    }
+
+    public Integer getIdArchivo() {
+        return IdArchivo;
+    }
+
+    public void setIdArchivo(Integer IdArchivo) {
+        this.IdArchivo = IdArchivo;
     }
 
     

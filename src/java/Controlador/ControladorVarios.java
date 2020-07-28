@@ -189,6 +189,10 @@ public class ControladorVarios {
             }
             modeloVarios.setLstmodeloMe80fn(modeloMe80fns);
 
+            if (modeloMb51.getBatch().contentEquals("B19121512")) {
+                System.err.println("");
+            }
+
             if (modeloProveedor.getVendor_Type().contains("ICO")) {
 
                 SQL = con.prepareStatement("SELECT * FROM Fbl3m WHERE Text = '" + modeloMb51.getPurchase_order() + modeloMb51.getItem() + "' AND (Offsetting_acct_no = '20011' OR Offsetting_acct_no = '50320' OR Offsetting_acct_no = '3062482' OR Offsetting_acct_no = '3072634' OR Offsetting_acct_no = '3905355' OR Offsetting_acct_no = '3905370' OR Offsetting_acct_no = '3905371')");

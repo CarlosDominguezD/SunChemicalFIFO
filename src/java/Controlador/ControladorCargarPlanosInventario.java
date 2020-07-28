@@ -38,6 +38,8 @@ public class ControladorCargarPlanosInventario {
     ControladorInventarioInicial controladorInventarioInicial = new ControladorInventarioInicial();
     ControladorMb51 controladorMb51 = new ControladorMb51();
     ControladorInformeProduccion controladorInformeProduccion = new ControladorInformeProduccion();
+    Herramienta herramienta = new Herramienta();
+    String ANO = "";
 
     public String Upload(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
         String resultado = "false";
@@ -87,23 +89,8 @@ public class ControladorCargarPlanosInventario {
                     break;
                 case "MCBR":
                     resultado = CargarCSV_MCBR_INFILE(RutaDispo, request);
-                    break;
-                case "Valuacion":
-                    resultado = CargarCSV_Valuacion_INFILE(RutaDispo, request);
                     if ("true".equals(resultado)) {
-                        Herramienta herramientas = new Herramienta();
-                        ControladorFechas controladorFechas = new ControladorFechas();
-                        ModeloEstadoPlanos modeloEstadoPlanos = new ModeloEstadoPlanos();
-                        modeloEstadoPlanos.setNombrePlano("MCBR");
-                        modeloEstadoPlanos.setFechaCarga(herramientas.sDate());
-                        modeloEstadoPlanos.setEstado("Activo");
-                        modeloEstadoPlanos.setIdFechas(controladorFechas.getIdFecha(request));
-                        ControladorEstadoPlanos controladorEstadoPlanos = new ControladorEstadoPlanos();
-                        controladorEstadoPlanos.Insert(modeloEstadoPlanos);
-                        //Selecionamos el ultimo Id del la tabal estado plano
-                        modeloEstadoPlanos.setId(controladorEstadoPlanos.getIdEstadoPlanos());
-                        // Update Mb51
-                        controladorEstadoPlanos.UpdateMB51(modeloEstadoPlanos, "MCBR");
+
                     }
                     break;
 
@@ -120,6 +107,9 @@ public class ControladorCargarPlanosInventario {
          */
         String ano = request.getParameter("Mes");
         String mes = request.getParameter("Ano");
+
+        ANO = mes + "-" + ano;
+
         String Realizado = "false";
         Ruta = Ruta.replace("\\", "/");
         String SqlInsertMasivo
@@ -153,12 +143,15 @@ public class ControladorCargarPlanosInventario {
         return Realizado;
     }
 
-    public String CargarCSV_MCBR_INFILE(String Ruta, HttpServletRequest request) throws IOException {
+    public String CargarCSV_MCBR_INFILE(String Ruta, HttpServletRequest request) throws IOException, SQLException {
         /*
          * Variables de Año y Mes
          */
         String ano = request.getParameter("Mes");
         String mes = request.getParameter("Ano");
+        
+        ANO = ano + "-" + mes;
+        
         String Realizado = "false";
         Ruta = Ruta.replace("\\", "/");
         String SqlInsertMasivo
@@ -174,49 +167,9 @@ public class ControladorCargarPlanosInventario {
         ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
 
         String Sqlborrar = "delete from MCBR WHERE IdArchivo is null";
-
         if (controladorMrpdata.Insert(Sqlborrar)) {
-            //Realizado = "true";
-        }
-
-        if (controladorMrpdata.Insert(SqlInsertMasivo)) {
             Realizado = "true";
-            //Auditoria
-            ModeloAuditoria modeloAuditoria = new ModeloAuditoria();
-            modeloAuditoria.setModeloUsuario((ModeloUsuario) request.getSession().getAttribute("user"));
-            modeloAuditoria.setMensaje("El Usuario " + modeloAuditoria.getModeloUsuario().getUsuario() + " a cargado el plano MCBR en el sistema.");
-            ControladorAuditoria controladorAuditoria = new ControladorAuditoria();
-            controladorAuditoria.Insert(modeloAuditoria);
-
         }
-
-        return Realizado;
-    }
-
-    public String CargarCSV_Valuacion_INFILE(String Ruta, HttpServletRequest request) throws IOException, SQLException {
-        /*
-         * Variables de Año y Mes
-         */
-        String ano = request.getParameter("Mes");
-        String mes = request.getParameter("Ano");
-        String Realizado = "false";
-        Ruta = Ruta.replace("\\", "/");
-        String SqlInsertMasivo
-                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE MCBR"
-                + " FIELDS TERMINATED BY ','"
-                + " ENCLOSED BY '\"'"
-                + " LINES TERMINATED BY '\\r\\n'"
-                + " IGNORE 1 LINES"
-                + " (Material,Descripcion,Plant,Batch,Month,Profit_center,Material_Type,Status,Val_stock,Val_stock_Med,ValStckVal,ValStck_Val_Mon)";
-
-        System.out.println("Consulta: " + SqlInsertMasivo);
-
-        ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
-
-        //String Sqlborrar = "delete from MCBR WHERE IdArchivo is null";
-        //if (controladorMrpdata.Insert(Sqlborrar)) {
-        //Realizado = "true";
-        //}
         if (controladorMrpdata.Insert(SqlInsertMasivo)) {
 
             //Auditoria
@@ -228,9 +181,11 @@ public class ControladorCargarPlanosInventario {
 
             ControladorMcbr controladorMcbr = new ControladorMcbr();
             LinkedList<ModeloMcbr> Lista_ModeloMcbr = new LinkedList<ModeloMcbr>();
-            System.out.println("INICIA CARGA AL LISTADO CON TODOS LOS REGISTROS DE MCBR: " + new Date());
+            
+            Progreso("CARGA AL LISTADO CON TODOS LOS REGISTROS DE MCBR:", "1");
+            herramienta.setEventoProcesado("CARGA AL LISTADO CON TODOS LOS REGISTROS DE MCBR: 1%");
             Lista_ModeloMcbr = controladorMcbr.Select();
-            System.out.println("FINALIZA CARGA AL LISTADO CON TODOS LOS REGISTROS DE MCBR: " + new Date());
+
             LinkedList<ModeloMcbr> Lista_ModeloMcbr_Upd = new LinkedList<ModeloMcbr>();
 
             ConexionBDMySql conexion = new ConexionBDMySql();
@@ -240,22 +195,40 @@ public class ControladorCargarPlanosInventario {
 
             int Contador = 0;
 
-            System.out.println("INICIA RECORRIDO DEL LISTADO CON TODOS LOS REGISTROS DE MCBR: " + new Date());
+            Progreso("RECORRIDO DEL LISTADO CON TODOS LOS REGISTROS DE MCBR:", "30");
+            herramienta.setEventoProcesado("RECORRIDO DEL LISTADO CON TODOS LOS REGISTROS DE MCBR: 30%");
+
+            ModeloEstadoPlanos modeloEstadoPlanos = Archivo(request);
+            int Porcentaje = 30;
+            int VUeltas = Lista_ModeloMcbr.size() / 40;
+            int sumador = 1;
+
             for (ModeloMcbr modeloMcbr : Lista_ModeloMcbr) {
 
+                if (sumador == VUeltas) {
+                    herramienta.setEventoProcesado("Progreso " + Porcentaje + "%");
+                    System.err.println("Progreso " + Porcentaje + "%");
+                    Porcentaje++;
+                    sumador = 1;
+                }
+                sumador++;
+
                 modeloMcbr = LlenarModeloMcbr(modeloMcbr, con);
+                modeloMcbr.setIdArchivo(modeloEstadoPlanos.getId());
+
                 Lista_ModeloMcbr_Upd.add(modeloMcbr);
 
-                Contador++;
-                if (Contador == 1000) {
-                    System.out.println("Vuelta de Procesados Fase 1: " + Contador + " - " + new Date());
-                    Contador = 1;
-                }
-
+//                Contador++;
+//                if (Contador == 1000) {
+//                    System.out.println("Vuelta de Procesados Fase 1: " + Contador + " - " + new Date());
+//                    Contador = 1;
+//                }
             }
-            System.out.println("FINALIZA RECORRIDO DEL LISTADO CON TODOS LOS REGISTROS DE MCBR: " + new Date());
-            System.out.println("INICIA ACTUALIZACION DEL LISTADO CON TODOS LOS REGISTROS DE MCBR: " + new Date());
-            controladorMcbr.UpdateList_Masivo(Lista_ModeloMcbr_Upd, con);
+
+            Progreso("ACTUALIZACION DEL LISTADO CON TODOS LOS REGISTROS DE MCBR:", "70");
+            herramienta.setEventoProcesado("ACTUALIZACION DEL LISTADO CON TODOS LOS REGISTROS DE MCBR: 70%");
+
+            controladorMcbr.UpdateList_Masivo(Lista_ModeloMcbr_Upd, con, "70");
             System.out.println("FINALIZA ACTUALIZACION DEL LISTADO CON TODOS LOS REGISTROS DE MCBR: " + new Date());
             con.close();
 
@@ -293,22 +266,21 @@ public class ControladorCargarPlanosInventario {
                 + "sum(Conversion_Cost) as Conversion_Cost_, "
                 + "sum(Nuevo_Valor_Orden) as Nuevo_Valor_Orden_ "
                 + "from kob1 group by Link_Terminado_Batch)";
-        
-        System.out.println("INICIA INSERSION PRODUCCION: " + new Date());
+
+        Progreso("Generando Informe Produccion Archivo", "10");
+        herramienta.setEventoProcesado("Generando Informe Produccion Archivo 10%");
 
         controladorMrpdata.Insert(SqlInformeProduccionPiso);
-        
-        System.out.println("FINALIZA INSERSION PRODUCCION: " + new Date());
-        
-        
+
         String ActualizacionInformePiso = "update "
                 + "informe_produccion "
                 + "set Costo_unitario_FIFO = (Nuevo_Valor_Orden / Cantidad)";
 
-        System.out.println("INICIA CALCULO DE PRODUCCION: " + new Date());        
+        Progreso("Calculando Valor de Informe de Produccion", "20");
+        herramienta.setEventoProcesado("Calculando Valor de Informe de Produccion 20%");
         boolean rs = controladorMrpdata.Insert(ActualizacionInformePiso);
-        System.out.println("FINALIZA CALCULO DE PRODUCCION: " + new Date());
         
+
         return rs;
     }
 
@@ -345,7 +317,8 @@ public class ControladorCargarPlanosInventario {
         //controladorMb51 = new ControladorMb51();
         LinkedList<ModeloMb51> Lista_modeloMb51s;// = new LinkedList<ModeloMb51>();
 
-        String Sql1 = "SELECT * FROM mb51 where Material = '" + modeloMcbr.getMaterial() + "' and Batch = '" + modeloMcbr.getBatch() + "'";
+        String Sql1 = "SELECT * FROM mb51 where Material = '" + modeloMcbr.getMaterial() + "' and Batch = '" + modeloMcbr.getBatch() + "' and fecha = '" + ANO + "'";
+//        String Sql = "SELECT * FROM mb51 where link1_Material_Batch = '" + modeloKob1.getLink_Material_Batch() + "' AND fecha = '" + ANO + "' ORDER BY Month";
 
         double Cost_Unit_Purchase = 0.0;
 
@@ -431,6 +404,28 @@ public class ControladorCargarPlanosInventario {
             modeloMcbr.setCost_Unit_KOB1_Final("0.0");
         }
         return modeloMcbr;
+    }
+
+    public void Progreso(String Proceso, String Porcentaje) {
+        System.out.println("Porcentaje " + Porcentaje + "% Proceso: " + Proceso);
+
+    }
+
+    public ModeloEstadoPlanos Archivo(HttpServletRequest request) {
+        Herramienta herramientas = new Herramienta();
+        ControladorFechas controladorFechas = new ControladorFechas();
+        ModeloEstadoPlanos modeloEstadoPlanos = new ModeloEstadoPlanos();
+        modeloEstadoPlanos.setNombrePlano("MCBR");
+        modeloEstadoPlanos.setFechaCarga(herramientas.sDate());
+        modeloEstadoPlanos.setEstado("Activo");
+        modeloEstadoPlanos.setIdFechas(controladorFechas.getIdFecha(request));
+        ControladorEstadoPlanos controladorEstadoPlanos = new ControladorEstadoPlanos();
+        controladorEstadoPlanos.Insert(modeloEstadoPlanos);
+        //Selecionamos el ultimo Id del la tabal estado plano
+        modeloEstadoPlanos.setId(controladorEstadoPlanos.getIdEstadoPlanos());
+
+        return modeloEstadoPlanos;
+
     }
 
 }
