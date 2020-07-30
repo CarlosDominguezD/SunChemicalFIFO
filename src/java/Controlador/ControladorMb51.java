@@ -6,6 +6,7 @@
 package Controlador;
 
 import Conexiones.ConexionBDMySql;
+import Herramienta.Herramienta;
 import Modelos.ModeloMb51;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,6 +19,8 @@ import java.util.LinkedList;
  * @author Carlos A Dominguez D
  */
 public class ControladorMb51 {
+
+    Herramienta herramienta = new Herramienta();
 
     public boolean Insert(ModeloMb51 modeloMb51) {
         boolean resul = false;
@@ -217,9 +220,24 @@ public class ControladorMb51 {
                         + "Porcentaje_fifo_final_vs_Estandar,"
                         + "Compra_valorada_a_Unit_FIFO,"
                         + "Variacion_FIFO_vs_Estandar,"
-                        + "NovedadIco) "
-                        + "VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                        + "NovedadIco,"
+                        + "IdArchivo) "
+                        + "VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+
+                int Porcentaje1 = Integer.valueOf(70);
+                int VUeltas = listModeloMb51.size() / 28;
+                int sumador = 1;
+
                 for (ModeloMb51 modeloMb51 : listModeloMb51) {
+
+                    if (sumador == VUeltas) {
+                        herramienta.setEventoProcesado("Progreso " + Porcentaje1 + "%");
+                        System.err.println("Progreso " + Porcentaje1 + "%");
+                        Porcentaje1++;
+                        sumador = 1;
+                    }
+                    sumador++;
+
                     SQL.setString(1, modeloMb51.getPlant());
                     SQL.setString(2, modeloMb51.getPurchase_order());
                     SQL.setString(3, modeloMb51.getMaterial());
@@ -275,6 +293,7 @@ public class ControladorMb51 {
                     SQL.setString(53, modeloMb51.getCompra_valorada_a_Unit_FIFO());
                     SQL.setString(54, modeloMb51.getVariacion_FIFO_vs_Estandar());
                     SQL.setString(55, modeloMb51.getNovedadIco());
+                    SQL.setInt(56, modeloMb51.getIdArchivo());
 
                     if (SQL.executeUpdate() > 0) {
                         resul = true;
@@ -395,66 +414,65 @@ public class ControladorMb51 {
 //                    + "NovedadIco"
 //                    + " FROM mb51 WHERE IdArchivo is null group by  Material, Batch order by Batch, Material";
         String Sql = "SELECT "
-                    + "Id,"
-                    + "Plant,"
-                    + "Purchase_order,"
-                    + "Material,"
-                    + "Material_Description,"
-                    + "Batch,"
-                    + "Movement_type,"
-                    + "Movement_Type_Text,"
-                    + "Item,"
-                    + "SUM(Quantity) AS 'Quantity',"
-                    + "SUM(Qty_in_unit_of_entry) AS 'Qty_in_unit_of_entry',"
-                    + "Unit_of_Entry,"
-                    + "SUM(Amt_in_loc_cur) AS 'Amt_in_loc_cur',"
-                    + "Currency,"
-                    + "Storage_Location,"
-                    + "Posting_Date,"
-                    + "Document_Date,"
-                    + "Material_Document,"
-                    + "User_Name,"
-                    + "Vendor,"
-                    + "Vendor_Name,"
-                    + "Vendor_Type,"
-                    + "Month,"
-                    + "Period,"
-                    + "Cost_Unit_SAP_en_KG,"
-                    + "Material_Type,"
-                    + "Profit_Center,"
-                    + "link1_Material_Batch,"
-                    + "link2_PO_position,"
-                    + "Referencia_vendor,"
-                    + "TotalQ_ME80FN,"
-                    + "O_Unit_ME80FN,"
-                    + "TotalQ_Porcentaje,"
-                    + "TOTAL_INVOICE_VALUE,"
-                    + "Factura_Value_Unit,"
-                    + "PIR_Porcentaje_del_Costo,"
-                    + "Precio_Unit_moneda_compra,"
-                    + "Moneda,"
-                    + "link3_PO_Item,"
-                    + "Freight,"
-                    + "Dutys,"
-                    + "Arancel,"
-                    + "Total_Costos_Adicionales,"
-                    + "Participac_Adicionales,"
-                    + "Adicionales_al_CTO_Estandar,"
-                    + "Variance,"
-                    + "Total_Costos,"
-                    + "Unitario_Real,"
-                    + "Unitario_Real_adicional_estandar,"
-                    + "Unitario_estandar_SAP,"
-                    + "Unitario_final_FIFO,"
-                    + "Porcentaje_Real_Vs_Estandar,"
-                    + "Porcentaje_fifo_final_vs_Estandar,"
-                    + "Compra_valorada_a_Unit_FIFO,"
-                    + "Variacion_FIFO_vs_Estandar,"
-                    + "NovedadIco"
-                    //+ " FROM mb51 WHERE IdArchivo is null group by  Purchase_order, Material, Batch order by Batch, Material";        
-                    + " FROM MB51_planos group by Purchase_order, Material, Batch order by Batch, Material";        
-        
-        
+                + "Id,"
+                + "Plant,"
+                + "Purchase_order,"
+                + "Material,"
+                + "Material_Description,"
+                + "Batch,"
+                + "Movement_type,"
+                + "Movement_Type_Text,"
+                + "Item,"
+                + "SUM(Quantity) AS 'Quantity',"
+                + "SUM(Qty_in_unit_of_entry) AS 'Qty_in_unit_of_entry',"
+                + "Unit_of_Entry,"
+                + "SUM(Amt_in_loc_cur) AS 'Amt_in_loc_cur',"
+                + "Currency,"
+                + "Storage_Location,"
+                + "Posting_Date,"
+                + "Document_Date,"
+                + "Material_Document,"
+                + "User_Name,"
+                + "Vendor,"
+                + "Vendor_Name,"
+                + "Vendor_Type,"
+                + "Month,"
+                + "Period,"
+                + "Cost_Unit_SAP_en_KG,"
+                + "Material_Type,"
+                + "Profit_Center,"
+                + "link1_Material_Batch,"
+                + "link2_PO_position,"
+                + "Referencia_vendor,"
+                + "TotalQ_ME80FN,"
+                + "O_Unit_ME80FN,"
+                + "TotalQ_Porcentaje,"
+                + "TOTAL_INVOICE_VALUE,"
+                + "Factura_Value_Unit,"
+                + "PIR_Porcentaje_del_Costo,"
+                + "Precio_Unit_moneda_compra,"
+                + "Moneda,"
+                + "link3_PO_Item,"
+                + "Freight,"
+                + "Dutys,"
+                + "Arancel,"
+                + "Total_Costos_Adicionales,"
+                + "Participac_Adicionales,"
+                + "Adicionales_al_CTO_Estandar,"
+                + "Variance,"
+                + "Total_Costos,"
+                + "Unitario_Real,"
+                + "Unitario_Real_adicional_estandar,"
+                + "Unitario_estandar_SAP,"
+                + "Unitario_final_FIFO,"
+                + "Porcentaje_Real_Vs_Estandar,"
+                + "Porcentaje_fifo_final_vs_Estandar,"
+                + "Compra_valorada_a_Unit_FIFO,"
+                + "Variacion_FIFO_vs_Estandar,"
+                + "NovedadIco"
+                //+ " FROM mb51 WHERE IdArchivo is null group by  Purchase_order, Material, Batch order by Batch, Material";        
+                + " FROM MB51_planos group by Purchase_order, Material, Batch order by Batch, Material";
+
         try {
             SQL = con.prepareStatement(Sql);
             ResultSet res = SQL.executeQuery();
@@ -794,10 +812,11 @@ public class ControladorMb51 {
         }
         return resul;
     }
-    
+
     LinkedList<ModeloMb51> modeloMb51s = new LinkedList<ModeloMb51>();
-     public LinkedList<ModeloMb51> SelectSql(String Sql, Connection con) {
-    //    LinkedList<ModeloMb51> modeloMb51s = new LinkedList<ModeloMb51>();
+
+    public LinkedList<ModeloMb51> SelectSql(String Sql, Connection con) {
+        //    LinkedList<ModeloMb51> modeloMb51s = new LinkedList<ModeloMb51>();
         modeloMb51s.clear();
         //ConexionBDMySql conexion = new ConexionBDMySql();
         //Connection con;
@@ -874,5 +893,5 @@ public class ControladorMb51 {
         }
         return modeloMb51s;
     }
-    
+
 }

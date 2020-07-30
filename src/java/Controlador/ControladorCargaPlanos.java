@@ -90,21 +90,7 @@ public class ControladorCargaPlanos {
                     case "MB51":
                         resultado = CargarCSV_MB51_INFILE_new(RutaDispo, request);
                         if ("true".equals(resultado)) {
-                            Herramienta herramientas = new Herramienta();
-                            ControladorFechas controladorFechas = new ControladorFechas();
-                            ModeloEstadoPlanos modeloEstadoPlanos = new ModeloEstadoPlanos();
-                            modeloEstadoPlanos.setNombrePlano("MB51");
-                            modeloEstadoPlanos.setFechaCarga(herramientas.sDate());
-                            modeloEstadoPlanos.setEstado("Activo");
-                            modeloEstadoPlanos.setIdFechas(controladorFechas.getIdFecha(request));
-                            ControladorEstadoPlanos controladorEstadoPlanos = new ControladorEstadoPlanos();
-                            herramienta.setEventoProcesado("Actualizacion Proceso Final 98%");
-                            System.err.println("Actualizacion Proceso Final 98%");
-                            controladorEstadoPlanos.Insert(modeloEstadoPlanos);
-                            //Selecionamos el ultimo Id del la tabal estado plano
-                            modeloEstadoPlanos.setId(controladorEstadoPlanos.getIdEstadoPlanos());
-                            // Update Mb51
-                            controladorEstadoPlanos.UpdateMB51(modeloEstadoPlanos, "MB51");
+
                         }
                         break;
                     case "FBL3N":
@@ -135,7 +121,7 @@ public class ControladorCargaPlanos {
                         resultado = CargarCSV_POVR_INFILE(RutaDispo, request);
                         break;
                     case "INVENTARIO":
-                        resultado = CargarCSV_INVENTARIO_INFILE(RutaDispo, request);
+                        resultado = CargarCSV_InventarioInicial_INFILE(RutaDispo, request);
                         break;
                 }
             } catch (IOException | SQLException ex) {
@@ -217,21 +203,6 @@ public class ControladorCargaPlanos {
                 case "MB51":
                     resultado = CargarCSV_MB51_INFILE_new(RutaDispo, request);
                     if ("true".equals(resultado)) {
-                        Herramienta herramientas = new Herramienta();
-                        ControladorFechas controladorFechas = new ControladorFechas();
-                        ModeloEstadoPlanos modeloEstadoPlanos = new ModeloEstadoPlanos();
-                        modeloEstadoPlanos.setNombrePlano("MB51");
-                        modeloEstadoPlanos.setFechaCarga(herramientas.sDate());
-                        modeloEstadoPlanos.setEstado("Activo");
-                        modeloEstadoPlanos.setIdFechas(controladorFechas.getIdFecha(request));
-                        ControladorEstadoPlanos controladorEstadoPlanos = new ControladorEstadoPlanos();
-                        herramienta.setEventoProcesado("Actualizacion Proceso Final 98%");
-                        System.err.println("Actualizacion Proceso Final 98%");
-                        controladorEstadoPlanos.Insert(modeloEstadoPlanos);
-                        //Selecionamos el ultimo Id del la tabal estado plano
-                        modeloEstadoPlanos.setId(controladorEstadoPlanos.getIdEstadoPlanos());
-                        // Update Mb51
-                        controladorEstadoPlanos.UpdateMB51(modeloEstadoPlanos, "MB51");
                     }
                     break;
                 case "FBL3N":
@@ -402,8 +373,8 @@ public class ControladorCargaPlanos {
             for (ModeloMb51 modeloMb51 : LinkModeloMb51s) {
 
                 if (sumador == VUeltas) {
-                    herramienta.setEventoProcesado("Verificacion de Cambios en Batch " + Porcentaje + "%");
-                    System.err.println("Verificacion de Cambios en Batch " + Porcentaje + "%");
+                    herramienta.setEventoProcesado("Cambios en Batch " + Porcentaje + "%");
+                    System.err.println("Cambios en Batch " + Porcentaje + "%");
                     Porcentaje++;
                     sumador = 1;
                 }
@@ -413,6 +384,8 @@ public class ControladorCargaPlanos {
                 CambiosBatch(modeloMb51);
                 //System.out.println("Registros Procesados: " + Contador++);
             }
+
+            ModeloEstadoPlanos modeloEstadoPlanos = Archivo(request);
             Contador = 0;
             Porcentaje = 30;
             VUeltas = LinkModeloMb51_New.size() / 40;
@@ -426,7 +399,12 @@ public class ControladorCargaPlanos {
                     sumador = 1;
                 }
                 sumador++;
-                LinkModeloMb51.add(FinalComprasMB51_CargaCSV_20(modeloMb51));
+
+                modeloMb51 = FinalComprasMB51_CargaCSV_20(modeloMb51);
+
+                modeloMb51.setIdArchivo(modeloEstadoPlanos.getId());
+
+                LinkModeloMb51.add(modeloMb51);
 
             }
 
@@ -437,11 +415,11 @@ public class ControladorCargaPlanos {
                 //Realizado = "true";
 
             }
-            herramienta.setEventoProcesado("Actualizacion de Acumulado de Compras 70%");
-            System.err.println("Actualizacion de Acumulado de Compras 70%");
+            herramienta.setEventoProcesado("Actualizacion Final de Compras 70%");
+            System.err.println("Actualizacion de Final de Compras 70%");
             controladorMb51.InsertList(LinkModeloMb51);
-            herramienta.setEventoProcesado("Actualizacion de Acumulado de Compras 90%");
-            System.err.println("Actualizacion de Acumulado de Compras 90%");
+            herramienta.setEventoProcesado("Actualizacion de Fecha Archivo de Compras 98%");
+            System.err.println("Actualizacion de Fecha Archivo de Compras 98%");
             SqlUpdateFecha = "Update MB51 set fecha = '" + ano + "-" + mes + "' where fecha is null";
             controladorMrpdata.Insert(SqlUpdateFecha);
 
@@ -803,25 +781,30 @@ public class ControladorCargaPlanos {
         return Realizado;
     }
 
-    public String CargarCSV_INVENTARIO_INFILE(String Ruta, HttpServletRequest request) throws IOException {
+    public String CargarCSV_InventarioInicial_INFILE(String Ruta, HttpServletRequest request) throws IOException {
         /*
          * Variables de Año y Mes
          */
         String ano = request.getParameter("Mes");
         String mes = request.getParameter("Ano");
+
+        
+
         String Realizado = "false";
         Ruta = Ruta.replace("\\", "/");
         String SqlInsertMasivo
-                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE INVENTARIO"
+                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE InventarioInicial"
                 + " FIELDS TERMINATED BY ','"
                 + " ENCLOSED BY '\"'"
                 + " LINES TERMINATED BY '\\r\\n'"
                 + " IGNORE 1 LINES"
                 + " (Material,Material_Description,Batch,Link_Material_Batch,FIFO_Cost_UNIT)";
 
-        //System.out.println("Consulta: " + SqlInsertMasivo);
+        System.out.println("Consulta: " + SqlInsertMasivo);
+
         ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
-        String Sqlborrar = "delete from INVENTARIO";
+
+        String Sqlborrar = "delete from InventarioInicial";
 
         if (controladorMrpdata.Insert(Sqlborrar)) {
             //Realizado = "true";
@@ -832,7 +815,7 @@ public class ControladorCargaPlanos {
             //Auditoria
             ModeloAuditoria modeloAuditoria = new ModeloAuditoria();
             modeloAuditoria.setModeloUsuario((ModeloUsuario) request.getSession().getAttribute("user"));
-            modeloAuditoria.setMensaje("El Usuario " + modeloAuditoria.getModeloUsuario().getUsuario() + " a cargado el plano INVENTARIO en el sistema.");
+            modeloAuditoria.setMensaje("El Usuario " + modeloAuditoria.getModeloUsuario().getUsuario() + " a cargado el plano InventarioInicial en el sistema.");
             ControladorAuditoria controladorAuditoria = new ControladorAuditoria();
             controladorAuditoria.Insert(modeloAuditoria);
 
@@ -958,7 +941,10 @@ public class ControladorCargaPlanos {
         modeloMb51.setFactura_Value_Unit(String.format("%.5f", Factura_Value_Unit).replace(",", "."));
 
         //Double Unitario_estandar = Double.valueOf(modeloMb51.getAmt_in_loc_cur()) / Double.valueOf(modeloMb51.getQuantity());
-        Double PIR = Factura_Value_Unit / Cost_Unit_SAP_en_KG;
+        Double PIR = 0.0;
+        if (Cost_Unit_SAP_en_KG != 0) {
+            PIR = Factura_Value_Unit / Cost_Unit_SAP_en_KG;
+        }
         //LLENAMOS COLUMNA AJ
         //modeloMb51.setPIR_Porcentaje(String.format("%.5f", PIR));
         modeloMb51.setPIR_Porcentaje_del_Costo(String.format("%.5f", PIR).replace(",", "."));
@@ -1355,7 +1341,10 @@ public class ControladorCargaPlanos {
         modeloMb51.setFactura_Value_Unit(String.format("%.5f", Factura_Value_Unit).replace(",", "."));
 
         //Double Unitario_estandar = Double.valueOf(modeloMb51.getAmt_in_loc_cur()) / Double.valueOf(modeloMb51.getQuantity());
-        Double PIR = Factura_Value_Unit / Cost_Unit_SAP_en_KG;
+        Double PIR = 0.0;
+        if (Cost_Unit_SAP_en_KG != 0) {
+            PIR = Factura_Value_Unit / Cost_Unit_SAP_en_KG;
+        }
         //LLENAMOS COLUMNA AJ
         //modeloMb51.setPIR_Porcentaje(String.format("%.5f", PIR));
         modeloMb51.setPIR_Porcentaje_del_Costo(String.format("%.5f", PIR).replace(",", "."));
@@ -1541,6 +1530,24 @@ public class ControladorCargaPlanos {
 //
 //        controladorMb51.Update(modeloMb51);
         //}
+    }
+
+    public ModeloEstadoPlanos Archivo(HttpServletRequest request) {
+        Herramienta herramientas = new Herramienta();
+        ControladorFechas controladorFechas = new ControladorFechas();
+        ModeloEstadoPlanos modeloEstadoPlanos = new ModeloEstadoPlanos();
+        modeloEstadoPlanos.setNombrePlano("MB51");
+        modeloEstadoPlanos.setFechaCarga(herramientas.sDate());
+        modeloEstadoPlanos.setEstado("Activo");
+        modeloEstadoPlanos.setIdFechas(controladorFechas.getIdFecha(request));
+        ControladorEstadoPlanos controladorEstadoPlanos = new ControladorEstadoPlanos();
+        herramienta.setEventoProcesado("Actualizacion Proceso Final 98%");
+        System.err.println("Actualizacion Proceso Final 98%");
+        controladorEstadoPlanos.Insert(modeloEstadoPlanos);
+        //Selecionamos el ultimo Id del la tabal estado plano
+        modeloEstadoPlanos.setId(controladorEstadoPlanos.getIdEstadoPlanos());
+
+        return modeloEstadoPlanos;
     }
 
 }

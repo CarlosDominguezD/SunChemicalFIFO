@@ -88,11 +88,12 @@
                             <script type="text/javascript">
                                 var dato = 'Ininciando';
                                 function GetEventos() {
-                                    alert("Inicia");
+                                    //alert("Inicia");
                                     setInterval(StartSolicitudEvento, 100);
                                 }
                                 function StartSolicitudEvento()
                                 {
+                                    document.cargaplanoscompres.Accion.disabled=true;  
                                     var Accion = "GetSolicitudEvento";
                                     var data = {
                                         Accion: Accion
@@ -104,7 +105,7 @@
                                         success: function (resul, textStatus, jqXHR) {
                                             if (dato !== resul)
                                             {
-                                                document.CargarPlanoServlet.listaEventos.value += resul + '\n';
+                                                document.cargaplanoscompres.listaEventos.value += resul + '\n';
                                                 dato = resul;
                                             }
                                         },

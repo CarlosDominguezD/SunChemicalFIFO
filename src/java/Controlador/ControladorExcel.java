@@ -90,7 +90,7 @@ public class ControladorExcel {
         String Fecha = new Date().getYear() + "_" + new Date().getMonth() + "_" + new Date().getDay() + "_" + new Date().getHours() + "_" + new Date().getMinutes() + "_" + new Date().getSeconds();
         String NombreArchivo = "C:/Zred/SunChemical/KOB1_" + Fecha + ".CSV";
         
-        newQuery = "SELECT * FROM kob1 WHERE idarchivo is not null INTO OUTFILE '" + NombreArchivo +"' FIELDS TERMINATED BY ';' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\\r\\n';";
+        newQuery = "SELECT * FROM kob1 WHERE idarchivo is not null INTO OUTFILE '" + NombreArchivo +"' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\\r\\n';";
         try {
             System.out.println("Reporte : " + newQuery);
 
