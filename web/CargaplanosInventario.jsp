@@ -14,6 +14,13 @@
         <%@include file="Principal/Body.jsp" %>
         <script type="text/javascript" src="Principal/js/jquery.min.js" ></script>
         <script type="text/javascript" src="Principal/js/ValidacionesPlano.js" ></script> 
+        <style>
+            textarea {
+                overflow-y: scroll;
+                height: 200px;
+                resize: none; /* Remove this if you want the user to resize the textarea */
+            }
+        </style>
         <div class="right_col" role="main">
             <div class="">            
                 <div class="clearfix"></div>

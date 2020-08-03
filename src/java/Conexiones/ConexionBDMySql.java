@@ -41,8 +41,8 @@ public class ConexionBDMySql
     {
         try 
         {            
-            //file = new File("SunChemical\\ConBDMySqlWEBFIFO.ini");            
-            file = new File("C:\\Zred\\SunChemical\\ConBDMySqlWEB_Fifo.ini");            
+            file = new File("SunChemical\\ConBDMySqlWEBFIFO.ini");            
+            //file = new File("C:\\Zred\\SunChemical\\ConBDMySqlWEB_Fifo.ini");            
             BufferedReader filein = null;
             if (file != null)
             {
