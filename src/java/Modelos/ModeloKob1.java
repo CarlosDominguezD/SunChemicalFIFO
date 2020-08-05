@@ -54,8 +54,10 @@ public class ModeloKob1 {
     String Nuevo_Valor_Orden;
     String Month;
     Integer IdArchivo;
+    String Produccion;
+    String Inventario;
 
-    public ModeloKob1(Integer Id, String Functional_Area, String Company_Code, String Order_, String CO_object_name, String Cost_Element, String Cost_element_name, String Material, String Material_Description, String Plant, String Period, String Fiscal_Year, String Dr_Cr_indicator, String Total_Quantity, String Unit_of_Measure, String Value_TranCurr, String Transaction_Currency, String Value_in_Obj_Crcy, String Object_Currency, String Document_Number, String Link_Plant_Material, String Link_Material_orden, String Batch_consumo, String Link_Material_Batch, String Material_Type_Components, String Procur_Type, String Level_1, String Finish_Good_sku, String Mat_Type_Unfinish_Goods, String Batch_Finish_goods, String Link_Terminado_Batch, String Cost_Unit_Estandar, String Cantidad_Terminada, String Cost_Unit_Fifo_Old, String Cost_Unit_Fifo_R_Mat_Pack, String x, String Total_Raw_Material, String Manufact_Materials, String Packaging_Materials, String Conversion_Cost, String Nuevo_Valor_Orden, String Month, Integer IdArchivo) {
+    public ModeloKob1(Integer Id, String Functional_Area, String Company_Code, String Order_, String CO_object_name, String Cost_Element, String Cost_element_name, String Material, String Material_Description, String Plant, String Period, String Fiscal_Year, String Dr_Cr_indicator, String Total_Quantity, String Unit_of_Measure, String Value_TranCurr, String Transaction_Currency, String Value_in_Obj_Crcy, String Object_Currency, String Document_Number, String Link_Plant_Material, String Link_Material_orden, String Batch_consumo, String Link_Material_Batch, String Material_Type_Components, String Procur_Type, String Level_1, String Finish_Good_sku, String Mat_Type_Unfinish_Goods, String Batch_Finish_goods, String Link_Terminado_Batch, String Cost_Unit_Estandar, String Cantidad_Terminada, String Cost_Unit_Fifo_Old, String Cost_Unit_Fifo_R_Mat_Pack, String x, String Total_Raw_Material, String Manufact_Materials, String Packaging_Materials, String Conversion_Cost, String Nuevo_Valor_Orden, String Month, Integer IdArchivo, String Produccion, String Inventario) {
         this.Id = Id;
         this.Functional_Area = Functional_Area;
         this.Company_Code = Company_Code;
@@ -99,6 +101,8 @@ public class ModeloKob1 {
         this.Nuevo_Valor_Orden = Nuevo_Valor_Orden;
         this.Month = Month;
         this.IdArchivo = IdArchivo;
+        this.Produccion = Produccion;
+        this.Inventario = Inventario;
     }
 
     public ModeloKob1() {
@@ -446,6 +450,22 @@ public class ModeloKob1 {
 
     public void setIdArchivo(Integer IdArchivo) {
         this.IdArchivo = IdArchivo;
+    }
+
+    public String getProduccion() {
+        return Produccion;
+    }
+
+    public void setProduccion(String Produccion) {
+        this.Produccion = Produccion;
+    }
+
+    public String getInventario() {
+        return Inventario;
+    }
+
+    public void setInventario(String Inventario) {
+        this.Inventario = Inventario;
     }
     
     

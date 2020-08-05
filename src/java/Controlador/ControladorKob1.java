@@ -29,12 +29,45 @@ public class ControladorKob1 {
         ConexionBDMySql conexion = new ConexionBDMySql();
         Connection con;
         con = conexion.abrirConexion();
+
+        int cantFilas = 0;
+        PreparedStatement SQL1;
+        try {
+            SQL1 = con.prepareStatement("Select Count(id) as Cuenta from kob1_planos");
+            ResultSet res1 = SQL1.executeQuery();
+            while (res1.next()) {
+                cantFilas = Integer.parseInt(res1.getString("Cuenta"));
+            }
+            res1.close();
+            SQL1.close();
+            //con.close();
+        } catch (SQLException e) {
+            System.out.println("Error en la consulta SQL Select " + e);
+        }
+
         PreparedStatement SQL;
         try {
             SQL = con.prepareStatement(Sql);
             ResultSet res = SQL.executeQuery();
             //ModeloKob1 modeloKob1 = null;
+
+            int Porcentaje = 10;
+            int VUeltas = cantFilas / 10;
+            int sumador = 1;
+
             while (res.next()) {
+
+                if (sumador == VUeltas) {
+
+                    Runtime garbage = Runtime.getRuntime();
+                    garbage.gc();
+
+                    herramienta.setEventoProcesado("Progreso " + Porcentaje + "%");
+                    System.err.println("Progreso " + Porcentaje + "%");
+                    Porcentaje++;
+                    sumador = 1;
+                }
+                sumador++;
                 ModeloKob1 modeloKob1 = new ModeloKob1();
                 modeloKob1.setId(res.getInt("Id"));
                 modeloKob1.setFunctional_Area(res.getString("Functional_Area"));
@@ -80,6 +113,7 @@ public class ControladorKob1 {
                 modeloKob1.setMonth(res.getString("Month"));
 
                 lstModeloKob1.add(modeloKob1);
+
                 modeloKob1 = null;
             }
             res.close();
@@ -306,13 +340,132 @@ public class ControladorKob1 {
         return Cadena;
     }
 
+    public boolean InsertList_Masivo(LinkedList<ModeloKob1> listModeloKob1, Connection con, String Proceso, String Porcentaje) throws SQLException {
+        boolean resul = false;
+        int c = 1;
+        StringBuilder SqlDatos = new StringBuilder();
+        Runtime garbage = Runtime.getRuntime();
+        int Porcentaje1 = 0, sumador = 0, contt = 0;
+        int VUeltas = listModeloKob1.size() / 10;
+        String cadena = null;
+        try {
+            CallableStatement InserKOB1Masivo = con.prepareCall("{call INSERT_KOB1_MASIVO(?)}");
+            for (ModeloKob1 modeloKob1 : listModeloKob1) {
+
+                if (sumador == VUeltas) {
+
+                    garbage.gc();
+
+                    herramienta.setEventoProcesado("Progreso " + Porcentaje1 + "%");
+                    System.err.println("Progreso " + Porcentaje1 + "%");
+                    Porcentaje1++;
+                    sumador = 1;
+                }
+                sumador++;
+
+                if (contt == 2000) {
+                    //SqlDatos.append("\"");
+                    cadena = SqlDatos.toString();
+                    //cadena = cadena.substring(0, cadena.length() - 1);
+                    InserKOB1Masivo.setString(1, cadena);
+                    InserKOB1Masivo.execute();
+                    contt = 0;
+                    SqlDatos.delete(0, SqlDatos.length());
+
+                } else {
+                    if (contt > 0) {
+                        SqlDatos.append(",");
+                    } else {
+                        // SqlDatos.append("\"");
+                    }
+                }
+
+                SqlDatos
+                        .append("(")
+                        .append(ValidarValor(modeloKob1.getFunctional_Area())).append(",")
+                        .append(ValidarValor(modeloKob1.getCompany_Code())).append(",")
+                        .append(ValidarValor(modeloKob1.getOrder_())).append(",")
+                        .append(ValidarValor(modeloKob1.getCO_object_name())).append(",")
+                        .append(ValidarValor(modeloKob1.getCost_Element())).append(",")
+                        .append(ValidarValor(modeloKob1.getCost_element_name())).append(",")
+                        .append(ValidarValor(modeloKob1.getMaterial())).append(",")
+                        .append(ValidarValor(modeloKob1.getMaterial_Description())).append(",")
+                        .append(ValidarValor(modeloKob1.getPlant())).append(",")
+                        .append(ValidarValor(modeloKob1.getPeriod())).append(",")
+                        .append(ValidarValor(modeloKob1.getFiscal_Year())).append(",")
+                        .append(ValidarValor(modeloKob1.getDr_Cr_indicator())).append(",")
+                        .append(ValidarValor(modeloKob1.getTotal_Quantity())).append(",")
+                        .append(ValidarValor(modeloKob1.getUnit_of_Measure())).append(",")
+                        .append(ValidarValor(modeloKob1.getValue_TranCurr())).append(",")
+                        .append(ValidarValor(modeloKob1.getTransaction_Currency())).append(",")
+                        .append(ValidarValor(modeloKob1.getValue_in_Obj_Crcy())).append(",")
+                        .append(ValidarValor(modeloKob1.getObject_Currency())).append(",")
+                        .append(ValidarValor(modeloKob1.getDocument_Number())).append(",")
+                        .append(ValidarValor(modeloKob1.getLink_Plant_Material())).append(",")
+                        .append(ValidarValor(modeloKob1.getLink_Material_orden())).append(",")
+                        .append(ValidarValor(modeloKob1.getBatch_consumo())).append(",")
+                        .append(ValidarValor(modeloKob1.getLink_Material_Batch())).append(",")
+                        .append(ValidarValor(modeloKob1.getMaterial_Type_Components())).append(",")
+                        .append(ValidarValor(modeloKob1.getProcur_Type())).append(",")
+                        .append(ValidarValor(modeloKob1.getLevel_1())).append(",")
+                        .append(ValidarValor(modeloKob1.getFinish_Good_sku())).append(",")
+                        .append(ValidarValor(modeloKob1.getMat_Type_Unfinish_Goods())).append(",")
+                        .append(ValidarValor(modeloKob1.getBatch_Finish_goods())).append(",")
+                        .append(ValidarValor(modeloKob1.getLink_Terminado_Batch())).append(",")
+                        .append(ValidarValor(modeloKob1.getCost_Unit_Estandar())).append(",")
+                        .append(ValidarValor(modeloKob1.getCantidad_Terminada())).append(",")
+                        .append(ValidarValor(modeloKob1.getCost_Unit_Fifo_Old())).append(",")
+                        .append(ValidarValor(modeloKob1.getCost_Unit_Fifo_R_Mat_Pack())).append(",")
+                        .append(ValidarValor(modeloKob1.getX())).append(",")
+                        .append(ValidarValor(modeloKob1.getTotal_Raw_Material())).append(",")
+                        .append(ValidarValor(modeloKob1.getManufact_Materials())).append(",")
+                        .append(ValidarValor(modeloKob1.getPackaging_Materials())).append(",")
+                        .append(ValidarValor(modeloKob1.getConversion_Cost())).append(",")
+                        .append(ValidarValor(modeloKob1.getNuevo_Valor_Orden())).append(",")
+                        .append(ValidarValor(modeloKob1.getMonth())).append(",")
+                        .append(ValidarValor(modeloKob1.getProduccion())).append(",")
+                        .append(ValidarValor(modeloKob1.getInventario()))
+                        .append(")");
+                contt++;
+
+                modeloKob1 = null;
+
+            }
+
+//            SqlDatos.append("\"");
+            cadena = SqlDatos.toString();
+//            cadena = cadena.substring(0, cadena.length() - 1);
+            InserKOB1Masivo.setString(1, cadena);
+            InserKOB1Masivo.execute();
+
+        } catch (SQLException e) {
+            System.out.println("Controlador.ControladorKob1.InsertList_Masivo() " + e);
+        }
+
+        return resul;
+
+    }
+
+    public String ValidarValor(String Cadena) {
+        //StringBuilder Cadena = new StringBuilder();
+
+        if (Cadena == null) {
+            //Cadena = Cadena;
+            //Cadena.append("");
+        } else {
+            Cadena = "'" + Cadena + "'";
+            //Cadena.append(Valor);
+        }
+
+        return Cadena;
+    }
+
     public boolean UpdateList_Carlos(LinkedList<ModeloKob1> listModeloKob1, Connection con, String Proceso, String Porcentaje) throws SQLException {
         boolean resul = false;
-//        ConexionBDMySql conexion = new ConexionBDMySql();
-//        Connection con;
-//        con = conexion.abrirConexion();
 
         int CantidadRegistros = listModeloKob1.size();
+
+        CallableStatement UpdateKOB1Masivo = con.prepareCall("{call UPDATE_KOB1_MASIVO(?)}");
 
         ControladorCargaPlanosProduccion cargaPlanosProduccion = new ControladorCargaPlanosProduccion();
 // CADD Creo las variables Pendiente OJO
@@ -358,6 +511,8 @@ public class ControladorKob1 {
         StringBuilder Nuevo_Valor_Orden = new StringBuilder();
         StringBuilder Month = new StringBuilder();
         StringBuilder IdArchivo = new StringBuilder();
+        StringBuilder Produccion = new StringBuilder();
+        StringBuilder Inventario = new StringBuilder();
         StringBuilder Id = new StringBuilder();
 //CADD Inicno las Variables con el formato predefinido Ojo si se puede unir con el codigo de arriba 
         Functional_Area.append("(CASE id ");
@@ -402,9 +557,11 @@ public class ControladorKob1 {
         Nuevo_Valor_Orden.append("(CASE id ");
         Month.append("(CASE id ");
         IdArchivo.append("(CASE id ");
+        Produccion.append("(CASE id ");
+        Inventario.append("(CASE id ");
         //Id.append("(CASE id ");
         int Contador = 0;
-        PreparedStatement SQL = null;
+        //PreparedStatement SQL = null;
         //String SQLl = null;
         StringBuilder SQLl = new StringBuilder();
         try {
@@ -472,10 +629,12 @@ public class ControladorKob1 {
                 Nuevo_Valor_Orden.append("WHEN ").append(modeloKob1.getId()).append(" THEN '").append(Valor(modeloKob1.getNuevo_Valor_Orden())).append("' ");
                 Month.append("WHEN ").append(modeloKob1.getId()).append(" THEN '").append(Valor(modeloKob1.getMonth())).append("' ");
                 IdArchivo.append("WHEN ").append(modeloKob1.getId()).append(" THEN ").append(modeloKob1.getIdArchivo()).append(" ");
+                Produccion.append("WHEN ").append(modeloKob1.getId()).append(" THEN '").append(Valor(modeloKob1.getProduccion())).append("' ");
+                Inventario.append("WHEN ").append(modeloKob1.getId()).append(" THEN '").append(Valor(modeloKob1.getInventario())).append("' ");
                 Id.append(modeloKob1.getId());
                 c = 2;
 
-                if (contt == 1000) {
+                if (contt == 2000) {
 
                     Functional_Area.append("END)");
                     Company_Code.append("END)");
@@ -519,6 +678,8 @@ public class ControladorKob1 {
                     Nuevo_Valor_Orden.append("END)");
                     Month.append("END)");
                     IdArchivo.append("END)");
+                    Produccion.append("END)");
+                    Inventario.append("END)");
                     //Armo el Sql 
                     SQLl.append("UPDATE KOB1 SET ")
                             .append("Functional_Area = ").append(Functional_Area).append(", ")
@@ -562,12 +723,17 @@ public class ControladorKob1 {
                             .append("Conversion_Cost = ").append(Conversion_Cost).append(", ")
                             .append("Nuevo_Valor_Orden = ").append(Nuevo_Valor_Orden).append(", ")
                             .append("Month = ").append(Month).append(", ")
-                            .append("IdArchivo = ").append(IdArchivo).append("")
+                            .append("IdArchivo = ").append(IdArchivo).append(", ")
+                            .append("Produccion = ").append(Produccion).append(", ")
+                            .append("Inventario = ").append(Inventario).append("")
                             .append(" WHERE Id IN (").append(Id).append(") ");
                     //Paso el Sql al statement
-                    SQL = con.prepareStatement(SQLl + "");
+                    // SQL = con.prepareStatement(SQLl + "");
                     //ejecuto el SQL
-                    if (SQL.executeUpdate() > 0) {
+
+                    UpdateKOB1Masivo.setString(1, SQLl.toString());
+
+                    if (!UpdateKOB1Masivo.execute()) {
 
                         //System.out.println("Vuelta registros " + v);
                         v++;
@@ -617,6 +783,8 @@ public class ControladorKob1 {
                         Nuevo_Valor_Orden.delete(0, Nuevo_Valor_Orden.length());
                         Month.delete(0, Month.length());
                         IdArchivo.delete(0, IdArchivo.length());
+                        Produccion.delete(0, Produccion.length());
+                        Inventario.delete(0, Inventario.length());
                         Id.delete(0, Id.length());
                         //----//
 
@@ -662,6 +830,8 @@ public class ControladorKob1 {
                         Nuevo_Valor_Orden.append("(CASE id ");
                         Month.append("(CASE id ");
                         IdArchivo.append("(CASE id ");
+                        Produccion.append("(CASE id ");
+                        Inventario.append("(CASE id ");
                         //Id.append("(CASE id ");
 
                     }
@@ -712,6 +882,8 @@ public class ControladorKob1 {
             Nuevo_Valor_Orden.append("END)");
             Month.append("END)");
             IdArchivo.append("END)");
+            Produccion.append("END)");
+            Inventario.append("END)");
             //Armo el Sql 
             SQLl.delete(0, SQLl.length());
             SQLl.append("UPDATE KOB1 SET ")
@@ -756,345 +928,28 @@ public class ControladorKob1 {
                     .append("Conversion_Cost = ").append(Conversion_Cost).append(", ")
                     .append("Nuevo_Valor_Orden = ").append(Nuevo_Valor_Orden).append(", ")
                     .append("Month = ").append(Month).append(", ")
-                    .append("IdArchivo = ").append(IdArchivo).append("")
+                    .append("IdArchivo = ").append(IdArchivo).append(", ")
+                    .append("Produccion = ").append(Produccion).append(", ")
+                    .append("Inventario = ").append(Inventario).append("")
                     .append(" WHERE Id IN (").append(Id).append(") ");
             //Paso el Sql al statement
-            SQL = con.prepareStatement(SQLl + "");
+
+            //SQL = con.prepareStatement(SQLl + "");
             //ejecuto el SQL
-            if (SQL.executeUpdate() > 0) {
+            UpdateKOB1Masivo.setString(1, SQLl + "");
+
+            if (!UpdateKOB1Masivo.execute()) {
                 resul = true;
             }
-            SQL.close();
+            //SQL.close();
 //            con.close();
         } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Update " + e.getMessage());
-            SQL.close();
+            //SQL.close();
 
         }
         return resul;
 
-    }
-
-    public boolean InsertList_Masivo(LinkedList<ModeloKob1> listModeloKob1, Connection con, String Proceso, String Porcentaje) throws SQLException {
-        boolean resul = false;
-        int c = 1;
-        StringBuilder SqlDatos = new StringBuilder();
-        Runtime garbage = Runtime.getRuntime();
-        int Porcentaje1 = 0, sumador = 0, VUeltas = 0, contt = 0;
-        String cadena = null;
-        try {
-            CallableStatement InserKOB1Masivo = con.prepareCall("{call INSERT_KOB1_MASIVO(?)}");
-            for (ModeloKob1 modeloKob1 : listModeloKob1) {
-
-                if (sumador == VUeltas) {
-
-                    garbage.gc();
-
-                    herramienta.setEventoProcesado("Progreso " + Porcentaje1 + "%");
-                    System.err.println("Progreso " + Porcentaje1 + "%");
-                    Porcentaje1++;
-                    sumador = 1;
-                }
-                sumador++;
-
-                if (contt == 1000) {
-                    SqlDatos.append("\"");
-                    cadena = SqlDatos.toString();
-                    cadena = cadena.substring(0, cadena.length() - 1);
-                    InserKOB1Masivo.setString(1, cadena);
-                    InserKOB1Masivo.execute();
-                    contt = 0;
-
-                } else {
-                    if (contt > 0) {
-                        SqlDatos.append(",");
-                    } else {
-                        SqlDatos.append("\"");
-                    }
-                }
-
-                SqlDatos
-                        .append("(")
-                        .append(ValidarValor(modeloKob1.getFunctional_Area())).append(",")
-                        .append(ValidarValor(modeloKob1.getCompany_Code())).append(",")
-                        .append(ValidarValor(modeloKob1.getOrder_())).append(",")
-                        .append(ValidarValor(modeloKob1.getCO_object_name())).append(",")
-                        .append(ValidarValor(modeloKob1.getCost_Element())).append(",")
-                        .append(ValidarValor(modeloKob1.getCost_element_name())).append(",")
-                        .append(ValidarValor(modeloKob1.getMaterial())).append(",")
-                        .append(ValidarValor(modeloKob1.getMaterial_Description())).append(",")
-                        .append(ValidarValor(modeloKob1.getPlant())).append(",")
-                        .append(ValidarValor(modeloKob1.getPeriod())).append(",")
-                        .append(ValidarValor(modeloKob1.getFiscal_Year())).append(",")
-                        .append(ValidarValor(modeloKob1.getDr_Cr_indicator())).append(",")
-                        .append(ValidarValor(modeloKob1.getTotal_Quantity())).append(",")
-                        .append(ValidarValor(modeloKob1.getUnit_of_Measure())).append(",")
-                        .append(ValidarValor(modeloKob1.getValue_TranCurr())).append(",")
-                        .append(ValidarValor(modeloKob1.getTransaction_Currency())).append(",")
-                        .append(ValidarValor(modeloKob1.getValue_in_Obj_Crcy())).append(",")
-                        .append(ValidarValor(modeloKob1.getObject_Currency())).append(",")
-                        .append(ValidarValor(modeloKob1.getDocument_Number())).append(",")
-                        .append(ValidarValor(modeloKob1.getLink_Plant_Material())).append(",")
-                        .append(ValidarValor(modeloKob1.getLink_Material_orden())).append(",")
-                        .append(ValidarValor(modeloKob1.getBatch_consumo())).append(",")
-                        .append(ValidarValor(modeloKob1.getLink_Material_Batch())).append(",")
-                        .append(ValidarValor(modeloKob1.getMaterial_Type_Components())).append(",")
-                        .append(ValidarValor(modeloKob1.getProcur_Type())).append(",")
-                        .append(ValidarValor(modeloKob1.getLevel_1())).append(",")
-                        .append(ValidarValor(modeloKob1.getFinish_Good_sku())).append(",")
-                        .append(ValidarValor(modeloKob1.getMat_Type_Unfinish_Goods())).append(",")
-                        .append(ValidarValor(modeloKob1.getBatch_Finish_goods())).append(",")
-                        .append(ValidarValor(modeloKob1.getLink_Terminado_Batch())).append(",")
-                        .append(ValidarValor(modeloKob1.getCost_Unit_Estandar())).append(",")
-                        .append(ValidarValor(modeloKob1.getCantidad_Terminada())).append(",")
-                        .append(ValidarValor(modeloKob1.getCost_Unit_Fifo_Old())).append(",")
-                        .append(ValidarValor(modeloKob1.getCost_Unit_Fifo_R_Mat_Pack())).append(",")
-                        .append(ValidarValor(modeloKob1.getX())).append(",")
-                        .append(ValidarValor(modeloKob1.getTotal_Raw_Material())).append(",")
-                        .append(ValidarValor(modeloKob1.getManufact_Materials())).append(",")
-                        .append(ValidarValor(modeloKob1.getPackaging_Materials())).append(",")
-                        .append(ValidarValor(modeloKob1.getConversion_Cost())).append(",")
-                        .append(ValidarValor(modeloKob1.getNuevo_Valor_Orden())).append(",")
-                        .append(ValidarValor(modeloKob1.getMonth()))
-                        .append(")");
-                contt++;
-
-                modeloKob1 = null;
-
-                //insert uno a uno funcional 
-//                CallableStatement InserKOB1 = con.prepareCall("{call INSERT_KOB1(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}");
-//                InserKOB1.setString(1, modeloKob1.getFunctional_Area());
-//                InserKOB1.setString(2, modeloKob1.getCompany_Code());
-//                InserKOB1.setString(3, modeloKob1.getOrder_());
-//                InserKOB1.setString(4, modeloKob1.getCO_object_name());
-//                InserKOB1.setString(5, modeloKob1.getCost_Element());
-//                InserKOB1.setString(6, modeloKob1.getCost_element_name());
-//                InserKOB1.setString(7, modeloKob1.getMaterial());
-//                InserKOB1.setString(8, modeloKob1.getMaterial_Description());
-//                InserKOB1.setString(9, modeloKob1.getPlant());
-//                InserKOB1.setString(10, modeloKob1.getPeriod());
-//                InserKOB1.setString(11, modeloKob1.getFiscal_Year());
-//                InserKOB1.setString(12, modeloKob1.getDr_Cr_indicator());
-//                InserKOB1.setString(13, modeloKob1.getTotal_Quantity());
-//                InserKOB1.setString(14, modeloKob1.getUnit_of_Measure());
-//                InserKOB1.setString(15, modeloKob1.getValue_TranCurr());
-//                InserKOB1.setString(16, modeloKob1.getTransaction_Currency());
-//                InserKOB1.setString(17, modeloKob1.getValue_in_Obj_Crcy());
-//                InserKOB1.setString(18, modeloKob1.getObject_Currency());
-//                InserKOB1.setString(19, modeloKob1.getDocument_Number());
-//                InserKOB1.setString(20, modeloKob1.getLink_Plant_Material());
-//                InserKOB1.setString(21, modeloKob1.getLink_Material_orden());
-//                InserKOB1.setString(22, modeloKob1.getBatch_consumo());
-//                InserKOB1.setString(23, modeloKob1.getLink_Material_Batch());
-//                InserKOB1.setString(24, modeloKob1.getMaterial_Type_Components());
-//                InserKOB1.setString(25, modeloKob1.getProcur_Type());
-//                InserKOB1.setString(26, modeloKob1.getLevel_1());
-//                InserKOB1.setString(27, modeloKob1.getFinish_Good_sku());
-//                InserKOB1.setString(28, modeloKob1.getMat_Type_Unfinish_Goods());
-//                InserKOB1.setString(29, modeloKob1.getBatch_Finish_goods());
-//                InserKOB1.setString(30, modeloKob1.getLink_Terminado_Batch());
-//                InserKOB1.setString(31, modeloKob1.getCost_Unit_Estandar());
-//                InserKOB1.setString(32, modeloKob1.getCantidad_Terminada());
-//                InserKOB1.setString(33, modeloKob1.getCost_Unit_Fifo_Old());
-//                InserKOB1.setString(34, modeloKob1.getCost_Unit_Fifo_R_Mat_Pack());
-//                InserKOB1.setString(35, modeloKob1.getX());
-//                InserKOB1.setString(36, modeloKob1.getTotal_Raw_Material());
-//                InserKOB1.setString(37, modeloKob1.getManufact_Materials());
-//                InserKOB1.setString(38, modeloKob1.getPackaging_Materials());
-//                InserKOB1.setString(39, modeloKob1.getConversion_Cost());
-//                InserKOB1.setString(40, modeloKob1.getNuevo_Valor_Orden());
-//                InserKOB1.setString(41, modeloKob1.getMonth());
-//                //InserKOB1.setInt(42, modeloKob1.getIdArchivo());
-//                //InserKOB1.setInt(42, 1);
-//                //InserKOB1.setString(43, "31-07-2020");
-//
-//                InserKOB1.execute();
-//
-//                System.out.println(c);
-//                c++;
-            }
-
-            SqlDatos.append("\"");
-            cadena = SqlDatos.toString();
-            cadena = cadena.substring(0, cadena.length() - 1);
-            InserKOB1Masivo.setString(1, cadena);
-            InserKOB1Masivo.execute();
-        } catch (SQLException e) {
-            System.out.println("Controlador.ControladorKob1.InsertList_Masivo() " + e);
-        }
-
-//        StringBuilder SqlInsert = new StringBuilder();
-//        StringBuilder SqlDatos = new StringBuilder();
-//        SqlInsert.append("INSERT INTO kob1 (")
-//                //.append("Id,")
-//                .append("Functional_Area,")
-//                .append("Company_Code,")
-//                .append("Order_,")
-//                .append("CO_object_name,")
-//                .append("Cost_Element,")
-//                .append("Cost_element_name,")
-//                .append("Material,")
-//                .append("Material_Description,")
-//                .append("Plant,")
-//                .append("Period,")
-//                .append("Fiscal_Year,")
-//                .append("Dr_Cr_indicator,")
-//                .append("Total_Quantity,")
-//                .append("Unit_of_Measure,")
-//                .append("Value_TranCurr,")
-//                .append("Transaction_Currency,")
-//                .append("Value_in_Obj_Crcy,")
-//                .append("Object_Currency,")
-//                .append("Document_Number,")
-//                .append("Link_Plant_Material,")
-//                .append("Link_Material_orden,")
-//                .append("Batch_consumo,")
-//                .append("Link_Material_Batch,")
-//                .append("Material_Type_Components,")
-//                .append("Procur_Type,")
-//                .append("Level_1,")
-//                .append("Finish_Good_sku,")
-//                .append("Mat_Type_Unfinish_Goods,")
-//                .append("Batch_Finish_goods,")
-//                .append("Link_Terminado_Batch,")
-//                .append("Cost_Unit_Estandar,")
-//                .append("Cantidad_Terminada,")
-//                .append("Cost_Unit_Fifo_Old,")
-//                .append("Cost_Unit_Fifo_R_Mat_Pack,")
-//                .append("x,")
-//                .append("Total_Raw_Material,")
-//                .append("Manufact_Materials,")
-//                .append("Packaging_Materials,")
-//                .append("Conversion_Cost,")
-//                .append("Nuevo_Valor_Orden,")
-//                .append("Month,")
-//                .append("IdArchivo)")
-//                .append(" VALUES ");
-//
-//        PreparedStatement SQL = null;
-//        String cadena = "";
-//        Runtime garbage = Runtime.getRuntime();
-//
-//        try {
-//            SQL = con.prepareStatement("INSERT INTO mb51(");
-//            //Recorreo el modelo e inserto los datos en las variables
-//            int contt = 0;
-//
-//            int Porcentaje1 = Integer.valueOf(Porcentaje);
-//            int VUeltas = listModeloKob1.size() / 10;
-//            int sumador = 1;
-//
-//            for (ModeloKob1 modeloKob1 : listModeloKob1) {
-//
-//                if (sumador == VUeltas) {
-//
-//                    
-//                    garbage.gc();
-//                    
-//                    herramienta.setEventoProcesado("Progreso " + Porcentaje1 + "%");
-//                    System.err.println("Progreso " + Porcentaje1 + "%");
-//                    Porcentaje1++;
-//                    sumador = 1;
-//                }
-//                sumador++;
-//
-//                if (contt == 1000) {
-//
-//                    cadena = SqlInsert + "" + SqlDatos;
-//                    cadena = cadena.substring(0, cadena.length() - 1);
-//
-//                    SQL = con.prepareStatement(cadena);
-//
-//                    if (SQL.execute()) {
-//                        SqlDatos.delete(0, SqlDatos.length());
-//                        resul = true;
-//                    }
-//                    contt = 1;
-//
-//                }
-//
-//                SqlDatos
-//                        .append("(")
-//                        .append(ValidarValor(modeloKob1.getFunctional_Area())).append(",")
-//                        .append(ValidarValor(modeloKob1.getCompany_Code())).append(",")
-//                        .append(ValidarValor(modeloKob1.getOrder_())).append(",")
-//                        .append(ValidarValor(modeloKob1.getCO_object_name())).append(",")
-//                        .append(ValidarValor(modeloKob1.getCost_Element())).append(",")
-//                        .append(ValidarValor(modeloKob1.getCost_element_name())).append(",")
-//                        .append(ValidarValor(modeloKob1.getMaterial())).append(",")
-//                        .append(ValidarValor(modeloKob1.getMaterial_Description())).append(",")
-//                        .append(ValidarValor(modeloKob1.getPlant())).append(",")
-//                        .append(ValidarValor(modeloKob1.getPeriod())).append(",")
-//                        .append(ValidarValor(modeloKob1.getFiscal_Year())).append(",")
-//                        .append(ValidarValor(modeloKob1.getDr_Cr_indicator())).append(",")
-//                        .append(ValidarValor(modeloKob1.getTotal_Quantity())).append(",")
-//                        .append(ValidarValor(modeloKob1.getUnit_of_Measure())).append(",")
-//                        .append(ValidarValor(modeloKob1.getValue_TranCurr())).append(",")
-//                        .append(ValidarValor(modeloKob1.getTransaction_Currency())).append(",")
-//                        .append(ValidarValor(modeloKob1.getValue_in_Obj_Crcy())).append(",")
-//                        .append(ValidarValor(modeloKob1.getObject_Currency())).append(",")
-//                        .append(ValidarValor(modeloKob1.getDocument_Number())).append(",")
-//                        .append(ValidarValor(modeloKob1.getLink_Plant_Material())).append(",")
-//                        .append(ValidarValor(modeloKob1.getLink_Material_orden())).append(",")
-//                        .append(ValidarValor(modeloKob1.getBatch_consumo())).append(",")
-//                        .append(ValidarValor(modeloKob1.getLink_Material_Batch())).append(",")
-//                        .append(ValidarValor(modeloKob1.getMaterial_Type_Components())).append(",")
-//                        .append(ValidarValor(modeloKob1.getProcur_Type())).append(",")
-//                        .append(ValidarValor(modeloKob1.getLevel_1())).append(",")
-//                        .append(ValidarValor(modeloKob1.getFinish_Good_sku())).append(",")
-//                        .append(ValidarValor(modeloKob1.getMat_Type_Unfinish_Goods())).append(",")
-//                        .append(ValidarValor(modeloKob1.getBatch_Finish_goods())).append(",")
-//                        .append(ValidarValor(modeloKob1.getLink_Terminado_Batch())).append(",")
-//                        .append(ValidarValor(modeloKob1.getCost_Unit_Estandar())).append(",")
-//                        .append(ValidarValor(modeloKob1.getCantidad_Terminada())).append(",")
-//                        .append(ValidarValor(modeloKob1.getCost_Unit_Fifo_Old())).append(",")
-//                        .append(ValidarValor(modeloKob1.getCost_Unit_Fifo_R_Mat_Pack())).append(",")
-//                        .append(ValidarValor(modeloKob1.getX())).append(",")
-//                        .append(ValidarValor(modeloKob1.getTotal_Raw_Material())).append(",")
-//                        .append(ValidarValor(modeloKob1.getManufact_Materials())).append(",")
-//                        .append(ValidarValor(modeloKob1.getPackaging_Materials())).append(",")
-//                        .append(ValidarValor(modeloKob1.getConversion_Cost())).append(",")
-//                        .append(ValidarValor(modeloKob1.getNuevo_Valor_Orden())).append(",")
-//                        .append(ValidarValor(modeloKob1.getMonth())).append(",")
-//                        .append(modeloKob1.getIdArchivo())
-//                        .append("),");
-//
-//                contt++;
-//                
-//                modeloKob1 = null;
-//
-//            }
-//
-//            cadena = SqlInsert + "" + SqlDatos;
-//            cadena = cadena.substring(0, cadena.length() - 1);
-//
-//            SQL = con.prepareStatement(cadena);
-//
-//            if (SQL.executeUpdate() > 0) {
-//                SqlDatos.delete(0, SqlDatos.length());
-//                resul = true;
-//            }
-//
-//        } catch (SQLException e) {
-//            System.out.println("Error en la consulta SQL Insert " + e);
-//        }
-//        SQL.close();
-        return resul;
-
-    }
-
-    public String ValidarValor(String Cadena) {
-        //StringBuilder Cadena = new StringBuilder();
-
-        if (Cadena == null) {
-            //Cadena = Cadena;
-            //Cadena.append("");
-        } else {
-            Cadena = "'" + Cadena + "'";
-            //Cadena.append(Valor);
-        }
-
-        return Cadena;
     }
 
 }
