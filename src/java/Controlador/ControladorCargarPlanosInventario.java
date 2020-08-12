@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
@@ -149,9 +150,9 @@ public class ControladorCargarPlanosInventario {
          */
         String ano = request.getParameter("Mes");
         String mes = request.getParameter("Ano");
-        
+
         ANO = ano + "-" + mes;
-        
+
         String Realizado = "false";
         Ruta = Ruta.replace("\\", "/");
         String SqlInsertMasivo
@@ -181,7 +182,7 @@ public class ControladorCargarPlanosInventario {
 
             ControladorMcbr controladorMcbr = new ControladorMcbr();
             LinkedList<ModeloMcbr> Lista_ModeloMcbr = new LinkedList<ModeloMcbr>();
-            
+
             Progreso("CARGA AL LISTADO CON TODOS LOS REGISTROS DE MCBR:", "1");
             herramienta.setEventoProcesado("CARGA AL LISTADO CON TODOS LOS REGISTROS DE MCBR: 1%");
             Lista_ModeloMcbr = controladorMcbr.Select();
@@ -191,7 +192,10 @@ public class ControladorCargarPlanosInventario {
             ConexionBDMySql conexion = new ConexionBDMySql();
             Connection con;
             con = conexion.abrirConexion();
-            Informe_Produccion();
+            //Informe_Produccion(con);
+            CallableStatement InformeProduccion = con.prepareCall("{CALL SUMAS_INFORME_PRODUCCION_INVENTARIO()}");
+
+            InformeProduccion.execute();
 
             int Contador = 0;
 
@@ -199,7 +203,7 @@ public class ControladorCargarPlanosInventario {
             herramienta.setEventoProcesado("RECORRIDO DEL LISTADO CON TODOS LOS REGISTROS DE MCBR: 30%");
 
             ModeloEstadoPlanos modeloEstadoPlanos = Archivo(request);
-            int Porcentaje = 30;
+            int Porcentaje = 1;
             int VUeltas = Lista_ModeloMcbr.size() / 40;
             int sumador = 1;
 
@@ -238,8 +242,9 @@ public class ControladorCargarPlanosInventario {
         return Realizado;
     }
 
-    public boolean Informe_Produccion() {
+    public boolean Informe_Produccion(Connection con) throws SQLException {
         ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
+
         controladorMrpdata.Insert("Delete from informe_produccion");
 
         String SqlInformeProduccionPiso = "INSERT INTO "
@@ -279,7 +284,6 @@ public class ControladorCargarPlanosInventario {
         Progreso("Calculando Valor de Informe de Produccion", "20");
         herramienta.setEventoProcesado("Calculando Valor de Informe de Produccion 20%");
         boolean rs = controladorMrpdata.Insert(ActualizacionInformePiso);
-        
 
         return rs;
     }

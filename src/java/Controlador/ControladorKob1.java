@@ -24,7 +24,7 @@ public class ControladorKob1 {
 
     Herramienta herramienta = new Herramienta();
 
-    public LinkedList<ModeloKob1> Select(String Sql) {
+    public LinkedList<ModeloKob1> Select(String Sql, String Fecha, String PorcentajeDesde, String PorcentajeHasta) {
         LinkedList<ModeloKob1> lstModeloKob1 = new LinkedList<ModeloKob1>();
         ConexionBDMySql conexion = new ConexionBDMySql();
         Connection con;
@@ -33,7 +33,7 @@ public class ControladorKob1 {
         int cantFilas = 0;
         PreparedStatement SQL1;
         try {
-            SQL1 = con.prepareStatement("Select Count(id) as Cuenta from kob1_planos");
+            SQL1 = con.prepareStatement("Select Count(id) as Cuenta from kob1_planos where fecha = '" + Fecha + "'");
             ResultSet res1 = SQL1.executeQuery();
             while (res1.next()) {
                 cantFilas = Integer.parseInt(res1.getString("Cuenta"));
@@ -51,8 +51,8 @@ public class ControladorKob1 {
             ResultSet res = SQL.executeQuery();
             //ModeloKob1 modeloKob1 = null;
 
-            int Porcentaje = 10;
-            int VUeltas = cantFilas / 10;
+            int Porcentaje = Integer.valueOf(PorcentajeDesde);
+            int VUeltas = cantFilas / (Integer.valueOf(PorcentajeHasta) - Integer.valueOf(PorcentajeDesde));
             int sumador = 1;
 
             while (res.next()) {
@@ -62,8 +62,8 @@ public class ControladorKob1 {
                     Runtime garbage = Runtime.getRuntime();
                     garbage.gc();
 
-                    herramienta.setEventoProcesado("Progreso " + Porcentaje + "%");
-                    System.err.println("Progreso " + Porcentaje + "%");
+                    herramienta.setEventoProcesado(Fecha + " Progreso " + Porcentaje + "%");
+                    System.err.println(Fecha + " Progreso " + Porcentaje + "%");
                     Porcentaje++;
                     sumador = 1;
                 }
@@ -111,6 +111,8 @@ public class ControladorKob1 {
                 modeloKob1.setConversion_Cost(res.getString("Conversion_Cost"));
                 modeloKob1.setNuevo_Valor_Orden(res.getString("Nuevo_Valor_Orden"));
                 modeloKob1.setMonth(res.getString("Month"));
+                modeloKob1.setFecha(res.getString("Fecha"));
+                
 
                 lstModeloKob1.add(modeloKob1);
 
@@ -340,12 +342,12 @@ public class ControladorKob1 {
         return Cadena;
     }
 
-    public boolean InsertList_Masivo(LinkedList<ModeloKob1> listModeloKob1, Connection con, String Proceso, String Porcentaje) throws SQLException {
+    public boolean InsertList_Masivo(LinkedList<ModeloKob1> listModeloKob1, Connection con, String Proceso, String Fecha, String Porcentaje) throws SQLException {
         boolean resul = false;
         int c = 1;
         StringBuilder SqlDatos = new StringBuilder();
         Runtime garbage = Runtime.getRuntime();
-        int Porcentaje1 = 0, sumador = 0, contt = 0;
+        int Porcentaje1 = Integer.valueOf(Porcentaje), sumador = 0, contt = 0;
         int VUeltas = listModeloKob1.size() / 10;
         String cadena = null;
         try {
@@ -356,8 +358,8 @@ public class ControladorKob1 {
 
                     garbage.gc();
 
-                    herramienta.setEventoProcesado("Progreso " + Porcentaje1 + "%");
-                    System.err.println("Progreso " + Porcentaje1 + "%");
+                    herramienta.setEventoProcesado(Fecha + " Progreso " + Porcentaje1 + "%");
+                    System.err.println(Fecha + " Progreso " + Porcentaje1 + "%");
                     Porcentaje1++;
                     sumador = 1;
                 }
@@ -423,6 +425,7 @@ public class ControladorKob1 {
                         .append(ValidarValor(modeloKob1.getConversion_Cost())).append(",")
                         .append(ValidarValor(modeloKob1.getNuevo_Valor_Orden())).append(",")
                         .append(ValidarValor(modeloKob1.getMonth())).append(",")
+                        .append(ValidarValor(modeloKob1.getFecha())).append(",")
                         .append(ValidarValor(modeloKob1.getProduccion())).append(",")
                         .append(ValidarValor(modeloKob1.getInventario()))
                         .append(")");
@@ -460,7 +463,7 @@ public class ControladorKob1 {
         return Cadena;
     }
 
-    public boolean UpdateList_Carlos(LinkedList<ModeloKob1> listModeloKob1, Connection con, String Proceso, String Porcentaje) throws SQLException {
+    public boolean UpdateList_Carlos(LinkedList<ModeloKob1> listModeloKob1, Connection con, String Proceso, String FechaA, String PorcentajeDesde, String PorcentajeHasta) throws SQLException {
         boolean resul = false;
 
         int CantidadRegistros = listModeloKob1.size();
@@ -511,6 +514,7 @@ public class ControladorKob1 {
         StringBuilder Nuevo_Valor_Orden = new StringBuilder();
         StringBuilder Month = new StringBuilder();
         StringBuilder IdArchivo = new StringBuilder();
+        StringBuilder Fecha = new StringBuilder();
         StringBuilder Produccion = new StringBuilder();
         StringBuilder Inventario = new StringBuilder();
         StringBuilder Id = new StringBuilder();
@@ -557,6 +561,7 @@ public class ControladorKob1 {
         Nuevo_Valor_Orden.append("(CASE id ");
         Month.append("(CASE id ");
         IdArchivo.append("(CASE id ");
+        Fecha.append("(CASE id ");
         Produccion.append("(CASE id ");
         Inventario.append("(CASE id ");
         //Id.append("(CASE id ");
@@ -569,15 +574,15 @@ public class ControladorKob1 {
             int c = 1, contt = 0;
             int v = 1;
 
-            int Porcentaje1 = Integer.valueOf(Porcentaje);
-            int VUeltas = listModeloKob1.size() / 10;
+            int Porcentaje1 = Integer.valueOf(PorcentajeDesde);
+            int VUeltas = listModeloKob1.size() / (Integer.valueOf(PorcentajeHasta) - Integer.valueOf(PorcentajeDesde));
             int sumador = 1;
 
             for (ModeloKob1 modeloKob1 : listModeloKob1) {
 
                 if (sumador == VUeltas) {
-                    herramienta.setEventoProcesado("Progreso " + Porcentaje1 + "%");
-                    System.err.println("Progreso " + Porcentaje1 + "%");
+                    herramienta.setEventoProcesado(FechaA + " Progreso " + Porcentaje1 + "%");
+                    System.err.println(FechaA + " Progreso " + Porcentaje1 + "%");
                     Porcentaje1++;
                     sumador = 1;
                 }
@@ -629,6 +634,7 @@ public class ControladorKob1 {
                 Nuevo_Valor_Orden.append("WHEN ").append(modeloKob1.getId()).append(" THEN '").append(Valor(modeloKob1.getNuevo_Valor_Orden())).append("' ");
                 Month.append("WHEN ").append(modeloKob1.getId()).append(" THEN '").append(Valor(modeloKob1.getMonth())).append("' ");
                 IdArchivo.append("WHEN ").append(modeloKob1.getId()).append(" THEN ").append(modeloKob1.getIdArchivo()).append(" ");
+                Fecha.append("WHEN ").append(modeloKob1.getId()).append(" THEN '").append(Valor(modeloKob1.getFecha())).append("' ");
                 Produccion.append("WHEN ").append(modeloKob1.getId()).append(" THEN '").append(Valor(modeloKob1.getProduccion())).append("' ");
                 Inventario.append("WHEN ").append(modeloKob1.getId()).append(" THEN '").append(Valor(modeloKob1.getInventario())).append("' ");
                 Id.append(modeloKob1.getId());
@@ -678,6 +684,7 @@ public class ControladorKob1 {
                     Nuevo_Valor_Orden.append("END)");
                     Month.append("END)");
                     IdArchivo.append("END)");
+                    Fecha.append("END)");
                     Produccion.append("END)");
                     Inventario.append("END)");
                     //Armo el Sql 
@@ -724,6 +731,7 @@ public class ControladorKob1 {
                             .append("Nuevo_Valor_Orden = ").append(Nuevo_Valor_Orden).append(", ")
                             .append("Month = ").append(Month).append(", ")
                             .append("IdArchivo = ").append(IdArchivo).append(", ")
+                            .append("Fecha = ").append(Fecha).append(", ")
                             .append("Produccion = ").append(Produccion).append(", ")
                             .append("Inventario = ").append(Inventario).append("")
                             .append(" WHERE Id IN (").append(Id).append(") ");
@@ -783,6 +791,7 @@ public class ControladorKob1 {
                         Nuevo_Valor_Orden.delete(0, Nuevo_Valor_Orden.length());
                         Month.delete(0, Month.length());
                         IdArchivo.delete(0, IdArchivo.length());
+                        Fecha.delete(0, Fecha.length());
                         Produccion.delete(0, Produccion.length());
                         Inventario.delete(0, Inventario.length());
                         Id.delete(0, Id.length());
@@ -830,6 +839,7 @@ public class ControladorKob1 {
                         Nuevo_Valor_Orden.append("(CASE id ");
                         Month.append("(CASE id ");
                         IdArchivo.append("(CASE id ");
+                        Fecha.append("(CASE id ");
                         Produccion.append("(CASE id ");
                         Inventario.append("(CASE id ");
                         //Id.append("(CASE id ");
@@ -882,6 +892,7 @@ public class ControladorKob1 {
             Nuevo_Valor_Orden.append("END)");
             Month.append("END)");
             IdArchivo.append("END)");
+            Fecha.append("END)");
             Produccion.append("END)");
             Inventario.append("END)");
             //Armo el Sql 
@@ -929,6 +940,7 @@ public class ControladorKob1 {
                     .append("Nuevo_Valor_Orden = ").append(Nuevo_Valor_Orden).append(", ")
                     .append("Month = ").append(Month).append(", ")
                     .append("IdArchivo = ").append(IdArchivo).append(", ")
+                    .append("Fecha = ").append(Fecha).append(", ")
                     .append("Produccion = ").append(Produccion).append(", ")
                     .append("Inventario = ").append(Inventario).append("")
                     .append(" WHERE Id IN (").append(Id).append(") ");
@@ -947,6 +959,96 @@ public class ControladorKob1 {
             System.out.println("Error en la consulta SQL Update " + e.getMessage());
             //SQL.close();
 
+        }
+        return resul;
+
+    }
+
+    public boolean UpdateList_CampoProd(LinkedList<ModeloKob1> listModeloKob1, Connection con, String Proceso, String Fecha, String PorcentajeDesde, String PorcentajeHasta) throws SQLException {
+        boolean resul = false;
+
+
+        CallableStatement UpdateKOB1Masivo = con.prepareCall("{call UPDATE_KOB1_MASIVO(?)}");
+
+        StringBuilder X = new StringBuilder();
+        StringBuilder Id = new StringBuilder();
+
+        X.append("(CASE Order_ ");
+
+        StringBuilder SQLl = new StringBuilder();
+        try {
+            int c = 1, contt = 0;
+
+            int Porcentaje1 = Integer.valueOf(PorcentajeDesde);
+            int VUeltas = listModeloKob1.size() / (Integer.valueOf(PorcentajeHasta) - Integer.valueOf(PorcentajeDesde));
+            int sumador = 1;
+
+            for (ModeloKob1 modeloKob1 : listModeloKob1) {
+
+                if (sumador == VUeltas) {
+                    herramienta.setEventoProcesado(Fecha + " Progreso " + Porcentaje1 + "%");
+                    System.err.println(Fecha + " Progreso " + Porcentaje1 + "%");
+                    Porcentaje1++;
+                    sumador = 1;
+                }
+                sumador++;
+
+                contt++;
+                if (c == 2) {
+                    Id.append(",");
+                }
+                X.append("WHEN '").append(modeloKob1.getOrder_()).append("' THEN '").append(Valor(modeloKob1.getX())).append("' ");
+                Id.append("'").append(modeloKob1.getOrder_()).append("'");
+                c = 2;
+
+                if (contt == 100) {
+
+                    X.append("END)");
+                    //Armo el Sql 
+                    SQLl.append("UPDATE KOB1 SET ")
+                            .append("x = ").append(X).append("")
+                            .append(" WHERE Order_ IN (").append(Id).append(") ");
+                    //Paso el Sql al statement
+                    // SQL = con.prepareStatement(SQLl + "");
+                    //ejecuto el SQL
+
+                    UpdateKOB1Masivo.setString(1, SQLl.toString());
+
+                    if (!UpdateKOB1Masivo.execute()) {
+
+                        //System.out.println("Vuelta registros " + v);
+                        resul = true;
+                        // limpiamos los datos
+                        SQLl.delete(0, SQLl.length());
+                        X.delete(0, X.length());
+                        Id.delete(0, Id.length());
+                        //----//
+
+                        X.append("(CASE Order_ ");
+
+                    }
+                    c = 1;
+                    contt = 0;
+                }
+            }
+            //finalizo el formato del SQL
+
+            X.append("END)");
+
+            //Armo el Sql 
+            SQLl.delete(0, SQLl.length());
+            SQLl.append("UPDATE KOB1 SET ")
+                    .append("x = ").append(X).append("")
+                    .append(" WHERE Order_ IN (").append(Id).append(") ");
+
+            UpdateKOB1Masivo.setString(1, SQLl + "");
+
+            if (!UpdateKOB1Masivo.execute()) {
+                resul = true;
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error en la consulta SQL Update " + e.getMessage());
         }
         return resul;
 

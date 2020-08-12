@@ -754,6 +754,10 @@ public class ControladorCargaPlanos {
 
         String Sqlborrar = "delete from POVR where fecha = '" + ano + "-" + mes + "'";
 
+        if (controladorMrpdata.Insert(Sqlborrar)) {
+            //Realizado = "true";
+        }
+
         String Realizado = "false";
         Ruta = Ruta.replace("\\", "/");
         String SqlInsertMasivo
@@ -787,8 +791,6 @@ public class ControladorCargaPlanos {
          */
         String ano = request.getParameter("Mes");
         String mes = request.getParameter("Ano");
-
-        
 
         String Realizado = "false";
         Ruta = Ruta.replace("\\", "/");

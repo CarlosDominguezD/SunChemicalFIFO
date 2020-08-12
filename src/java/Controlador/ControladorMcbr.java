@@ -8,6 +8,7 @@ package Controlador;
 import Conexiones.ConexionBDMySql;
 import Herramienta.Herramienta;
 import Modelos.ModeloMcbr;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,7 +20,7 @@ import java.util.LinkedList;
  * @author Diego Fdo Guzman B
  */
 public class ControladorMcbr {
-    
+
     Herramienta herramienta = new Herramienta();
 
     public boolean InsertList(LinkedList<ModeloMcbr> listModeloMcbr) throws SQLException {
@@ -228,6 +229,8 @@ public class ControladorMcbr {
     public boolean UpdateList_Masivo(LinkedList<ModeloMcbr> listModeloMcbr, Connection con, String Porcentaje) throws SQLException {
         boolean resul = false;
 
+        CallableStatement UpdateKOB1Masivo = con.prepareCall("{call UPDATE_KOB1_MASIVO(?)}");
+
         StringBuilder Material = new StringBuilder();
         StringBuilder Descripcion = new StringBuilder();
         StringBuilder Plant = new StringBuilder();
@@ -371,9 +374,12 @@ public class ControladorMcbr {
                             .append("IdArchivo = ").append(IdArchivo).append("")
                             .append(" WHERE Id IN (").append(Id).append(") ");
                     //Paso el Sql al statement
-                    SQL = con.prepareStatement(SQLl + "");
+                    //SQL = con.prepareStatement(SQLl + "");
                     //ejecuto el SQL
-                    if (SQL.executeUpdate() > 0) {
+
+                    UpdateKOB1Masivo.setString(1, SQLl.toString());
+
+                    if (!UpdateKOB1Masivo.execute()) {
 
                         //System.out.println("Vuelta registros " + v);
                         v++;
@@ -481,16 +487,16 @@ public class ControladorMcbr {
                     .append("IdArchivo = ").append(IdArchivo).append("")
                     .append(" WHERE Id IN (").append(Id).append(") ");
             //Paso el Sql al statement
-            SQL = con.prepareStatement(SQLl + "");
-            //ejecuto el SQL
-            if (SQL.executeUpdate() > 0) {
+            UpdateKOB1Masivo.setString(1, SQLl.toString());
+
+            if (!UpdateKOB1Masivo.execute()) {
                 resul = true;
             }
-            SQL.close();
+            //SQL.close();
 //            con.close();
         } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Update " + e.getMessage());
-            SQL.close();
+            //SQL.close();
 
         }
         return resul;

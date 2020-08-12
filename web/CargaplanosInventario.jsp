@@ -17,7 +17,7 @@
         <style>
             textarea {
                 overflow-y: scroll;
-                height: 200px;
+                height: 500px;
                 resize: none; /* Remove this if you want the user to resize the textarea */
             }
         </style>

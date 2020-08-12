@@ -320,6 +320,7 @@ public class ServletSunchemical extends HttpServlet {
                 ControladorCargaPlanosProduccion controladorCargaPlanosProduccion = new ControladorCargaPlanosProduccion();
                  {
                     try {
+                        System.err.println("Ingresa en Servlet");
                         res = controladorCargaPlanosProduccion.Upload(request, response);
                     } catch (SQLException ex) {
                         Logger.getLogger(ServletSunchemical.class.getName()).log(Level.SEVERE, null, ex);
