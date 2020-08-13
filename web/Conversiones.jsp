@@ -16,20 +16,20 @@
     <head>        
         <%@include file="Principal/Head.html" %>        
         <script type="text/javascript" src="Principal/js/jsfifo/jquery.min.js" ></script>
-        <script type="text/javascript" src="Principal/js/jsfifo/ValidacionesUsuarios.js" ></script> 
+        <script type="text/javascript" src="Principal/js/jsfifo/ValidacionesConversiones.js" ></script> 
     </head>
     <body class="nav-md">
         <%
             Modelos.ModeloUsuario modeloUsuarios = (ModeloUsuario) request.getSession().getAttribute("user");
             if (modeloUsuarios != null) {
-        %> 
+        %>            
         <%@include file="Principal/Body.jsp" %>
         <!-- Contenido -->
         <div class="right_col" role="main">
             <div class="">
                 <div class="page-title">
                     <div class="title_left">
-                        <h3>Usuarios</h3>
+                        <h3>Conversiones</h3>
                     </div>
                     <div class="title_right">
                         <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search"> 
@@ -68,35 +68,52 @@
                                     </div>
                                     <div id="Principal">
                                         <div class="row">
-                                            <input type="hidden" id="Id" name="Id">                                            
+                                            <input type="hidden" id="Id" name="Id">
                                             <div class="col-md-6 col-sm-12 col-xs-12 form-group">
-                                                <label for="cedula">Código</label>
-                                                <input type="number" class="form-control" id="IdCodigo" name="Codigo" min="0" required="required">                                                
-                                            </div>
-                                            <div class="col-md-6 col-sm-12 col-xs-12 form-group">
-                                                <label for="nombre">Nombre</label>
-                                                <input type="text" class="form-control" id="IdNombre" name="Nombre" required="required">
-                                            </div>
-                                            <div class="col-md-6 col-sm-12 col-xs-12 form-group">
-                                                <label for="Usuario">Usuario</label>
-                                                <input type="text" class="form-control" id="IdUsuario" name="Usuario" required="required">                                                
-                                            </div>
-                                            <div class="col-md-6 col-sm-12 col-xs-12 form-group">
-                                                <label for="Clave">Clave</label>
-                                                <input type="password" class="form-control" id="IdClave" name="Clave" required="required">                                                
-                                            </div>
-                                            <div class="col-md-0 col-sm-12 col-xs-12 form-group">
-                                                <select class="form-control" id="IdRol" name="Rol">                                                       
-                                                    <%                                                        ControladorRoles controladorRoles = new ControladorRoles();
-                                                        LinkedList<ModeloRoles> listmodeloRoles = controladorRoles.Read();
-                                                        for (ModeloRoles modeloRoles : listmodeloRoles) {
-                                                    %>
-                                                    <option value="<%=modeloRoles.getId()%>"><%=modeloRoles.getNombre()%></option> 
-                                                    <%
-                                                        }
-                                                    %>  
+                                                <select class="form-control" id="IdMes" name="Mes">                                                                                        
+                                                    <option value=0></option>
+                                                    <option value="Enero">Enero</option>
+                                                    <option value="Febrero">Febrero</option>
+                                                    <option value="Marzo">Marzo</option>
+                                                    <option value="Abril">Abril</option>
+                                                    <option value="Mayo">Mayo</option>
+                                                    <option value="Junio">Junio</option>
+                                                    <option value="Julio">Julio</option>
+                                                    <option value="Agosto">Agosto</option>
+                                                    <option value="Septiembre">Septiembre</option>
+                                                    <option value="Octubre">Octubre</option>
+                                                    <option value="Noviembre">Noviembre</option>
+                                                    <option value="Diciembre">Diciembre</option>
                                                 </select>
-                                            </div>                                            
+                                            </div>
+                                            <div class="col-md-6 col-sm-12 col-xs-12 form-group">
+                                                <select class="form-control" id="IdAno" name="Ano">  
+                                                    <option value=0></option>
+                                                    <option value="2020">2020</option>
+                                                    <option value="2021">2021</option>
+                                                    <option value="2022">2022</option>
+                                                    <option value="2023">2023</option>
+                                                    <option value="2024">2024</option>
+                                                    <option value="2025">2025</option>
+                                                    <option value="2026">2026</option>
+                                                    <option value="2027">2027</option>
+                                                    <option value="2028">2028</option>
+                                                    <option value="2029">2029</option>
+                                                    <option value="2030">2030</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4 col-sm-12 col-xs-12 form-group">
+                                                <label for="CONVERSION_LABOR">CONVERSION_LABOR</label>
+                                                <input type="text" class="form-control" id="IdConversionLabor" name="ConversionLabor" required="required">
+                                            </div>
+                                            <div class="col-md-4 col-sm-12 col-xs-12 form-group">
+                                                <label for="CONVERSION_MACHINE">CONVERSION_MACHINE</label>
+                                                <input type="text" class="form-control" id="IdConversionMachine" name="ConversionMachine" required="required">                                                
+                                            </div>
+                                            <div class="col-md-4 col-sm-12 col-xs-12 form-group">
+                                                <label for="CONVERSION_OVHDS">CONVERSION_OVHDS</label>
+                                                <input type="text" class="form-control" id="IdConversionOvhds" name="ConversionOvhds" required="required">                                                
+                                            </div>
                                         </div>
                                         <!-- Formulario Configuración -->      
                                         <!-- Botones -->
@@ -148,11 +165,11 @@
                                         <table id="datatable" class="table table-striped table-bordered">
                                             <thead>
                                                 <tr>
-                                                    <th>InterCod</th>
-                                                    <th>Código</th>
-                                                    <th>Nombre</th>
-                                                    <th>Usuario</th>
-                                                    <th>Rol</th>
+                                                    <th>Mes</th>
+                                                    <th>Año</th>
+                                                    <th>CONVERSION_LABOR</th>
+                                                    <th>CONVERSION_MACHINE</th>
+                                                    <th>CONVERSION_OVHDS</th>
                                                     <th>Opciones</th>   
                                                 </tr>
                                             </thead>
@@ -163,18 +180,7 @@
                                                     <td></td>                                     
                                                     <td></td>                                     
                                                     <td></td>                                     
-                                                    <td class="text-center">
-                                                        <button class="SetFormulario btn btn-warning btn-md" 
-                                                                data-id=""
-                                                                data-codigo=""
-                                                                data-nombre=""                                                                
-                                                                type="button" id="IdModificar" name="Modificar">Editar</button>
-                                                        <button class="SetEliminar btn btn-dark btn-md" 
-                                                                data-id=""
-                                                                data-codigo=""
-                                                                data-nombre=""                                                                
-                                                                type="button" id="IdEliminar" name="Eliminar"></button>
-                                                    </td>                                                    
+                                                    <td></td>                                                    
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -196,7 +202,7 @@
         </footer>
         <!-- Footer -->
         <%@include file="Principal/Script.html" %>  
-        <%} else {
+        <%}else{
         %>
         <script src="Principal/js/jsfifo/jquery.min.js"></script>  
         <script>
@@ -204,6 +210,6 @@
         </script>  
         <%
             }
-        %>
+        %>        
     </body>
 </html>

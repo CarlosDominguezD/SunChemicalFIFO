@@ -17,6 +17,7 @@ public class ModeloConversiones {
     String conversion_labor;
     String conversion_machine;
     String conversion_ovhds;
+    String datocompleto;    
 
     public ModeloConversiones(Integer id, String ano, String mes, String conversion_labor, String conversion_machine, String conversion_ovhds) {
         this.id = id;
@@ -77,7 +78,9 @@ public class ModeloConversiones {
     public void setConversion_ovhds(String conversion_ovhds) {
         this.conversion_ovhds = conversion_ovhds;
     }
-    
-    
+
+    public String getDatoCopleto() {
+        return datocompleto = "Ano " + ano + " Mes " + mes + " Conversion_Labor " + conversion_labor + " Conversion_Machine " + conversion_machine + " Conversion_Ovhds " + conversion_ovhds;
+    }
 
 }

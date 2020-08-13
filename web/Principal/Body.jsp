@@ -47,6 +47,7 @@
                                     String ItemAuditoria = "false";
                                     String ItemCargaplanosBarra = "false";
                                     String ItemGestionCompras = "false";
+                                    String ItemConversiones = "false";
                                     if (modeloUsuario != null) {
                                         for (ModeloItemMenu modelo : modeloUsuario.getListModeloItemMenu()) {
                                             if ("ItemAdministracion".equals(modelo.getNombre())) {
@@ -112,6 +113,9 @@
                                             if ("ItemGestionCompras".equals(modelo.getNombre())) {
                                                 ItemGestionCompras = "true";
                                             }
+                                            if ("ItemConversiones".equals(modelo.getNombre())) {
+                                                ItemConversiones = "true";
+                                            }
                                         }
                                         if ("true".equals(ItemAdministracion)) {
                             %>
@@ -160,14 +164,8 @@
 
                                         if ("true".equals(ItemProveedores)) {
                                     %>
-                                    <li><a href="#">Proveedores</a></li>
+                                    <li><a href="Conversiones.jsp">Conversiones</a></li>
                                         <%      }
-
-                                            if ("true".equals(ItemMateriales)) {
-                                        %>
-                                    <li><a href="#">Materiales</a></li>
-                                        <%      }
-
                                             if ("true".equals(ItemVendorType)) {
                                         %>
                                     <li><a href="Vendortype.jsp">Vendortype</a></li>

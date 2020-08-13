@@ -17,7 +17,7 @@ import java.util.Date;
  */
 public class Herramienta {
 
-    static String  EventoProcesado;
+    static String EventoProcesado;
 
     public String getEventoProcesado() {
         if (EventoProcesado == null) {
@@ -81,6 +81,9 @@ public class Herramienta {
                 break;
             case "-5":
                 resp = "Error al modificar el plano";
+                break;
+            case "-6":
+                resp = "El Año y el Mes ya está ingresados en el sistema por favor selecciónelo y edítelo";
                 break;
         }
         return resp;

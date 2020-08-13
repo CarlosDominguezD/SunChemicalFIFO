@@ -19,6 +19,10 @@
         <script type="text/javascript" src="Principal/js/jsfifo/ValidacionesPermisosRol.js" ></script> 
     </head>
     <body class="nav-md">
+        <%
+            Modelos.ModeloUsuario modeloUsuarios = (ModeloUsuario) request.getSession().getAttribute("user");
+            if (modeloUsuarios != null) {
+        %>          
         <%@include file="Principal/Body.jsp" %>
         <!-- Contenido -->
         <div class="right_col" role="main">
@@ -188,5 +192,14 @@
         </footer>
         <!-- Footer -->
         <%@include file="Principal/Script.html" %>  
+        <%}else{
+        %>
+        <script src="Principal/js/jsfifo/jquery.min.js"></script>  
+        <script>
+            location.href = "index.jsp";
+        </script>  
+        <%
+            }
+        %>        
     </body>
 </html>

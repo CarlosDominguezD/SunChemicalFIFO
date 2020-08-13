@@ -9,6 +9,7 @@ import Controlador.ControladorAuditoria;
 import Controlador.ControladorCargaPlanos;
 import Controlador.ControladorCargaPlanosProduccion;
 import Controlador.ControladorCargarPlanosInventario;
+import Controlador.ControladorConversiones;
 import Controlador.ControladorEstadoPlanos;
 import Controlador.ControladorExcel;
 import Controlador.ControladorMb51;
@@ -432,6 +433,24 @@ public class ServletSunchemical extends HttpServlet {
                         break;
                     case "Read":
                         Resultado = controladorRoles.ReadRoles(request, response);
+                        PrintWriter pwr = response.getWriter();
+                        pwr.write(Resultado);
+                        System.out.println(pwr.checkError() ? "Error al cargar la lista" : "Tabla Cargada");
+                        break;
+                }
+                break;
+            case "ConversionesJSP":
+                ControladorConversiones controladorConversiones = new ControladorConversiones();
+                evento = request.getParameter("evento");
+                switch (evento) {
+                    case "Upload":
+                        Resultado = controladorConversiones.Insert(request);
+                        break;
+//                    case "Delete":
+//                        Resultado = controladorConversiones.Delete(request);
+//                        break;
+                    case "Read":
+                        Resultado = controladorConversiones.Read(request, response);
                         PrintWriter pwr = response.getWriter();
                         pwr.write(Resultado);
                         System.out.println(pwr.checkError() ? "Error al cargar la lista" : "Tabla Cargada");

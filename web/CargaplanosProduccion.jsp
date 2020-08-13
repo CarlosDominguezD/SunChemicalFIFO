@@ -11,6 +11,10 @@
         <%@include file="Principal/Head.html" %>        
     </head>
     <body class="nav-md">        
+        <%
+            Modelos.ModeloUsuario modeloUsuarios = (ModeloUsuario) request.getSession().getAttribute("user");
+            if (modeloUsuarios != null) {
+        %>
         <%@include file="Principal/Body.jsp" %>
         <script type="text/javascript" src="Principal/js/jquery.min.js" ></script>
         <script type="text/javascript" src="Principal/js/ValidacionesPlano.js" ></script> 
@@ -174,5 +178,14 @@
             </div>
         </div>
         <%@include file="Principal/Script.html" %>
+        <%}else{
+        %>
+        <script src="Principal/js/jsfifo/jquery.min.js"></script>  
+        <script>
+            location.href = "index.jsp";
+        </script>  
+        <%
+            }
+        %>        
     </body>
 </html>

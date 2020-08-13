@@ -12,7 +12,11 @@
         <script type="text/javascript" src="Principal/js/jquery.min.js" ></script>
         <script type="text/javascript" src="Principal/js/jsfifo/ValidacionesCompras.js" ></script> 
     </head>
-    <body class="nav-md" onload="">        
+    <body class="nav-md" onload="">   
+        <%
+            Modelos.ModeloUsuario modeloUsuarios = (ModeloUsuario) request.getSession().getAttribute("user");
+            if (modeloUsuarios != null) {
+        %>            
         <%@include file="Principal/Body.jsp" %>
         <div class="right_col" role="main">
             <div class="">            
@@ -134,6 +138,15 @@
                 </div>
             </div>
         </div>
-        <%@include file="Principal/Script.html" %>       
+        <%@include file="Principal/Script.html" %>   
+        <%}else{
+        %>
+        <script src="Principal/js/jsfifo/jquery.min.js"></script>  
+        <script>
+            location.href = "index.jsp";
+        </script>  
+        <%
+            }
+        %>        
     </body>   
 </html>
