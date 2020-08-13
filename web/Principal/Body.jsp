@@ -162,7 +162,7 @@
                                     </li>
                                     <%      }
 
-                                        if ("true".equals(ItemProveedores)) {
+                                        if ("true".equals(ItemConversiones)) {
                                     %>
                                     <li><a href="Conversiones.jsp">Conversiones</a></li>
                                         <%      }
@@ -245,3 +245,27 @@
                 </div>            
             </div>
         </div>
+        <!-- Submenu superior. -->
+        <div class="top_nav">
+            <div class="nav_menu">
+                <nav>
+                    <div class="nav toggle">
+                        <a id="menu_toggle"><i class="fa fa-bars"></i></a>                                
+                    </div>   
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="">
+                            <a id="idusera" href="#" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                <img id="idimg" src="Principal/images/user.png" alt="">Administración
+                                <span class="fa fa-angle-double-down"></span>
+                            </a>
+                            <input type="hidden" id="idUsAct" name="UsAct">
+                            <ul class="dropdown-menu dropdown-usermenu pull-right">                                
+                                <li><a id="idcambiarpw" href="CambiarClave.jsp"><i class="fa fa-key pull-right"></i>Cambiar clave</a></li>                                
+                                <li><a id="idcambiarpw" href=CerrarSeccion.jsp><i class="fa fa-close pull-right"></i>Salir</a></li>                                
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>      
+        <!-- /Submenu superior. -->        

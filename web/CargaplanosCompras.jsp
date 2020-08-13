@@ -22,7 +22,7 @@
             textarea {
                 overflow-y: scroll;
                 height: 500px;
-                resize: none; /* Remove this if you want the user to resize the textarea */
+                resize: vertical; /* Remove this if you want the user to resize the textarea */
             }
         </style>
         <div class="right_col" role="main">
@@ -93,7 +93,7 @@
                                 </div>
                                 <div class="col-md-12 col-sm-12 col-xs-12 form-group has-feedback" align = "center">
                                     <label for="ListaEventos">Lista de Eventos</label>
-                                    <textarea class="form-control" id="IdlistaEventos" name="listaEventos" rows="3"></textarea>
+                                    <textarea class="form-control" id="IdlistaEventos" name="listaEventos" rows="10"></textarea>
                                 </div>
                             </form>
                             <script type="text/javascript">

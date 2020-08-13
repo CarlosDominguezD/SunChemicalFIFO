@@ -24,7 +24,7 @@
                 <div class="row">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>Descargar Reporte Compras</h2>
+                            <h2>Abrir Plano Compras</h2>
                             <div class="clearfix"></div>
                         </div>
                         <div class="x_content">

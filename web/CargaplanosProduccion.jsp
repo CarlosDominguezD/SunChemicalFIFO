@@ -14,7 +14,7 @@
         <%
             Modelos.ModeloUsuario modeloUsuarios = (ModeloUsuario) request.getSession().getAttribute("user");
             if (modeloUsuarios != null) {
-                %>
+        %>
         <%@include file="Principal/Body.jsp" %>
         <script type="text/javascript" src="Principal/js/jquery.min.js" ></script>
         <script type="text/javascript" src="Principal/js/ValidacionesPlano.js" ></script> 
@@ -22,7 +22,7 @@
             textarea {
                 overflow-y: scroll;
                 height: 500px;
-                resize: none; /* Remove this if you want the user to resize the textarea */
+                resize: vertical; /* Remove this if you want the user to resize the textarea */
             }
         </style>
         <div class="right_col" role="main">
@@ -43,7 +43,7 @@
                                     <input type="hidden" id="Id" name="Id">
                                     <div class="col-md-6 col-sm-12 col-xs-12 form-group">
                                         <select class="form-control" id="IdMes" name="Mes" required>                                                                                        
-                                            <option value=0></option>
+                                            <option value=""></option>
                                             <option value="Enero">Enero</option>
                                             <option value="Febrero">Febrero</option>
                                             <option value="Marzo">Marzo</option>
@@ -60,7 +60,7 @@
                                     </div>
                                     <div class="col-md-6 col-sm-12 col-xs-12 form-group">
                                         <select class="form-control" id="IdAno" name="Ano" required>  
-                                            <option value=0></option>
+                                            <option value=""></option>
                                             <option value="2020">2020</option>
                                             <option value="2021">2021</option>
                                             <option value="2022">2022</option>
@@ -73,19 +73,21 @@
                                             <option value="2029">2029</option>
                                             <option value="2030">2030</option>
                                         </select>
-                                    </div>
+                                    </div>                                    
+                                    <!--
                                     <div class="col-md-4 col-sm-12 col-xs-12 form-group">
                                         <label for="CONVERSION_LABOR">CONVERSION_LABOR</label>
-                                        <input type="text" class="form-control" id="IdConversionLabor" name="ConversionLabor" required>
+                                        <input type="text" class="form-control" id="IdConversionLabor" name="ConversionLabor">
                                     </div>
                                     <div class="col-md-4 col-sm-12 col-xs-12 form-group">
                                         <label for="CONVERSION_MACHINE">CONVERSION_MACHINE</label>
-                                        <input type="text" class="form-control" id="IdConversionMachine" name="ConversionMachine" required>                                                
+                                        <input type="text" class="form-control" id="IdConversionMachine" name="ConversionMachine">                                                
                                     </div>
                                     <div class="col-md-4 col-sm-12 col-xs-12 form-group">
                                         <label for="CONVERSION_OVHDS">CONVERSION_OVHDS</label>
-                                        <input type="text" class="form-control" id="IdConversionOvhds" name="ConversionOvhds" required>                                                
-                                    </div>
+                                        <input type="text" class="form-control" id="IdConversionOvhds" name="ConversionOvhds">                                                
+                                    </div>    
+                                    -->
                                 </div>
                                 <br></br>
                                 <div  class="col-md-12 col-sm-12 col-xs-12 form-group has-feedback" align = "center">
@@ -98,20 +100,20 @@
                                 <br>
                                 <br>
                                 <div align="center" id="botonCargar">
-                                    <input type="submit" class="btn btn-lg btn-primary" onclick = "GetEventos()"  name="Accion" value="CargarPlanosProduccion">       
+                                    <input type="submit" class="btn btn-lg btn-primary" onclick = "GetEventos()"  name="Accion" value="CargarPlanosProduccion">                                    
                                 </div>
                                 <div align="center" id="espera" style="display: none">
                                     <img src="Principal/images/loading.gif">
                                 </div>
                                 <div class="col-md-12 col-sm-12 col-xs-12 form-group has-feedback" align = "center">
                                     <label for="ListaEventos">Lista de Eventos</label>
-                                    <textarea class="form-control" id="IdlistaEventos" name="listaEventos" rows="3"></textarea>
+                                    <textarea class="form-control" id="IdlistaEventos" name="listaEventos" rows="10"></textarea>
                                 </div>
                             </form>                            
                             <script type="text/javascript">
                                 var dato = 'Ininciando';
                                 function GetEventos() {
-                                    if (Validaciones())
+                                    if (Validaciones() === true)
                                     {
                                         setInterval(StartSolicitudEvento, 100);
                                     } else
@@ -123,17 +125,15 @@
                                 function Validaciones()
                                 {
                                     var res = false;
-                                    if ($('#IdConversionLabor').val() !== "")
+                                    if ($('#IdMes').val() !== "0")
                                     {
-                                        if ($('#IdConversionMachine').val() !== "")
+                                        if ($('#IdAno').val() !== "0")
                                         {
-                                            if ($('#IdConversionOvhds').val() !== "")
+                                            if ($('#Idarchivo').val() !== "")
                                             {
-                                                if ($('#Idarchivo').val() !== "")
-                                                {
-                                                    res = true;
-                                                }
+                                                res = true;
                                             }
+
                                         }
                                     }
                                     return res;
