@@ -22,11 +22,14 @@ $(function ()
     function ValidaCampo()
     {
         var res = false;
-        if ($('#IdRol').val() !== "")
+        if ($('#IdConversionLabor').val() !== "")
         {
-            if ($('#IdItemMenu').val() !== "")
+            if ($('#IdConversionMachine').val() !== "")
             {
-                res = true;
+                if ($('#IdConversionOvhds').val() !== "")
+                {
+                    res = true;
+                }
             }
         }
         return res;
