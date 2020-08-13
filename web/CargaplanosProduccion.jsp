@@ -14,7 +14,7 @@
         <%
             Modelos.ModeloUsuario modeloUsuarios = (ModeloUsuario) request.getSession().getAttribute("user");
             if (modeloUsuarios != null) {
-        %>
+                %>
         <%@include file="Principal/Body.jsp" %>
         <script type="text/javascript" src="Principal/js/jquery.min.js" ></script>
         <script type="text/javascript" src="Principal/js/ValidacionesPlano.js" ></script> 
@@ -42,7 +42,7 @@
                                 <div class="row">
                                     <input type="hidden" id="Id" name="Id">
                                     <div class="col-md-6 col-sm-12 col-xs-12 form-group">
-                                        <select class="form-control" id="IdMes" name="Mes">                                                                                        
+                                        <select class="form-control" id="IdMes" name="Mes" required>                                                                                        
                                             <option value=0></option>
                                             <option value="Enero">Enero</option>
                                             <option value="Febrero">Febrero</option>
@@ -59,7 +59,7 @@
                                         </select>
                                     </div>
                                     <div class="col-md-6 col-sm-12 col-xs-12 form-group">
-                                        <select class="form-control" id="IdAno" name="Ano">  
+                                        <select class="form-control" id="IdAno" name="Ano" required>  
                                             <option value=0></option>
                                             <option value="2020">2020</option>
                                             <option value="2021">2021</option>
@@ -76,20 +76,20 @@
                                     </div>
                                     <div class="col-md-4 col-sm-12 col-xs-12 form-group">
                                         <label for="CONVERSION_LABOR">CONVERSION_LABOR</label>
-                                        <input type="text" class="form-control" id="IdConversionLabor" name="ConversionLabor" required="required">
+                                        <input type="text" class="form-control" id="IdConversionLabor" name="ConversionLabor" required>
                                     </div>
                                     <div class="col-md-4 col-sm-12 col-xs-12 form-group">
                                         <label for="CONVERSION_MACHINE">CONVERSION_MACHINE</label>
-                                        <input type="text" class="form-control" id="IdConversionMachine" name="ConversionMachine" required="required">                                                
+                                        <input type="text" class="form-control" id="IdConversionMachine" name="ConversionMachine" required>                                                
                                     </div>
                                     <div class="col-md-4 col-sm-12 col-xs-12 form-group">
                                         <label for="CONVERSION_OVHDS">CONVERSION_OVHDS</label>
-                                        <input type="text" class="form-control" id="IdConversionOvhds" name="ConversionOvhds" required="required">                                                
+                                        <input type="text" class="form-control" id="IdConversionOvhds" name="ConversionOvhds" required>                                                
                                     </div>
                                 </div>
                                 <br></br>
                                 <div  class="col-md-12 col-sm-12 col-xs-12 form-group has-feedback" align = "center">
-                                    <input type="file" name="archivo" id="Idarchivo" accept="aplication/txt" autofocus class="btn btn-lg btn-primary" onchange="nombre(this.value)">
+                                    <input type="file" name="archivo" id="Idarchivo" accept="aplication/txt" autofocus class="btn btn-lg btn-primary" onchange="nombre(this.value)" required>
                                 </div>
                                 <br>
                                 <br>
@@ -111,8 +111,36 @@
                             <script type="text/javascript">
                                 var dato = 'Ininciando';
                                 function GetEventos() {
-                                    setInterval(StartSolicitudEvento, 100);
+                                    if (Validaciones())
+                                    {
+                                        setInterval(StartSolicitudEvento, 100);
+                                    } else
+                                    {
+                                        alert("Favor de compleatar todos los campos")
+                                    }
                                 }
+
+                                function Validaciones()
+                                {
+                                    var res = false;
+                                    if ($('#IdConversionLabor').val() !== "")
+                                    {
+                                        if ($('#IdConversionMachine').val() !== "")
+                                        {
+                                            if ($('#IdConversionOvhds').val() !== "")
+                                            {
+                                                if ($('#Idarchivo').val() !== "")
+                                                {
+                                                    res = true;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    return res;
+                                }
+
+
+
                                 function StartSolicitudEvento()
                                 {
                                     document.CargarPlanoServlet.Accion.disabled = true;
@@ -178,11 +206,11 @@
             </div>
         </div>
         <%@include file="Principal/Script.html" %>
-        <%}else{
+        <%} else {
         %>
         <script src="Principal/js/jsfifo/jquery.min.js"></script>  
         <script>
-            location.href = "index.jsp";
+                                location.href = "index.jsp";
         </script>  
         <%
             }
