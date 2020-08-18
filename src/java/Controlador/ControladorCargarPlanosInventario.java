@@ -41,6 +41,7 @@ public class ControladorCargarPlanosInventario {
     ControladorInformeProduccion controladorInformeProduccion = new ControladorInformeProduccion();
     Herramienta herramienta = new Herramienta();
     String ANO = "";
+    String MesKob1 = "";
 
     public String Upload(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
         String resultado = "false";
@@ -85,14 +86,17 @@ public class ControladorCargarPlanosInventario {
             }
 
             switch (nombre) {
-                case "InventarioInicial":
-                    resultado = CargarCSV_InventarioInicial_INFILE(RutaDispo, request);
-                    break;
+//                case "InventarioInicial":
+//                    resultado = CargarCSV_InventarioInicial_INFILE(RutaDispo, request);
+//                    break;
                 case "MCBR":
                     resultado = CargarCSV_MCBR_INFILE(RutaDispo, request);
                     if ("true".equals(resultado)) {
 
                     }
+                    break;
+                default:
+                    resultado = "false";
                     break;
 
             }
@@ -151,6 +155,9 @@ public class ControladorCargarPlanosInventario {
         String ano = request.getParameter("Mes");
         String mes = request.getParameter("Ano");
 
+        ControladorCargaPlanosProduccion controladorCargaPlanosProduccion = new ControladorCargaPlanosProduccion();
+        MesKob1 = controladorCargaPlanosProduccion.validarMesMb51(mes);
+
         ANO = ano + "-" + mes;
 
         String Realizado = "false";
@@ -203,7 +210,7 @@ public class ControladorCargarPlanosInventario {
             herramienta.setEventoProcesado("RECORRIDO DEL LISTADO CON TODOS LOS REGISTROS DE MCBR: 30%");
 
             ModeloEstadoPlanos modeloEstadoPlanos = Archivo(request);
-            int Porcentaje = 1;
+            int Porcentaje = 30;
             int VUeltas = Lista_ModeloMcbr.size() / 40;
             int sumador = 1;
 
@@ -235,6 +242,9 @@ public class ControladorCargarPlanosInventario {
             controladorMcbr.UpdateList_Masivo(Lista_ModeloMcbr_Upd, con, "70");
             System.out.println("FINALIZA ACTUALIZACION DEL LISTADO CON TODOS LOS REGISTROS DE MCBR: " + new Date());
             con.close();
+
+            Progreso("--", "100");
+            herramienta.setEventoProcesado("--");
 
             Realizado = "true";
         }
@@ -321,7 +331,7 @@ public class ControladorCargarPlanosInventario {
         //controladorMb51 = new ControladorMb51();
         LinkedList<ModeloMb51> Lista_modeloMb51s;// = new LinkedList<ModeloMb51>();
 
-        String Sql1 = "SELECT * FROM mb51 where Material = '" + modeloMcbr.getMaterial() + "' and Batch = '" + modeloMcbr.getBatch() + "' and fecha = '" + ANO + "'";
+        String Sql1 = "SELECT * FROM mb51 where Material = '" + modeloMcbr.getMaterial() + "' and Batch = '" + modeloMcbr.getBatch() + "' and fecha = '" + MesKob1 + "'";
 //        String Sql = "SELECT * FROM mb51 where link1_Material_Batch = '" + modeloKob1.getLink_Material_Batch() + "' AND fecha = '" + ANO + "' ORDER BY Month";
 
         double Cost_Unit_Purchase = 0.0;

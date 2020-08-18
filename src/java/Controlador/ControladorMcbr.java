@@ -96,6 +96,22 @@ public class ControladorMcbr {
         ConexionBDMySql conexion = new ConexionBDMySql();
         Connection con;
         con = conexion.abrirConexion();
+
+        int cantFilas = 0;
+        PreparedStatement SQL1;
+        try {
+            SQL1 = con.prepareStatement("Select Count(id) as Cuenta from FROM MCBR WHERE IdArchivo is null");
+            ResultSet res1 = SQL1.executeQuery();
+            while (res1.next()) {
+                cantFilas = Integer.parseInt(res1.getString("Cuenta"));
+            }
+            res1.close();
+            SQL1.close();
+            //con.close();
+        } catch (SQLException e) {
+            System.out.println("Error en la consulta SQL Select " + e);
+        }
+
         PreparedStatement SQL;
         try {
             SQL = con.prepareStatement("SELECT "
@@ -122,7 +138,24 @@ public class ControladorMcbr {
                     + "Variacion_FIFO_vs_Estandar "
                     + " FROM MCBR WHERE IdArchivo is null");
             ResultSet res = SQL.executeQuery();
+
+            int Porcentaje = 1;
+            int VUeltas = cantFilas / 30;
+            int sumador = 1;
+
             while (res.next()) {
+
+                if (sumador == VUeltas) {
+
+                    Runtime garbage = Runtime.getRuntime();
+                    garbage.gc();
+
+                    herramienta.setEventoProcesado("Progreso " + Porcentaje + "%");
+                    System.err.println("Progreso " + Porcentaje + "%");
+                    Porcentaje++;
+                    sumador = 1;
+                }
+
                 ModeloMcbr modeloMcbr = new ModeloMcbr();
                 modeloMcbr.setId(res.getInt("id"));
                 modeloMcbr.setMaterial(res.getString("Material"));

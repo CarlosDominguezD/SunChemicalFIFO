@@ -61,11 +61,12 @@ public class ControladorCargaPlanosProduccion {
     ControladorInventarioInicial controladorInventarioInicial = new ControladorInventarioInicial();
     Herramienta herramienta = new Herramienta();
     ControladorConversiones controladorConversiones = new ControladorConversiones();
-    
 
     String MES = "";
     String ANO = "";
     String MESActual = "";
+    String MesKob1 = "";
+    
 
     public String procesarCarga(LinkedList<ModeloArchivos> listModeloArchivoses, HttpServletRequest request, HttpServletResponse response) {
         String resultado = "false";
@@ -171,18 +172,21 @@ public class ControladorCargaPlanosProduccion {
             }
 
             switch (nombre) {
-                case "MB51_CONSUMOS":
-                    resultado = CargarCSV_MB51_CONSUMOS_INFILE(RutaDispo, request);
-                    break;
-                case "POVR":
-                    resultado = CargarCSV_POVR_INFILE(RutaDispo, request);
-                    break;
+//                case "MB51_CONSUMOS":
+//                    resultado = CargarCSV_MB51_CONSUMOS_INFILE(RutaDispo, request);
+//                    break;
+//                case "POVR":
+//                    resultado = CargarCSV_POVR_INFILE(RutaDispo, request);
+//                    break;
                 case "KOB1":
                     System.err.println("CargarCSV_KOB1_INFILE");
                     resultado = CargarCSV_KOB1_INFILE(RutaDispo, request);
                     break;
-                case "INVENTARIO":
-                    resultado = CargarCSV_InventarioInicial_INFILE(RutaDispo, request);
+//                case "INVENTARIO":
+//                    resultado = CargarCSV_InventarioInicial_INFILE(RutaDispo, request);
+//                    break;
+                default:
+                    resultado = "false";
                     break;
 
             }
@@ -238,10 +242,9 @@ public class ControladorCargaPlanosProduccion {
 
         mes(request);
 
-        CONVERSION_LABOR = Double.parseDouble(request.getParameter("ConversionLabor"));
-        CONVERSION_MACHINE = Double.parseDouble(request.getParameter("ConversionMachine"));
-        CONVERSION_OVHDS = Double.parseDouble(request.getParameter("ConversionOvhds"));
-
+//        CONVERSION_LABOR = Double.parseDouble(request.getParameter("ConversionLabor"));
+//        CONVERSION_MACHINE = Double.parseDouble(request.getParameter("ConversionMachine"));
+//        CONVERSION_OVHDS = Double.parseDouble(request.getParameter("ConversionOvhds"));
         ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
 
         String mes = request.getParameter("Mes");
@@ -266,6 +269,9 @@ public class ControladorCargaPlanosProduccion {
 
         //System.out.println("Consulta: " + SqlInsertMasivo);
         String SqlUpdateFecha = "Update kob1_planos set fecha = '" + mes + "-" + ano + "' where fecha is null";
+        
+        
+        MesKob1 = validarMesMb51(ano);
 
         herramienta.setEventoProcesado("Inicia Carga de Archivo 1%");
         if (controladorMrpdata.Insert(SqlInsertMasivo)) {
@@ -280,13 +286,12 @@ public class ControladorCargaPlanosProduccion {
 
     public String PROCESO_PRODUCCION(Connection con, String mes, String ano) throws IOException, SQLException {
         String Realizado = "false";
-        
+
         ModeloConversiones modeloConversiones = new ModeloConversiones();
         modeloConversiones = controladorConversiones.Select("select * from conversiones where ano = '" + ano + "' and mes = '" + mes + "'", con);
         CONVERSION_LABOR = Double.parseDouble(modeloConversiones.getConversion_labor());
         CONVERSION_MACHINE = Double.parseDouble(modeloConversiones.getConversion_machine());
         CONVERSION_OVHDS = Double.parseDouble(modeloConversiones.getConversion_ovhds());
-        
 
         LinkedList<ModeloKob1> lstModeloKob1 = new LinkedList<ModeloKob1>();
         LinkedList<ModeloKob1> lstModeloKob1Upd = new LinkedList<ModeloKob1>();
@@ -295,7 +300,7 @@ public class ControladorCargaPlanosProduccion {
             Progreso(mes + "-" + ano + " LLenando Listado de Produccion Paso 1", "0");
             herramienta.setEventoProcesado(mes + "-" + ano + " LLenando Listado de Produccion Paso 1 0%");
             lstModeloKob1 = Select("SELECT * from kob1_planos where fecha = '" + mes + "-" + ano + "'", con, mes + "-" + ano);
-            
+
             Progreso(mes + "-" + ano + " Insertando Listado General de Produccion Paso 1", "10");
             herramienta.setEventoProcesado(mes + "-" + ano + " Insertando Listado General de Produccion Paso 1 10%");
             controladorMrpdata.Insert("delete from kob1 where fecha = '" + mes + "-" + ano + "'");
@@ -317,7 +322,7 @@ public class ControladorCargaPlanosProduccion {
         Progreso(mes + "-" + ano + " Actualizando Ordenes con Produccion No Piso", "25");
         herramienta.setEventoProcesado(mes + "-" + ano + " Actualizando Ordenes con Produccion No Piso 25%");
 
-        controladorKob1.UpdateList_CampoProd(lstModeloKob1, con, "Actualizando Ordenes con Produccion No Piso", mes + "-" + ano, "25", "30");
+        controladorKob1.UpdateList_CampoProd(lstModeloKob1Upd, con, "Actualizando Ordenes con Produccion No Piso", mes + "-" + ano, "25", "30");
 
         lstModeloKob1Upd = null;
         lstModeloKob1Upd = new LinkedList<ModeloKob1>();
@@ -389,10 +394,9 @@ public class ControladorCargaPlanosProduccion {
         String FechaAño = mes + "-" + ano;
         CallableStatement InformeProduccion = con.prepareCall("{CALL SUMAS_INFORME_PRODUCCION(?)}");
         CallableStatement InformeProduccion_FinMes = con.prepareCall("{CALL SUMAS_INFORME_PRODUCCION_FINMES(?)}");
-        InformeProduccion_FinMes.setString(1, FechaAño);        
-        
-        
-        InformeProduccion.setString(1, FechaAño);        
+        InformeProduccion_FinMes.setString(1, FechaAño);
+
+        InformeProduccion.setString(1, FechaAño);
         InformeProduccion.execute();
 
         Progreso(mes + "-" + ano + " Actuzalizando  Procur_Type", "50");
@@ -410,7 +414,9 @@ public class ControladorCargaPlanosProduccion {
         lstModeloKob1 = null;
         Progreso(mes + "-" + ano + " Llenando Listado Produccion Paso 2", "50");
         herramienta.setEventoProcesado(mes + "-" + ano + " Llenando Listado Produccion Paso 2 50%");
-        lstModeloKob1 = controladorKob1.Select("SELECT * from KOB1 where fecha = '" + mes + "-" + ano + "'", mes + "-" + ano, "50", "60");
+        //lstModeloKob1 = controladorKob1.Select("SELECT * from KOB1 where fecha = '" + mes + "-" + ano + "'", mes + "-" + ano, "50", "60");
+        lstModeloKob1 = controladorKob1.Select("SELECT * from kob1 where fecha = '" + mes + "-" + ano + "' and x = 'x'", mes + "-" + ano, "50", "60");
+
 //            System.out.println("FINALIZA LLENADO DEL MODELO LISTADO NUMERO 2: " + new Date());
         lstModeloKob1Upd = null;
         lstModeloKob1Upd = new LinkedList<ModeloKob1>();
@@ -477,7 +483,7 @@ public class ControladorCargaPlanosProduccion {
 //            System.out.println("INICIA ACTUALIZACION DEL LISTADO NUMERO 2: " + new Date());
         Progreso(mes + "-" + ano + " Insertando Listado General de Produccion Paso 2", "70");
         herramienta.setEventoProcesado(mes + "-" + ano + " Insertando Listado General de Produccion Paso 2 70%");
-        controladorMrpdata.Insert("delete from kob1 where fecha = '" + mes + "-" + ano + "'");
+        controladorMrpdata.Insert("delete from kob1 where fecha = '" + mes + "-" + ano + "' and x = 'x'");
 
         //controladorKob1.UpdateList_Carlos(lstModeloKob1Upd, con, "Inicia Actualizacion de Listado General", "90");
         controladorKob1.InsertList_Masivo(lstModeloKob1Upd, con, "Insertando Listado General de Produccion Paso 2", mes + "-" + ano, "70");
@@ -498,14 +504,14 @@ public class ControladorCargaPlanosProduccion {
 
         Progreso(mes + "-" + ano + " Actualizando Registros con Produccion No piso en Cero Para ser Excluidos", "85");
         herramienta.setEventoProcesado(mes + "-" + ano + " Actualizando Registros con Produccion No piso en Cero Para ser Excluidos 85%");
-        controladorKob1.UpdateList_CampoProd(lstModeloKob1, con, "Actualizacion Listado Para Produccion Piso", FechaAño, "85", "90");
+        controladorKob1.UpdateList_CampoProd(lstModeloKob1Upd, con, "Actualizacion Listado Para Produccion Piso", FechaAño, "85", "90");
 
         lstModeloKob1Upd = null;
         lstModeloKob1Upd = new LinkedList<ModeloKob1>();
 
         Progreso(mes + "-" + ano + " Procesando Informe Produccion Piso y No Piso", "90");
         herramienta.setEventoProcesado(mes + "-" + ano + " Procesando Informe Produccion Piso y No Piso 90%");
-        
+
         //InformeProduccion.execute();
         InformeProduccion_FinMes.execute();
 
@@ -555,7 +561,6 @@ public class ControladorCargaPlanosProduccion {
         controladorKob1.UpdateList_Carlos(lstModeloKob1Upd, con, "Actualizacio registros Produccion Piso", FechaAño, "95", "100");
 
         //InformeProduccion_FinMes.execute();
-        
         lstModeloKob1 = null;
         lstModeloKob1Upd = null;
 
@@ -732,7 +737,7 @@ public class ControladorCargaPlanosProduccion {
 
     public ModeloKob1 CostoCompras(ModeloKob1 modeloKob1, Connection con) throws SQLException {
 
-        String Sql = "SELECT * FROM mb51 where link1_Material_Batch = '" + modeloKob1.getLink_Material_Batch() + "' AND fecha = '" + ANO + "' ORDER BY Month";
+        String Sql = "SELECT * FROM mb51 where link1_Material_Batch = '" + modeloKob1.getLink_Material_Batch() + "' AND fecha = '" + MesKob1 + "' ORDER BY Month";
 
         LinkedList<ModeloMb51> LstModeloMb51 = controladorMb51.SelectSql(Sql, con);
 
@@ -1210,7 +1215,7 @@ public class ControladorCargaPlanosProduccion {
         String mes = request.getParameter("Mes");
         String ano = request.getParameter("Ano");
 
-        ANO = mes + "-" + ano;        
+        ANO = mes + "-" + ano;
         MESActual = request.getParameter("Mes");
 
         int vueltas = 0;
@@ -1255,13 +1260,21 @@ public class ControladorCargaPlanosProduccion {
 
         }
 
-        Progreso("Fecha Hora Inicio: " + new Date(), "0");
-        herramienta.setEventoProcesado("Fecha Hora Inicio: " + new Date());
+        Date PruebaInicioFecha = new Date();
+        Date PruebaFinFecha = new Date();
+        //Date Res = PruebaInicioFecha.getTime() - PruebaFinFecha.ge;
+
+        Progreso("Fecha Hora Inicio Proceso Completo: " + new Date(), "0");
+        herramienta.setEventoProcesado("Fecha Hora Inicio Proceso Completo:" + new Date());
         for (int x = 1; x <= vueltas; x++) {
+            Progreso("Fecha Hora Inicio Mes: " + mes + " - " + new Date(), "0");
+            herramienta.setEventoProcesado("Fecha Hora Inicio Proceso Completo:" + new Date());
             Realizado = PROCESO_PRODUCCION(con, DevolverMes(x), ano);
+            Progreso("Fecha Hora Fin Mes : " + mes + " - " + new Date(), "0");
+            herramienta.setEventoProcesado("Fecha Hora Fin Proceso Completo: " + new Date());
         }
-        Progreso("Fecha Hora Fin: " + new Date(), "0");
-        herramienta.setEventoProcesado("Fecha Hora Fin: " + new Date());
+        Progreso("Fecha Hora Fin Proceso Completo: " + new Date(), "0");
+        herramienta.setEventoProcesado("Fecha Hora Fin Proceso Completo: " + new Date());
         herramienta.setEventoProcesado("--");
         con.close();
 
@@ -1312,6 +1325,132 @@ public class ControladorCargaPlanosProduccion {
 
         }
 
+        return Mes;
+    }
+
+    public String validarMesMb51(String Ano) {
+        String Mes = "";
+
+        String Enero = "";
+        String Febrero = "";
+        String Marzo = "";
+        String Abril = "";
+        String Mayo = "";
+        String Junio = "";
+        String Julio = "";
+        String Agosto = "";
+        String Septiembre = "";
+        String Octubre = "";
+        String Noviembre = "";
+        String Diciembre = "";
+
+        ConexionBDMySql conexion = new ConexionBDMySql();
+        Connection con;
+        con = conexion.abrirConexion();
+        PreparedStatement SQL;
+        LinkedList<Object> lista = new LinkedList<Object>();
+
+        try {
+
+            SQL = con.prepareStatement("select fecha from mb51 where fecha like '%" + Ano + "' group by fecha");
+            ResultSet res = SQL.executeQuery();
+            while (res.next()) {
+                lista.add(res.getString("fecha"));
+            }
+            res.close();
+            SQL.close();
+            con.close();
+        } catch (SQLException e) {
+            System.out.println("Error en la consulta SQL Select " + e);
+        }
+
+        for (Object Mess : lista) {
+            if (Mess.toString().contains("Enero")) {
+                Enero = "Enero-" + Ano;
+            }
+            if (Mess.toString().contains("Febrero")) {
+                Febrero = "Febrero-" + Ano;
+            }
+            if (Mess.toString().contains("Marzo")) {
+                Marzo = "Marzo-" + Ano;
+            }
+            if (Mess.toString().contains("Abril")) {
+                Abril = "Abril-" + Ano;
+            }
+            if (Mess.toString().contains("Mayo")) {
+                Mayo = "Mayo-" + Ano;
+            }
+            if (Mess.toString().contains("Junio")) {
+                Junio = "Junio-" + Ano;
+            }
+            if (Mess.toString().contains("Julio")) {
+                Julio = "Julio-" + Ano;
+            }
+            if (Mess.toString().contains("Agosto")) {
+                Agosto = "Agosto-" + Ano;
+            }
+            if (Mess.toString().contains("Septiembre")) {
+                Septiembre = "Septiembre-" + Ano;
+            }
+            if (Mess.toString().contains("Octubre")) {
+                Octubre = "Octubre-" + Ano;
+            }
+            if (Mess.toString().contains("Noviembre")) {
+                Noviembre = "Noviembre-" + Ano;
+            }
+            if (Mess.toString().contains("Diciembre")) {
+                Diciembre = "Diciembre-" + Ano;
+            }
+        }
+
+        if (Diciembre.contentEquals("")) {
+            if (Noviembre.contentEquals("")) {
+                if (Octubre.contentEquals("")) {
+                    if (Septiembre.contentEquals("")) {
+                        if (Agosto.contentEquals("")) {
+                            if (Julio.contentEquals("")) {
+                                if (Junio.contentEquals("")) {
+                                    if (Mayo.contentEquals("")) {
+                                        if (Abril.contentEquals("")) {
+                                            if (Marzo.contentEquals("")) {
+                                                if (Febrero.contentEquals("")) {
+                                                    if (Enero.contentEquals("")) {
+                                                    } else {
+                                                        return Enero;
+                                                    }
+                                                } else {
+                                                    return Febrero;
+                                                }
+                                            } else {
+                                                return Marzo;
+                                            }
+                                        } else {
+                                            return Abril;
+                                        }
+                                    } else {
+                                        return Mayo;
+                                    }
+                                } else {
+                                    return Junio;
+                                }
+                            } else {
+                                return Julio;
+                            }
+                        } else {
+                            return Agosto;
+                        }
+                    } else {
+                        return Septiembre;
+                    }
+                } else {
+                    return Octubre;
+                }
+            } else {
+                return Noviembre;
+            }
+        } else {
+            return Diciembre;
+        }
         return Mes;
     }
 
