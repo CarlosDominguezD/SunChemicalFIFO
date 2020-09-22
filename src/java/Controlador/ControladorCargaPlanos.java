@@ -248,7 +248,7 @@ public class ControladorCargaPlanos {
         String Realizado = "false";
         Ruta = Ruta.replace("\\", "/");
         String SqlInsertMasivo
-                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE MB51"
+                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE MB51 CHARACTER SET LATIN1"
                 + " FIELDS TERMINATED BY ','"
                 + " ENCLOSED BY '\"'"
                 + " LINES TERMINATED BY '\\r\\n'"
@@ -345,7 +345,7 @@ public class ControladorCargaPlanos {
         }
         Ruta = Ruta.replace("\\", "/");
         String SqlInsertMasivo
-                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE MB51_planos"
+                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE MB51_planos CHARACTER SET LATIN1"
                 + " FIELDS TERMINATED BY ','"
                 + " ENCLOSED BY '\"'"
                 + " LINES TERMINATED BY '\\r\\n'"
@@ -397,6 +397,11 @@ public class ControladorCargaPlanos {
             sumador = 1;
 
             for (ModeloMb51 modeloMb51 : LinkModeloMb51_New) {
+
+                if (modeloMb51.getPurchase_order().contentEquals("4502175823")) {
+                    System.out.println("Controlador.ControladorCargaPlanos.CargarCSV_MB51_INFILE_new()");
+                }
+
                 if (sumador == VUeltas) {
                     herramienta.setEventoProcesado("Consultas en Archivos Base " + Porcentaje + "%");
                     System.err.println("Consultas en Archivos Base " + Porcentaje + "%");
@@ -453,7 +458,7 @@ public class ControladorCargaPlanos {
 
         Ruta = Ruta.replace("\\", "/");
         String SqlInsertMasivo
-                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE FBL3M"
+                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE FBL3M CHARACTER SET LATIN1"
                 + " FIELDS TERMINATED BY ','"
                 + " ENCLOSED BY '\"'"
                 + " LINES TERMINATED BY '\\r\\n'"
@@ -494,7 +499,7 @@ public class ControladorCargaPlanos {
 
         Ruta = Ruta.replace("\\", "/");
         String SqlInsertMasivo
-                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE ME80FN"
+                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE ME80FN CHARACTER SET LATIN1"
                 + " FIELDS TERMINATED BY ','"
                 + " ENCLOSED BY '\"'"
                 + " LINES TERMINATED BY '\\r\\n'"
@@ -526,7 +531,7 @@ public class ControladorCargaPlanos {
         String Realizado = "false";
         Ruta = Ruta.replace("\\", "/");
         String SqlInsertMasivo
-                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE MRPDATA"
+                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE MRPDATA CHARACTER SET LATIN1"
                 + " FIELDS TERMINATED BY ','"
                 + " ENCLOSED BY '\"'"
                 + " LINES TERMINATED BY '\\r\\n'"
@@ -563,7 +568,7 @@ public class ControladorCargaPlanos {
         String Realizado = "false";
         Ruta = Ruta.replace("\\", "/");
         String SqlInsertMasivo
-                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE PROVEEDOR"
+                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE PROVEEDOR CHARACTER SET LATIN1"
                 + " FIELDS TERMINATED BY ','"
                 + " ENCLOSED BY '\"'"
                 + " LINES TERMINATED BY '\\r\\n'"
@@ -600,7 +605,7 @@ public class ControladorCargaPlanos {
         String Realizado = "false";
         Ruta = Ruta.replace("\\", "/");
         String SqlInsertMasivo
-                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE EINE"
+                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE EINE CHARACTER SET LATIN1"
                 + " FIELDS TERMINATED BY ','"
                 + " ENCLOSED BY '\"'"
                 + " LINES TERMINATED BY '\\r\\n'"
@@ -638,7 +643,7 @@ public class ControladorCargaPlanos {
         String Realizado = "false";
         Ruta = Ruta.replace("\\", "/");
         String SqlInsertMasivo
-                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE EINE"
+                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE EINE CHARACTER SET LATIN1"
                 + " FIELDS TERMINATED BY ','"
                 + " ENCLOSED BY '\"'"
                 + " LINES TERMINATED BY '\\r\\n'"
@@ -685,7 +690,7 @@ public class ControladorCargaPlanos {
 
         Ruta = Ruta.replace("\\", "/");
         String SqlInsertMasivo
-                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE Z39"
+                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE Z39 CHARACTER SET LATIN1"
                 + " FIELDS TERMINATED BY ','"
                 + " ENCLOSED BY '\"'"
                 + " LINES TERMINATED BY '\\r\\n'"
@@ -726,7 +731,7 @@ public class ControladorCargaPlanos {
         String Realizado = "false";
         Ruta = Ruta.replace("\\", "/");
         String SqlInsertMasivo
-                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE MB51_CONSUMOS"
+                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE MB51_CONSUMOS CHARACTER SET LATIN1"
                 + " FIELDS TERMINATED BY ','"
                 + " ENCLOSED BY '\"'"
                 + " LINES TERMINATED BY '\\r\\n'"
@@ -768,7 +773,7 @@ public class ControladorCargaPlanos {
         String Realizado = "false";
         Ruta = Ruta.replace("\\", "/");
         String SqlInsertMasivo
-                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE POVR"
+                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE POVR CHARACTER SET LATIN1"
                 + " FIELDS TERMINATED BY ','"
                 + " ENCLOSED BY '\"'"
                 + " LINES TERMINATED BY '\\r\\n'"
@@ -802,7 +807,7 @@ public class ControladorCargaPlanos {
         String Realizado = "false";
         Ruta = Ruta.replace("\\", "/");
         String SqlInsertMasivo
-                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE InventarioInicial"
+                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE InventarioInicial CHARACTER SET LATIN1"
                 + " FIELDS TERMINATED BY ','"
                 + " ENCLOSED BY '\"'"
                 + " LINES TERMINATED BY '\\r\\n'"
@@ -861,8 +866,9 @@ public class ControladorCargaPlanos {
 //                        Double Qty_in_unit_of_entry_mb51 = Double.valueOf(modeloMb51.getQty_in_unit_of_entry());
                         Double Amt_in_loc_cur_mb51 = 0.0;
 
-                        Amt_in_loc_cur_mb51 = Quantity_Z39 * Amt_in_loc_cur_mb51_Original / Quantity_mb51_Original;
-
+                        if (Quantity_mb51_Original != 0) {
+                            Amt_in_loc_cur_mb51 = Quantity_Z39 * Amt_in_loc_cur_mb51_Original / Quantity_mb51_Original;
+                        }
                         ModeloMb51 modeloMb51_New = new ModeloMb51();
                         modeloMb51_New.setPlant(modeloMb51.getPlant());
                         modeloMb51_New.setPurchase_order(modeloMb51.getPurchase_order());
@@ -1112,6 +1118,10 @@ public class ControladorCargaPlanos {
             Adicionales_al_CTO_Estandar = Double.valueOf(modeloEine.getPorcentaje_Additional());
         }
 
+        if (modeloMb51.getPurchase_order().contentEquals("4502175823")) {
+            System.out.println("Controlador.ControladorCargaPlanos.CargarCSV_MB51_INFILE_new()");
+        }
+
         Double Total_Costos_Adicionales = 0.0;
         Double Participac_Adicionales = 0.0;
         if (modeloProveedor.getVendor_Type().contains("ICO")) {
@@ -1119,7 +1129,10 @@ public class ControladorCargaPlanos {
             Participac_Adicionales = Porcentaje_Adicional;
         } else {
             Total_Costos_Adicionales = Freight + Dutys + Arancel;
-            Participac_Adicionales = Total_Costos_Adicionales / TOTAL_INVOICE_VALUE;
+            if (TOTAL_INVOICE_VALUE != 0) {
+                Participac_Adicionales = Total_Costos_Adicionales / TOTAL_INVOICE_VALUE;
+            }
+
         }
 
         //LLENAMOS COLUMNA AQ
@@ -1191,15 +1204,21 @@ public class ControladorCargaPlanos {
         //LLENAMOS COLUMNA AX
         modeloMb51.setUnitario_final_FIFO(String.format("%.5f", Unitario_final_FIFO).replace(",", "."));
 
-        Double Porcentaje_Real_Vs_Estanda = 0.0;
-        Porcentaje_Real_Vs_Estanda = ((Unitario_Real / Unitario_estandar_SAP) - 1);
+        if (modeloMb51.getPurchase_order().contentEquals("4502149210")) {
+            System.out.println("Controlador.ControladorCargaPlanos.CargarCSV_MB51_INFILE_new()");
+        }
 
+        Double Porcentaje_Real_Vs_Estanda = 0.0;
+        if (Unitario_estandar_SAP != 0) {
+            Porcentaje_Real_Vs_Estanda = ((Unitario_Real / Unitario_estandar_SAP) - 1);
+        }
         //LLENAMOS COLUMNA AY
         modeloMb51.setPorcentaje_Real_Vs_Estandar(String.format("%.5f", Porcentaje_Real_Vs_Estanda).replace(",", "."));
 
         Double Porcentaje_fifo_final_vs_Estandar = 0.0;
-        Porcentaje_fifo_final_vs_Estandar = ((Unitario_final_FIFO / Unitario_estandar_SAP) - 1);
-
+        if (Unitario_estandar_SAP != 0) {
+            Porcentaje_fifo_final_vs_Estandar = ((Unitario_final_FIFO / Unitario_estandar_SAP) - 1);
+        }
         //LLENAMOS COLUMNA AZ
         modeloMb51.setPorcentaje_fifo_final_vs_Estandar(String.format("%.5f", Porcentaje_fifo_final_vs_Estandar).replace(",", "."));
 

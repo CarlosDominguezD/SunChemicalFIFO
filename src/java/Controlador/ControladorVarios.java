@@ -459,6 +459,10 @@ public class ControladorVarios {
                     modeloVarios.setModeloEine(modeloEine);
                 }
             }
+            
+            if(modeloMb51.getMaterial().contentEquals("91482534")){
+                System.out.println("Controlador.ControladorVarios.LLenarModelos()");
+            }
 
             SQL = con.prepareStatement("SELECT * FROM VendorType WHERE Material = '" + modeloMb51.getMaterial() + "'");
             res = SQL.executeQuery();
@@ -467,6 +471,7 @@ public class ControladorVarios {
                 modeloVendorType.setId(res.getInt("id"));
                 modeloVendorType.setMaterial(res.getString("Material"));
                 modeloVendorType.setVendor_Type(res.getString("Vendor_Type"));
+                modeloVarios.setModeloVendorType(modeloVendorType);
             }
 
             res.close();

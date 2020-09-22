@@ -366,9 +366,7 @@ public class ControladorKob1 {
                 sumador++;
 
                 if (contt == 2000) {
-                    //SqlDatos.append("\"");
                     cadena = SqlDatos.toString();
-                    //cadena = cadena.substring(0, cadena.length() - 1);
                     InserKOB1Masivo.setString(1, cadena);
                     InserKOB1Masivo.execute();
                     contt = 0;
@@ -435,9 +433,7 @@ public class ControladorKob1 {
 
             }
 
-//            SqlDatos.append("\"");
             cadena = SqlDatos.toString();
-//            cadena = cadena.substring(0, cadena.length() - 1);
             InserKOB1Masivo.setString(1, cadena);
             InserKOB1Masivo.execute();
 

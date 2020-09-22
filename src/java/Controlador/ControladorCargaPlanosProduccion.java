@@ -12,7 +12,6 @@ import Modelos.ModeloAuditoria;
 import Modelos.ModeloConversiones;
 import Modelos.ModeloEstadoPlanos;
 import Modelos.ModeloInforme_Produccion;
-import Modelos.ModeloInventario;
 import Modelos.ModeloInventarioInicial;
 import Modelos.ModeloKob1;
 import Modelos.ModeloMb51;
@@ -21,8 +20,6 @@ import Modelos.ModeloMrpData;
 import Modelos.ModeloPovr;
 import Modelos.ModeloUsuario;
 import static Servlet.ServletSunchemical.ObtenerFecha;
-import it.unimi.dsi.fastutil.BigList;
-import it.unimi.dsi.fastutil.objects.ObjectBigArrayBigList;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,9 +30,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.StringTokenizer;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -66,7 +64,6 @@ public class ControladorCargaPlanosProduccion {
     String ANO = "";
     String MESActual = "";
     String MesKob1 = "";
-    
 
     public String procesarCarga(LinkedList<ModeloArchivos> listModeloArchivoses, HttpServletRequest request, HttpServletResponse response) {
         String resultado = "false";
@@ -215,7 +212,7 @@ public class ControladorCargaPlanosProduccion {
 
         Ruta = Ruta.replace("\\", "/");
         String SqlInsertMasivo
-                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE MB51_CONSUMOS"
+                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE MB51_CONSUMOS CHARACTER SET LATIN1"
                 + " FIELDS TERMINATED BY ','"
                 + " ENCLOSED BY '\"'"
                 + " LINES TERMINATED BY '\\r\\n'"
@@ -258,7 +255,7 @@ public class ControladorCargaPlanosProduccion {
         }
         Ruta = Ruta.replace("\\", "/");
         String SqlInsertMasivo
-                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE kob1_planos"
+                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE kob1_planos CHARACTER SET LATIN1"
                 + " FIELDS TERMINATED BY ','"
                 + " ENCLOSED BY '\"'"
                 + " LINES TERMINATED BY '\\r\\n'"
@@ -269,8 +266,7 @@ public class ControladorCargaPlanosProduccion {
 
         //System.out.println("Consulta: " + SqlInsertMasivo);
         String SqlUpdateFecha = "Update kob1_planos set fecha = '" + mes + "-" + ano + "' where fecha is null";
-        
-        
+
         MesKob1 = validarMesMb51(ano);
 
         herramienta.setEventoProcesado("Inicia Carga de Archivo 1%");
@@ -351,27 +347,40 @@ public class ControladorCargaPlanosProduccion {
             }
             sumador++;
 
-            //BUSCO EN INVETNTARIO
-            modeloKob1 = CostoInventario(modeloKob1, con);
+            if (!modeloKob1.getCost_Element().contentEquals("50440")) {
+                if (!modeloKob1.getCost_Element().contentEquals("50400")) {
 
-            //BUSCO EN COMPRAS
-            modeloKob1 = CostoCompras(modeloKob1, con);
-            //CALCULO Total Raw Material
-            modeloKob1 = TotalRawValue(modeloKob1, con);
-            //CALCULO Packaging_Materials
-            if (modeloKob1.getCost_Element().contentEquals("50430")) {
-                modeloKob1 = Packaging_Materials(modeloKob1, con);
+                    if (!modeloKob1.getCost_Element().contentEquals("80004")) {
+                        if (!modeloKob1.getCost_Element().contentEquals("80005")) {
+                            if (!modeloKob1.getCost_Element().contentEquals("80015")) {
+
+                                //BUSCO EN INVETNTARIO
+                                modeloKob1 = CostoInventario(modeloKob1, con);
+
+                                //BUSCO EN COMPRAS
+                                modeloKob1 = CostoCompras(modeloKob1, con);
+                                //CALCULO Total Raw Material
+                                modeloKob1 = TotalRawValue(modeloKob1, con);
+                                //CALCULO Packaging_Materials
+                                if (modeloKob1.getCost_Element().contentEquals("50430")) {
+                                    modeloKob1 = Packaging_Materials(modeloKob1, con);
+                                }
+
+                            }
+                        }
+                    }
+
+                    double Nuevo_Valor_Orden = 0.0;
+
+                    Nuevo_Valor_Orden = Double.valueOf(modeloKob1.getTotal_Raw_Material())
+                            + Double.valueOf(modeloKob1.getManufact_Materials())
+                            + Double.valueOf(modeloKob1.getPackaging_Materials())
+                            + Double.valueOf(modeloKob1.getConversion_Cost());
+
+                    modeloKob1.setNuevo_Valor_Orden(String.format("%.5f", Nuevo_Valor_Orden).replace(",", "."));
+
+                }
             }
-
-            double Nuevo_Valor_Orden = 0.0;
-
-            Nuevo_Valor_Orden = Double.valueOf(modeloKob1.getTotal_Raw_Material())
-                    + Double.valueOf(modeloKob1.getManufact_Materials())
-                    + Double.valueOf(modeloKob1.getPackaging_Materials())
-                    + Double.valueOf(modeloKob1.getConversion_Cost());
-
-            modeloKob1.setNuevo_Valor_Orden(String.format("%.5f", Nuevo_Valor_Orden).replace(",", "."));
-
             lstModeloKob1Upd.add(modeloKob1);
 
         }
@@ -437,42 +446,46 @@ public class ControladorCargaPlanosProduccion {
                 sumador = 1;
             }
             sumador++;
-            if (modeloKob1.getLink_Material_Batch() != null) {
-                if (modeloKob1.getLink_Material_Batch().contentEquals("980198603YUMNL0095")) {
-                    //System.out.println("Controlador.ControladorCargaPlanosProduccion.CargarCSV_KOB1_INFILE()");
-                }
-            }
 
             modeloKob1.setProduccion("");
             modeloKob1.setInventario("");
             modeloKob1.setX("");
 
-            if (!modeloKob1.getMaterial().contentEquals("")) {
-                //LLENAMOS COLUMNA Cost Unit Fifo R.Mat y Pack
+            if (!modeloKob1.getCost_Element().contentEquals("50440")) {
+                if (!modeloKob1.getCost_Element().contentEquals("50400")) {
 
-                //BUSCO EN INVETNTARIO
-                modeloKob1 = CostoInventario(modeloKob1, con);
+                    if (!modeloKob1.getCost_Element().contentEquals("80004")) {
+                        if (!modeloKob1.getCost_Element().contentEquals("80005")) {
+                            if (!modeloKob1.getCost_Element().contentEquals("80015")) {
+                                //LLENAMOS COLUMNA Cost Unit Fifo R.Mat y Pack
 
-                if (modeloKob1.getProcur_Type().contentEquals("F")) {
-                    modeloKob1 = CostoCompras(modeloKob1, con);
-                    modeloKob1 = TotalRawValue(modeloKob1, con);
-                } else if (modeloKob1.getProcur_Type().contentEquals("E")) {
-                    modeloKob1 = ProduccionPiso(modeloKob1, con);
-                    modeloKob1 = ManufactMaterials(modeloKob1, con);
-                }
-                if (modeloKob1.getCost_Element().contentEquals("50430")) {
-                    modeloKob1 = Packaging_Materials(modeloKob1, con);
+                                //BUSCO EN INVETNTARIO
+                                modeloKob1 = CostoInventario(modeloKob1, con);
+
+                                if (modeloKob1.getProcur_Type().contentEquals("F")) {
+                                    modeloKob1 = CostoCompras(modeloKob1, con);
+                                    modeloKob1 = TotalRawValue(modeloKob1, con);
+                                } else if (modeloKob1.getProcur_Type().contentEquals("E")) {
+                                    modeloKob1 = ProduccionPiso(modeloKob1, con);
+                                    modeloKob1 = ManufactMaterials(modeloKob1, con);
+                                }
+                                if (modeloKob1.getCost_Element().contentEquals("50430")) {
+                                    modeloKob1 = Packaging_Materials(modeloKob1, con);
+                                }
+                            }
+                        }
+                    }
+                    double Nuevo_Valor_Orden = 0.0;
+
+                    Nuevo_Valor_Orden = Double.valueOf(modeloKob1.getTotal_Raw_Material())
+                            + Double.valueOf(modeloKob1.getManufact_Materials())
+                            + Double.valueOf(modeloKob1.getPackaging_Materials())
+                            + Double.valueOf(modeloKob1.getConversion_Cost());
+
+                    modeloKob1.setNuevo_Valor_Orden(String.format("%.5f", Nuevo_Valor_Orden).replace(",", "."));
+
                 }
             }
-
-            double Nuevo_Valor_Orden = 0.0;
-
-            Nuevo_Valor_Orden = Double.valueOf(modeloKob1.getTotal_Raw_Material())
-                    + Double.valueOf(modeloKob1.getManufact_Materials())
-                    + Double.valueOf(modeloKob1.getPackaging_Materials())
-                    + Double.valueOf(modeloKob1.getConversion_Cost());
-
-            modeloKob1.setNuevo_Valor_Orden(String.format("%.5f", Nuevo_Valor_Orden).replace(",", "."));
 
             modeloKob1.setFecha(FechaAño);
             lstModeloKob1Upd.add(modeloKob1);
@@ -534,25 +547,42 @@ public class ControladorCargaPlanosProduccion {
             }
             sumador++;
 
-            if (modeloKob1.getLink_Material_Batch() != null) {
-                if (modeloKob1.getLink_Material_Batch().contentEquals("980198603YUMNL0095")) {
-                    //System.out.println("Controlador.ControladorCargaPlanosProduccion.CargarCSV_KOB1_INFILE()");
+            if (!modeloKob1.getCost_Element().contentEquals("50440")) {
+                if (!modeloKob1.getCost_Element().contentEquals("50400")) {
+
+                    if (!modeloKob1.getCost_Element().contentEquals("80004")) {
+                        if (!modeloKob1.getCost_Element().contentEquals("80005")) {
+                            if (!modeloKob1.getCost_Element().contentEquals("80015")) {
+
+                                modeloKob1 = ProduccionPiso(modeloKob1, con);
+                                modeloKob1 = ManufactMaterials(modeloKob1, con);
+
+                            }
+                        }
+                    }
+
+                    double Nuevo_Valor_Orden = 0.0;
+
+                    Nuevo_Valor_Orden = Double.valueOf(modeloKob1.getTotal_Raw_Material())
+                            + Double.valueOf(modeloKob1.getManufact_Materials())
+                            + Double.valueOf(modeloKob1.getPackaging_Materials())
+                            + Double.valueOf(modeloKob1.getConversion_Cost());
+
+                    modeloKob1.setNuevo_Valor_Orden(String.format("%.5f", Nuevo_Valor_Orden).replace(",", "."));
                 }
             }
-
-            modeloKob1 = ProduccionPiso(modeloKob1, con);
-            modeloKob1 = ManufactMaterials(modeloKob1, con);
-
-            double Nuevo_Valor_Orden = 0.0;
-
-            Nuevo_Valor_Orden = Double.valueOf(modeloKob1.getTotal_Raw_Material())
-                    + Double.valueOf(modeloKob1.getManufact_Materials())
-                    + Double.valueOf(modeloKob1.getPackaging_Materials())
-                    + Double.valueOf(modeloKob1.getConversion_Cost());
-
-            modeloKob1.setNuevo_Valor_Orden(String.format("%.5f", Nuevo_Valor_Orden).replace(",", "."));
             modeloKob1.setFecha(FechaAño);
             lstModeloKob1Upd.add(modeloKob1);
+
+            if (modeloKob1.getOrder_().contentEquals("1012978309") && modeloKob1.getMaterial().contentEquals("98133118")) {
+                System.out.println("Controlador.ControladorCargaPlanosProduccion.PROCESO_PRODUCCION()");
+            }
+            if (modeloKob1.getOrder_().contentEquals("1012977900") && modeloKob1.getMaterial().contentEquals("91426638")) {
+                System.out.println("Controlador.ControladorCargaPlanosProduccion.PROCESO_PRODUCCION()");
+            }
+            if (modeloKob1.getOrder_().contentEquals("1012975749") && modeloKob1.getMaterial().contentEquals("90360144")) {
+                System.out.println("Controlador.ControladorCargaPlanosProduccion.PROCESO_PRODUCCION()");
+            }
 
         }
 
@@ -588,7 +618,7 @@ public class ControladorCargaPlanosProduccion {
         }
         Ruta = Ruta.replace("\\", "/");
         String SqlInsertMasivo
-                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE POVR"
+                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE POVR CHARACTER SET LATIN1"
                 + " FIELDS TERMINATED BY ','"
                 + " ENCLOSED BY '\"'"
                 + " LINES TERMINATED BY '\\r\\n'"
@@ -626,7 +656,7 @@ public class ControladorCargaPlanosProduccion {
         String Realizado = "false";
         Ruta = Ruta.replace("\\", "/");
         String SqlInsertMasivo
-                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE InventarioInicial"
+                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE InventarioInicial CHARACTER SET LATIN1"
                 + " FIELDS TERMINATED BY ','"
                 + " ENCLOSED BY '\"'"
                 + " LINES TERMINATED BY '\\r\\n'"
@@ -656,6 +686,47 @@ public class ControladorCargaPlanosProduccion {
         return Realizado;
     }
 
+    private static List<String> res = new ArrayList<>();
+
+    public static String[] delEmpties(String[] arr) {
+
+        res.clear();
+        int len = arr.length;
+
+        for (int i = 0; i < len; i++) {
+
+            if (!arr[i].equals("")) {
+                res.add(arr[i]);
+            }
+        }
+
+        return res.toArray(new String[0]);
+    }
+
+    /**
+     * Filters the array of strings and delete repeat elements
+     *
+     * @param arr The arr
+     * @return The array
+     */
+    public static String[] filterRepeated(String[] arr) {
+
+        int len = arr.length;
+
+        for (int i = 0; i < len; i++) {
+            for (int j = 0; j < (len - 1); j++) {
+
+                if (i != j) {
+                    if (arr[i].equals(arr[j])) {
+                        arr[j] = ""; //replace value by empty string
+                    }
+                }
+            }
+        }
+
+        return delEmpties(arr);
+    }
+
     public ModeloKob1 LlenarMrpdata_Original(ModeloKob1 modeloKob1, Connection con) throws SQLException {
 
         if (!modeloKob1.getMaterial().contentEquals("")) {
@@ -664,20 +735,51 @@ public class ControladorCargaPlanosProduccion {
             //LLENAMOS COLUMNA Link ( Material & orden)
             modeloKob1.setLink_Material_orden(modeloKob1.getMaterial() + modeloKob1.getOrder_());
             LinkedList<ModeloMb51_Consumos> LstModeloMb51_Consumos = controladorMb51_Consumos.SelectSQL("SELECT * FROM mb51_Consumos where Material = '" + modeloKob1.getMaterial() + "' and Order_ = '" + modeloKob1.getOrder_() + "'", con);
-            for (ModeloMb51_Consumos modeloMb51_Consumos : LstModeloMb51_Consumos) {
-                //LLENAMOS COLUMNA Batch consumo
-                if (modeloMb51_Consumos.getBatch() != null) {
-                    modeloKob1.setBatch_consumo(modeloMb51_Consumos.getBatch());
+            String VariosBatch = "";
+
+            if (LstModeloMb51_Consumos.size() > 0) {
+                if (LstModeloMb51_Consumos.size() > 1) {
+                    //System.out.println("Controlador.ControladorCargaPlanosProduccion.LlenarMrpdata_Original()");
                 }
+
+                for (ModeloMb51_Consumos modeloMb51_Consumos : LstModeloMb51_Consumos) {
+                    //LLENAMOS COLUMNA Batch consumo
+                    if (modeloMb51_Consumos.getBatch() != null) {
+                        if (VariosBatch.contentEquals("")) {
+                            VariosBatch = modeloMb51_Consumos.getBatch();
+                        } else {
+                            VariosBatch = VariosBatch + "," + modeloMb51_Consumos.getBatch();
+                        }
+
+                        //modeloKob1.setBatch_consumo(modeloMb51_Consumos.getBatch());
+                    }
+                }
+
+                String[] Bbatch = filterRepeated(VariosBatch.split(","));
+
+                int len = Bbatch.length;
+
+                VariosBatch = "";
+
+                for (int i = 0; i < len; i++) {
+                    if (VariosBatch.contentEquals("")) {
+                        VariosBatch = Bbatch[i];
+                    } else {
+                        VariosBatch = VariosBatch + "," + Bbatch[i];
+                    }
+                }
+
+                modeloKob1.setBatch_consumo(VariosBatch);
+
             }
             if (modeloKob1.getBatch_consumo() == null) {
                 //LLENAMOS COLUMNA Batch consumo
                 modeloKob1.setBatch_consumo("");
             }
             //LLENAMOS COLUMNA Link (Material & Batch)
-            modeloKob1.setLink_Material_Batch(modeloKob1.getMaterial() + modeloKob1.getBatch_consumo());
+            modeloKob1.setLink_Material_Batch(modeloKob1.getMaterial() + ";" + modeloKob1.getBatch_consumo());
 
-            ModeloMrpData modeloMrpData = controladorMrpdata.SelectSQL("SELECT * FROM mrpdata WHERE Material = '" + modeloKob1.getMaterial() + "'", con);
+            ModeloMrpData modeloMrpData = controladorMrpdata.SelectSQL("SELECT * FROM mrpdata WHERE Material = '" + modeloKob1.getMaterial() + "' and Plant = '" + modeloKob1.getPlant() + "'", con);
 
             //LLENAMOS COLUMNA Material Type Components
             modeloKob1.setMaterial_Type_Components(modeloMrpData.getMaterial_Type());
@@ -721,107 +823,140 @@ public class ControladorCargaPlanosProduccion {
 
     public ModeloKob1 CostoInventario(ModeloKob1 modeloKob1, Connection con) throws SQLException {
 
-        String Sql = "SELECT * FROM inventarioinicial where Link_Material_Batch = '" + modeloKob1.getLink_Material_Batch() + "'";
-        LinkedList<ModeloInventarioInicial> LstModeloInventario = controladorInventarioInicial.SelectListSql(Sql, con);
-        if (LstModeloInventario.size() > 0) {
-            for (ModeloInventarioInicial modeloInventario : LstModeloInventario) {
-                modeloKob1.setCost_Unit_Fifo_Old(modeloInventario.getFIFO_Cost_UNIT());
+        String[] Batch = modeloKob1.getLink_Material_Batch().split(";");
+        String Material = Batch[0];
+        String[] Batchs = {""};
+        if (Batch.length > 1) {
+            Batchs = Batch[1].split(",");
+        }
+
+        for (int i = 0; i < Batchs.length; i++) {
+
+            //String Sql = "SELECT * FROM inventarioinicial where Link_Material_Batch = '" + modeloKob1.getLink_Material_Batch() + "'";
+            String Sql = "SELECT * FROM inventarioinicial where Link_Material_Batch = '" + Material + Batchs[i] + "'";
+
+            LinkedList<ModeloInventarioInicial> LstModeloInventario = controladorInventarioInicial.SelectListSql(Sql, con);
+            if (LstModeloInventario.size() > 0) {
+                for (ModeloInventarioInicial modeloInventario : LstModeloInventario) {
+                    modeloKob1.setCost_Unit_Fifo_Old(modeloInventario.getFIFO_Cost_UNIT());
+                }
+                modeloKob1.setInventario("Si");
+                break;
+            } else {
+                modeloKob1.setCost_Unit_Fifo_Old("0.0");
+                modeloKob1.setInventario("No");
             }
-            modeloKob1.setInventario("Si");
-        } else {
-            modeloKob1.setCost_Unit_Fifo_Old("0.0");
-            modeloKob1.setInventario("No");
         }
         return modeloKob1;
     }
 
     public ModeloKob1 CostoCompras(ModeloKob1 modeloKob1, Connection con) throws SQLException {
 
-        String Sql = "SELECT * FROM mb51 where link1_Material_Batch = '" + modeloKob1.getLink_Material_Batch() + "' AND fecha = '" + MesKob1 + "' ORDER BY Month";
-
-        LinkedList<ModeloMb51> LstModeloMb51 = controladorMb51.SelectSql(Sql, con);
-
-        if (modeloKob1.getLink_Material_Batch() != null) {
-            if (modeloKob1.getLink_Material_Batch().contentEquals("30226610117")) {
-                //    System.out.println("Controlador.ControladorCargaPlanosProduccion.CostoCompras()");
-            }
+        String[] Batch = modeloKob1.getLink_Material_Batch().split(";");
+        String Material = Batch[0];
+        String[] Batchs = {""};
+        if (Batch.length > 1) {
+            Batchs = Batch[1].split(",");
         }
 
-        Double Cost_Unit_Fifo_R_Mat_Pack = 0.0;
-        Double Quantity = 0.0;
-        if (LstModeloMb51.size() > 0) {
-            for (ModeloMb51 modeloMb51 : LstModeloMb51) {
-                //if (Integer.valueOf(modeloMb51.getMonth()) == Integer.valueOf(modeloKob1.getPeriod())) {
-                //    if (Double.valueOf(modeloMb51.getQuantity()) > -1) {
+        for (int i = 0; i < Batchs.length; i++) {
 
-                if (modeloMb51.getQuantity() != null) {
-                    if (modeloMb51.getQuantity() != "") {
-                        Quantity = Quantity + Double.parseDouble(modeloMb51.getQuantity());
+            //String Sql = "SELECT * FROM mb51 where link1_Material_Batch = '" + modeloKob1.getLink_Material_Batch() + "' AND fecha = '" + MesKob1 + "' ORDER BY Month";
+            String Sql = "SELECT * FROM mb51 where link1_Material_Batch = '" + Material + Batchs[i] + "' AND fecha = '" + MesKob1 + "' ORDER BY Month";
+
+            LinkedList<ModeloMb51> LstModeloMb51 = controladorMb51.SelectSql(Sql, con);
+
+            Double Cost_Unit_Fifo_R_Mat_Pack = 0.0;
+            Double Quantity = 0.0;
+            if (LstModeloMb51.size() > 0) {
+                for (ModeloMb51 modeloMb51 : LstModeloMb51) {
+                    //if (Integer.valueOf(modeloMb51.getMonth()) == Integer.valueOf(modeloKob1.getPeriod())) {
+                    //    if (Double.valueOf(modeloMb51.getQuantity()) > -1) {
+
+                    if (modeloMb51.getQuantity() != null) {
+                        if (modeloMb51.getQuantity() != "") {
+                            Quantity = Quantity + Double.parseDouble(modeloMb51.getQuantity());
+                        }
                     }
+
+                    if (modeloMb51.getCompra_valorada_a_Unit_FIFO() != null) {
+                        if (modeloMb51.getCompra_valorada_a_Unit_FIFO() != "" || !modeloMb51.getCompra_valorada_a_Unit_FIFO().contains("NaN")) {
+                            Cost_Unit_Fifo_R_Mat_Pack = Cost_Unit_Fifo_R_Mat_Pack + Double.parseDouble(modeloMb51.getCompra_valorada_a_Unit_FIFO());
+                        }
+                    }
+
                 }
 
-                if (modeloMb51.getCompra_valorada_a_Unit_FIFO() != null) {
-                    if (modeloMb51.getCompra_valorada_a_Unit_FIFO() != "" || !modeloMb51.getCompra_valorada_a_Unit_FIFO().contains("NaN")) {
-                        Cost_Unit_Fifo_R_Mat_Pack = Cost_Unit_Fifo_R_Mat_Pack + Double.parseDouble(modeloMb51.getCompra_valorada_a_Unit_FIFO());
-                    }
-                }
-
+                Cost_Unit_Fifo_R_Mat_Pack = Cost_Unit_Fifo_R_Mat_Pack / Quantity;
+                modeloKob1.setCost_Unit_Fifo_R_Mat_Pack(String.format("%.5f", Cost_Unit_Fifo_R_Mat_Pack).replace(",", "."));
+                break;
+            } else {
+                modeloKob1.setCost_Unit_Fifo_R_Mat_Pack("0.0");
             }
-
-            Cost_Unit_Fifo_R_Mat_Pack = Cost_Unit_Fifo_R_Mat_Pack / Quantity;
-            modeloKob1.setCost_Unit_Fifo_R_Mat_Pack(String.format("%.5f", Cost_Unit_Fifo_R_Mat_Pack).replace(",", "."));
-        } else {
-            modeloKob1.setCost_Unit_Fifo_R_Mat_Pack("0.0");
         }
         return modeloKob1;
     }
 
     public ModeloKob1 ProduccionPiso(ModeloKob1 modeloKob1, Connection con) throws SQLException {
 
-//        ControladorInformeProduccion controladorInformeProduccion = new ControladorInformeProduccion();
-        String Sql = "SELECT * FROM informe_produccion where Link_Terminado_Batch = '" + modeloKob1.getLink_Material_Batch() + "'";
-        LinkedList<ModeloInforme_Produccion> LstModeloInforme_Produccion = controladorInformeProduccion.SelectSql(Sql, con);
+        String[] Batch = modeloKob1.getLink_Material_Batch().split(";");
+        String Material = Batch[0];
+        String[] Batchs = {""};
+        if (Batch.length > 1) {
+            Batchs = Batch[1].split(",");
+        }
 
-        if (LstModeloInforme_Produccion.size() > 0) {
-            for (ModeloInforme_Produccion modeloInforme_Produccion : LstModeloInforme_Produccion) {
-                Double Cantidad = 0.0;
-                Double Total_Raw_Material = 0.0;
-                Double Manufact = 0.0;
-                Double Packaging = 0.0;
-                Double Conversion = 0.0;
-                Double Nuevo_Valor_Orden = 0.0;
-                Double Costo_unitario_FIFO = 0.0;
+        for (int i = 0; i < Batchs.length; i++) {
 
-                if (modeloInforme_Produccion.getCantidad() != null) {
-                    Cantidad = Double.valueOf(modeloInforme_Produccion.getCantidad());
-                }
+            //String Sql = "SELECT * FROM informe_produccion where Link_Terminado_Batch = '" + modeloKob1.getLink_Material_Batch() + "'";
+            String Sql = "SELECT * FROM informe_produccion where Link_Terminado_Batch = '" + Material + Batchs[i] + "'";
+            LinkedList<ModeloInforme_Produccion> LstModeloInforme_Produccion = controladorInformeProduccion.SelectSql(Sql, con);
 
-                if (modeloInforme_Produccion.getTotal_Raw_Material() != null) {
-                    Total_Raw_Material = Double.valueOf(modeloInforme_Produccion.getTotal_Raw_Material());
-                }
-                if (modeloInforme_Produccion.getManufact() != null) {
-                    Manufact = Double.valueOf(modeloInforme_Produccion.getManufact());
-                }
-                if (modeloInforme_Produccion.getPackaging() != null) {
-                    Packaging = Double.valueOf(modeloInforme_Produccion.getPackaging());
-                }
-                if (modeloInforme_Produccion.getConversion() != null) {
-                    Conversion = Double.valueOf(modeloInforme_Produccion.getConversion());
-                }
+            if (LstModeloInforme_Produccion.size() > 0) {
+                for (ModeloInforme_Produccion modeloInforme_Produccion : LstModeloInforme_Produccion) {
+                    Double Cantidad = 0.0;
+                    Double Total_Raw_Material = 0.0;
+                    Double Manufact = 0.0;
+                    Double Packaging = 0.0;
+                    Double Conversion = 0.0;
+                    Double Nuevo_Valor_Orden = 0.0;
+                    Double Costo_unitario_FIFO = 0.0;
 
-                Nuevo_Valor_Orden = Total_Raw_Material + Manufact + Packaging + Conversion;
-                if (Cantidad != 0.0) {
-                    Costo_unitario_FIFO = Nuevo_Valor_Orden / Cantidad;
+                    if (modeloInforme_Produccion.getCantidad() != null) {
+                        Cantidad = Double.valueOf(modeloInforme_Produccion.getCantidad());
+                    }
+
+                    if (modeloInforme_Produccion.getTotal_Raw_Material() != null) {
+                        Total_Raw_Material = Double.valueOf(modeloInforme_Produccion.getTotal_Raw_Material());
+                    }
+                    if (modeloInforme_Produccion.getManufact() != null) {
+                        Manufact = Double.valueOf(modeloInforme_Produccion.getManufact());
+                    }
+                    if (modeloInforme_Produccion.getPackaging() != null) {
+                        Packaging = Double.valueOf(modeloInforme_Produccion.getPackaging());
+                    }
+                    if (modeloInforme_Produccion.getConversion() != null) {
+                        Conversion = Double.valueOf(modeloInforme_Produccion.getConversion());
+                    }
+
+                    Nuevo_Valor_Orden = Total_Raw_Material + Manufact + Packaging + Conversion;
+                    if (Cantidad != 0.0) {
+                        Costo_unitario_FIFO = Nuevo_Valor_Orden / Cantidad;
+                    }
+
+                    if (modeloKob1.getLink_Material_Batch().contentEquals("903602483YUMOC0427")) {
+                        System.out.println((String.format("%.5f", Costo_unitario_FIFO)));
+                        System.out.println((String.format("%.5f", Costo_unitario_FIFO).replace(",", ".")));
+                    }
+                    modeloKob1.setCost_Unit_Fifo_R_Mat_Pack(String.format("%.5f", Costo_unitario_FIFO).replace(",", "."));
+
+                    modeloKob1.setProduccion("Si");
+                    break;
                 }
-
-                //if (modeloInforme_Produccion.getCosto_unitario_FIFO() != null) {
-                modeloKob1.setCost_Unit_Fifo_R_Mat_Pack(String.format("%.5f", Costo_unitario_FIFO).replace(",", "."));
-
-                modeloKob1.setProduccion("Si");
+            } else {
+                modeloKob1.setCost_Unit_Fifo_R_Mat_Pack("0.0");
+                modeloKob1.setProduccion("No");
             }
-        } else {
-            modeloKob1.setCost_Unit_Fifo_R_Mat_Pack("0.0");
-            modeloKob1.setProduccion("No");
         }
         return modeloKob1;
     }
@@ -1019,6 +1154,11 @@ public class ControladorCargaPlanosProduccion {
                 //UpdateModeloKob1(modeloKob1, con);
 
                 modeloKob1.setFecha(Fecha);
+                if (modeloKob1.getBatch_consumo() != null) {
+                    if (modeloKob1.getBatch_consumo().length() > 250) {
+                        System.out.println("Varios Batch encontrados para Material " + modeloKob1.getMaterial() + " y order " + modeloKob1.getOrder_() + " ---- " + modeloKob1.getBatch_consumo());
+                    }
+                }
 
                 lstModeloKob1.add(modeloKob1);
 

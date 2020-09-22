@@ -23,7 +23,15 @@
         <script type="text/javascript" src="Principal/js/jsfifo/ValidaLogin.js"></script> 
     </head>
     <body class="login">
-        <div>
+        <div class="login_box">
+            <br>
+            <br>
+            <br>
+            <div class="login-logo" style="text-align: center">                
+                <img src="Principal/images/menu_bg.png"  width="210" height="80" class="responsive-img"/>
+            </div>
+            <div class="clearfix"></div>
+            <br />
             <a class="hiddenanchor" id="signup"></a>
             <a class="hiddenanchor" id="signin"></a>
             <div class="login_wrapper">

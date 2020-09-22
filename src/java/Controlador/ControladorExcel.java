@@ -138,7 +138,7 @@ public class ControladorExcel {
                 + "ifNull(fecha, ''), "
                 + "ifNull(Produccion, ''), "
                 + "ifNull(Inventario, '')"
-                + " FROM kob1 WHERE idarchivo is not null INTO OUTFILE '" + NombreArchivo +"' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\\r\\n';";
+                + " FROM kob1 INTO OUTFILE '" + NombreArchivo +"' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\\r\\n';";
         try {
             System.out.println("Reporte : " + newQuery);
 

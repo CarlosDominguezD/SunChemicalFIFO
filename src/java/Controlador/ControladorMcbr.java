@@ -100,7 +100,7 @@ public class ControladorMcbr {
         int cantFilas = 0;
         PreparedStatement SQL1;
         try {
-            SQL1 = con.prepareStatement("Select Count(id) as Cuenta from FROM MCBR WHERE IdArchivo is null");
+            SQL1 = con.prepareStatement("Select Count(id) as Cuenta FROM MCBR WHERE IdArchivo is null");
             ResultSet res1 = SQL1.executeQuery();
             while (res1.next()) {
                 cantFilas = Integer.parseInt(res1.getString("Cuenta"));
