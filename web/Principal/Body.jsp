@@ -15,7 +15,7 @@
                 <br>
                 <div class="navbar nav_title" style="border: 0;">
                     <!--a href="Dashboard.jsp" class="site_title"><span><img src="Principal/images/sunchemical-logo.png"  width="180" height="50" class="responsive-img"/></span> </a-->
-                    <a href="Dashboard.jsp" class="site_title"><span><img src="Principal/images/menu_bg.png"  width="180" height="50" class="responsive-img"/></span> </a>
+                    <!--a href="Dashboard.jsp" class="site_title"><span><img src="Principal/images/menu_bg.png"  width="180" height="50" class="responsive-img"/></span> </a-->
                 </div>
                 <div class="clearfix"></div>
                 <br />
@@ -48,6 +48,8 @@
                                     String ItemCargaplanosBarra = "false";
                                     String ItemGestionCompras = "false";
                                     String ItemConversiones = "false";
+                                    String ItemAbrirFecha = "false";
+                                    String ItemCerrarFecha = "false";
                                     if (modeloUsuario != null) {
                                         for (ModeloItemMenu modelo : modeloUsuario.getListModeloItemMenu()) {
                                             if ("ItemAdministracion".equals(modelo.getNombre())) {
@@ -116,6 +118,12 @@
                                             if ("ItemConversiones".equals(modelo.getNombre())) {
                                                 ItemConversiones = "true";
                                             }
+                                            if ("ItemAbrirFecha".equals(modelo.getNombre())) {
+                                                ItemAbrirFecha = "true";
+                                            }
+                                            if ("ItemCerrarFecha".equals(modelo.getNombre())) {
+                                                ItemCerrarFecha = "true";
+                                            }
                                         }
                                         if ("true".equals(ItemAdministracion)) {
                             %>
@@ -156,8 +164,20 @@
                                             </li>                                          
                                             <%      }
 
+                                                if ("true".equals(ItemAbrirFecha)) {
+                                            %>
+                                            <li><a href="AbrirFechas.jsp#">Abrir Fechas</a>
+                                            </li>                                          
+                                            <%      }
+                                                if ("true".equals(ItemCerrarFecha)) {
+                                            %>
+                                            <li><a href="CerrarFechas.jsp#">Cerrar Fechas</a>
+                                            </li>                                          
+                                            <%      }
+
                                                 if ("true".equals(ItemConfiguracion)) {
                                             %>
+
                                         </ul> 
                                     </li>
                                     <%      }

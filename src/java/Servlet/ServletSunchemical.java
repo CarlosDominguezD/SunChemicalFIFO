@@ -12,6 +12,7 @@ import Controlador.ControladorCargarPlanosInventario;
 import Controlador.ControladorConversiones;
 import Controlador.ControladorEstadoPlanos;
 import Controlador.ControladorExcel;
+import Controlador.ControladorFechas;
 import Controlador.ControladorMb51;
 import Controlador.ControladorPermisosRol;
 import Controlador.ControladorRoles;
@@ -524,8 +525,30 @@ public class ServletSunchemical extends HttpServlet {
                         break;
                 }
                 break;
+            case "FechasJSP":
+                ControladorFechas controladorFechas = new ControladorFechas();
+                evento = request.getParameter("evento");
+                switch (evento) {
+                    case "Select":
+                        Resultado = controladorFechas.GetModelo(request, response);
+                        response.setContentType("application/json");
+                        response.setCharacterEncoding("UTF-8");
+                        response.getWriter().write(Resultado);
+                        Accion = "JSON";
+                        respuesta = Resultado;
+                        break;
+                    case "AbrirFecha":
+                        Resultado = controladorFechas.GetAbrirFecha(request, response);
+                        //respuesta = Resultado;
+                        break;
+                    case "CerrarFecha":
+                        Resultado = controladorFechas.GetCerrarFecha(request, response);
+                        //respuesta = Resultado;
+                        break;
+                }
+                break;
         }
-        if ((!"GenerarArchivoCompras".equals(Accion)) & (!"GetSolicitudEvento".equals(Accion))) {
+        if ((!"JSON".equals(Accion)) & (!"GenerarArchivoCompras".equals(Accion)) & (!"GetSolicitudEvento".equals(Accion))) {
             String respuesta = herramienta.GetDescrpCode(Resultado);
             response.setCharacterEncoding("UTF-8");
             response.setContentType("text/plain");

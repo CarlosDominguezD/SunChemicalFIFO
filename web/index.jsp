@@ -28,7 +28,7 @@
             <br>
             <br>
             <div class="login-logo" style="text-align: center">                
-                <img src="Principal/images/menu_bg.png"  width="210" height="80" class="responsive-img"/>
+                <!--img src="Principal/images/menu_bg.png"  width="210" height="80" class="responsive-img"/-->
             </div>
             <div class="clearfix"></div>
             <br />
