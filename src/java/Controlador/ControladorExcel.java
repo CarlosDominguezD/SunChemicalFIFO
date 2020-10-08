@@ -88,7 +88,7 @@ public class ControladorExcel {
         public String GenerarCSV(String UrlArchivo, String newQuery) throws Exception {
         String genFileName = null;
         String Fecha = new Date().getYear() + "_" + new Date().getMonth() + "_" + new Date().getDay() + "_" + new Date().getHours() + "_" + new Date().getMinutes() + "_" + new Date().getSeconds();
-        String NombreArchivo = "C:/Zred/SunChemical/KOB1_" + Fecha + ".CSV";
+        String NombreArchivo = "C:/Zred/SunChemical/Rpt_Generados/KOB1_" + Fecha + ".CSV";
         
         //newQuery = "SELECT * FROM kob1 WHERE idarchivo is not null INTO OUTFILE '" + NombreArchivo +"' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\\r\\n';";
         newQuery = "SELECT "
@@ -483,7 +483,7 @@ public class ControladorExcel {
 
                 try {
                     //String UrlArchivo = "C:\\Users\\Carlos A Dominguez D\\GlasFish\\glassfish\\domains\\GlassFish\\config\\SunChemical\\Informe.xls";//request.getParameter("PlantillaUrl");
-                    String UrlArchivo = "C:\\Zred\\SunChemical\\MacroMB51.xls";//request.getParameter("PlantillaUrl");                
+                    String UrlArchivo = "C:\\Zred\\SunChemical\\Rpt_Generados\\MacroMB51.xls";//request.getParameter("PlantillaUrl");                
                     //String UrlArchivo = "D:\\Zred\\SunChemical\\MacroMB51.xls";//request.getParameter("PlantillaUrl");                
                     String newQuery = SQLReporte;
                     //ControladorExcel controladorExcel = new ControladorExcel();
@@ -650,7 +650,7 @@ public class ControladorExcel {
                 
                 try {
                     //String UrlArchivo = "C:\\Users\\Carlos A Dominguez D\\GlasFish\\glassfish\\domains\\GlassFish\\config\\SunChemical\\Informe.xls";//request.getParameter("PlantillaUrl");
-                    String UrlArchivo = "C:\\Zred\\SunChemical\\MacroKOB1.xls";//request.getParameter("PlantillaUrl");                
+                    String UrlArchivo = "C:\\Zred\\SunChemical\\Rpt_Generados\\MacroKOB1.xls";//request.getParameter("PlantillaUrl");                
                     //String UrlArchivo = "D:\\Zred\\SunChemical\\MacroMB51.xls";//request.getParameter("PlantillaUrl");                
                     String newQuery = SQLReporte;
                     //ControladorExcel controladorExcel = new ControladorExcel();
@@ -695,7 +695,7 @@ public class ControladorExcel {
                         + " FROM mcbr WHERE IdArchivo = " + request.getParameter("IdPlano");
                 try {
                     //String UrlArchivo = "C:\\Users\\Carlos A Dominguez D\\GlasFish\\glassfish\\domains\\GlassFish\\config\\SunChemical\\Informe.xls";//request.getParameter("PlantillaUrl");
-                    String UrlArchivo = "C:\\Zred\\SunChemical\\MacroMCBR.xls";//request.getParameter("PlantillaUrl");                
+                    String UrlArchivo = "C:\\Zred\\SunChemical\\Rpt_Generados\\MacroMCBR.xls";//request.getParameter("PlantillaUrl");                
                     //String UrlArchivo = "D:\\Zred\\SunChemical\\MacroMB51.xls";//request.getParameter("PlantillaUrl");                
                     String newQuery = SQLReporte;
                     //ControladorExcel controladorExcel = new ControladorExcel();

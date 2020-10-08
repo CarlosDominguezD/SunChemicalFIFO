@@ -121,7 +121,7 @@
                                 <div class="text-center" id="botonCargar" align="center">
                                     <div class="col-lg-12" style="text-align: center">
                                         <button type="submit" class="btn btn-primary" id="IdGenerarPlano" name="Accion" value="GenerarArchivoInventario" >Generar Plano</button>                                        
-                                        <button type="button" class="btn btn-warning" id="IdCerrarPlano" name="Accion" value="GenerarArchivoCompras" >Cerrar Plano</button>                                        
+                                        <!--button type="hidden" class="btn btn-warning" id="IdCerrarPlano" name="Accion" value="GenerarArchivoCompras" >Cerrar Plano</button -->
                                     </div>                                                            
                                 </div>
                                 <script type="text/javascript">

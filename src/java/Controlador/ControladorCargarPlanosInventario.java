@@ -9,6 +9,7 @@ import Conexiones.ConexionBDMySql;
 import Herramienta.Herramienta;
 import Modelos.ModeloAuditoria;
 import Modelos.ModeloEstadoPlanos;
+import Modelos.ModeloFechas;
 import Modelos.ModeloInforme_Produccion;
 import Modelos.ModeloInventarioInicial;
 import Modelos.ModeloMb51;
@@ -54,11 +55,11 @@ public class ControladorCargarPlanosInventario {
             String fileName = Paths.get(arch.getSubmittedFileName()).getFileName().toString();
             System.out.println(fileName);
             InputStream is = arch.getInputStream();
-            File detino = new File("C:\\Zred\\SunChemical\\" + formato + "\\");
+            File detino = new File("C:\\Zred\\SunChemical\\Upload\\");
             if (detino.exists() != true) {
                 detino.mkdirs();
             }
-            File file = new File(detino, formato + "_" + ObtenerFecha() + ".csv");
+            File file = new File(detino, fileName + "_" + ObtenerFecha() + ".csv");
             try (InputStream input = arch.getInputStream()) {
                 file.delete();
                 Files.copy(input, file.toPath());
@@ -154,99 +155,114 @@ public class ControladorCargarPlanosInventario {
          */
         String ano = request.getParameter("Mes");
         String mes = request.getParameter("Ano");
-
-        ControladorCargaPlanosProduccion controladorCargaPlanosProduccion = new ControladorCargaPlanosProduccion();
-        MesKob1 = controladorCargaPlanosProduccion.validarMesMb51(mes);
-
-        ANO = ano + "-" + mes;
-
         String Realizado = "false";
-        Ruta = Ruta.replace("\\", "/");
-        String SqlInsertMasivo
-                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE MCBR"
-                + " FIELDS TERMINATED BY ','"
-                + " ENCLOSED BY '\"'"
-                + " LINES TERMINATED BY '\\r\\n'"
-                + " IGNORE 1 LINES"
-                + " (Material,Descripcion,Plant,Batch,Month,Profit_center,Material_Type,Status,Val_stock,Val_stock_Med,ValStckVal,ValStck_Val_Mon)";
 
-        System.out.println("Consulta: " + SqlInsertMasivo);
+        ControladorFechas controladorFechas = new ControladorFechas();
+        ModeloFechas modeloFechas = controladorFechas.GetModeloFechas(mes, ano, "Inventario");
 
-        ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
+        boolean mes_abierto = false;
 
-        String Sqlborrar = "delete from MCBR WHERE IdArchivo is null";
-        if (controladorMrpdata.Insert(Sqlborrar)) {
-            Realizado = "true";
+        if (modeloFechas != null) {
+            if (modeloFechas.getEstadoCompras().contentEquals("Abierto")) {
+                mes_abierto = true;
+            }
         }
-        if (controladorMrpdata.Insert(SqlInsertMasivo)) {
 
-            //Auditoria
-            ModeloAuditoria modeloAuditoria = new ModeloAuditoria();
-            modeloAuditoria.setModeloUsuario((ModeloUsuario) request.getSession().getAttribute("user"));
-            modeloAuditoria.setMensaje("El Usuario " + modeloAuditoria.getModeloUsuario().getUsuario() + " a cargado el plano MCBR en el sistema.");
-            ControladorAuditoria controladorAuditoria = new ControladorAuditoria();
-            controladorAuditoria.Insert(modeloAuditoria);
+        if (mes_abierto) {
 
-            ControladorMcbr controladorMcbr = new ControladorMcbr();
-            LinkedList<ModeloMcbr> Lista_ModeloMcbr = new LinkedList<ModeloMcbr>();
+            ControladorCargaPlanosProduccion controladorCargaPlanosProduccion = new ControladorCargaPlanosProduccion();
+            MesKob1 = controladorCargaPlanosProduccion.validarMesMb51(mes);
 
-            Progreso("CARGA AL LISTADO CON TODOS LOS REGISTROS DE MCBR:", "1");
-            herramienta.setEventoProcesado("CARGA AL LISTADO CON TODOS LOS REGISTROS DE MCBR: 1%");
-            Lista_ModeloMcbr = controladorMcbr.Select();
+            ANO = ano + "-" + mes;
 
-            LinkedList<ModeloMcbr> Lista_ModeloMcbr_Upd = new LinkedList<ModeloMcbr>();
+            
+            Ruta = Ruta.replace("\\", "/");
+            String SqlInsertMasivo
+                    = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE MCBR"
+                    + " FIELDS TERMINATED BY ','"
+                    + " ENCLOSED BY '\"'"
+                    + " LINES TERMINATED BY '\\r\\n'"
+                    + " IGNORE 1 LINES"
+                    + " (Material,Descripcion,Plant,Batch,Month,Profit_center,Material_Type,Status,Val_stock,Val_stock_Med,ValStckVal,ValStck_Val_Mon)";
 
-            ConexionBDMySql conexion = new ConexionBDMySql();
-            Connection con;
-            con = conexion.abrirConexion();
-            //Informe_Produccion(con);
-            CallableStatement InformeProduccion = con.prepareCall("{CALL SUMAS_INFORME_PRODUCCION_INVENTARIO()}");
+            System.out.println("Consulta: " + SqlInsertMasivo);
 
-            InformeProduccion.execute();
+            ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
 
-            int Contador = 0;
+            String Sqlborrar = "delete from MCBR WHERE IdArchivo is null";
+            if (controladorMrpdata.Insert(Sqlborrar)) {
+                Realizado = "true";
+            }
+            if (controladorMrpdata.Insert(SqlInsertMasivo)) {
 
-            Progreso("RECORRIDO DEL LISTADO CON TODOS LOS REGISTROS DE MCBR:", "30");
-            herramienta.setEventoProcesado("RECORRIDO DEL LISTADO CON TODOS LOS REGISTROS DE MCBR: 30%");
+                //Auditoria
+                ModeloAuditoria modeloAuditoria = new ModeloAuditoria();
+                modeloAuditoria.setModeloUsuario((ModeloUsuario) request.getSession().getAttribute("user"));
+                modeloAuditoria.setMensaje("El Usuario " + modeloAuditoria.getModeloUsuario().getUsuario() + " a cargado el plano MCBR en el sistema.");
+                ControladorAuditoria controladorAuditoria = new ControladorAuditoria();
+                controladorAuditoria.Insert(modeloAuditoria);
 
-            ModeloEstadoPlanos modeloEstadoPlanos = Archivo(request);
-            int Porcentaje = 30;
-            int VUeltas = Lista_ModeloMcbr.size() / 40;
-            int sumador = 1;
+                ControladorMcbr controladorMcbr = new ControladorMcbr();
+                LinkedList<ModeloMcbr> Lista_ModeloMcbr = new LinkedList<ModeloMcbr>();
 
-            for (ModeloMcbr modeloMcbr : Lista_ModeloMcbr) {
+                Progreso("CARGA AL LISTADO CON TODOS LOS REGISTROS DE MCBR:", "1");
+                herramienta.setEventoProcesado("CARGA AL LISTADO CON TODOS LOS REGISTROS DE MCBR: 1%");
+                Lista_ModeloMcbr = controladorMcbr.Select();
 
-                if (sumador == VUeltas) {
-                    herramienta.setEventoProcesado("Progreso " + Porcentaje + "%");
-                    System.err.println("Progreso " + Porcentaje + "%");
-                    Porcentaje++;
-                    sumador = 1;
-                }
-                sumador++;
+                LinkedList<ModeloMcbr> Lista_ModeloMcbr_Upd = new LinkedList<ModeloMcbr>();
 
-                modeloMcbr = LlenarModeloMcbr(modeloMcbr, con);
-                modeloMcbr.setIdArchivo(modeloEstadoPlanos.getId());
+                ConexionBDMySql conexion = new ConexionBDMySql();
+                Connection con;
+                con = conexion.abrirConexion();
+                //Informe_Produccion(con);
+                CallableStatement InformeProduccion = con.prepareCall("{CALL SUMAS_INFORME_PRODUCCION_INVENTARIO()}");
 
-                Lista_ModeloMcbr_Upd.add(modeloMcbr);
+                InformeProduccion.execute();
+
+                int Contador = 0;
+
+                Progreso("RECORRIDO DEL LISTADO CON TODOS LOS REGISTROS DE MCBR:", "30");
+                herramienta.setEventoProcesado("RECORRIDO DEL LISTADO CON TODOS LOS REGISTROS DE MCBR: 30%");
+
+                ModeloEstadoPlanos modeloEstadoPlanos = Archivo(request);
+                int Porcentaje = 30;
+                int VUeltas = Lista_ModeloMcbr.size() / 40;
+                int sumador = 1;
+
+                for (ModeloMcbr modeloMcbr : Lista_ModeloMcbr) {
+
+                    if (sumador == VUeltas) {
+                        herramienta.setEventoProcesado("Progreso " + Porcentaje + "%");
+                        System.err.println("Progreso " + Porcentaje + "%");
+                        Porcentaje++;
+                        sumador = 1;
+                    }
+                    sumador++;
+
+                    modeloMcbr = LlenarModeloMcbr(modeloMcbr, con);
+                    modeloMcbr.setIdArchivo(modeloEstadoPlanos.getId());
+
+                    Lista_ModeloMcbr_Upd.add(modeloMcbr);
 
 //                Contador++;
 //                if (Contador == 1000) {
 //                    System.out.println("Vuelta de Procesados Fase 1: " + Contador + " - " + new Date());
 //                    Contador = 1;
 //                }
+                }
+
+                Progreso("ACTUALIZACION DEL LISTADO CON TODOS LOS REGISTROS DE MCBR:", "70");
+                herramienta.setEventoProcesado("ACTUALIZACION DEL LISTADO CON TODOS LOS REGISTROS DE MCBR: 70%");
+
+                controladorMcbr.UpdateList_Masivo(Lista_ModeloMcbr_Upd, con, "70");
+                System.out.println("FINALIZA ACTUALIZACION DEL LISTADO CON TODOS LOS REGISTROS DE MCBR: " + new Date());
+                con.close();
+
+                Progreso("--", "100");
+                herramienta.setEventoProcesado("--");
+
+                Realizado = "true";
             }
-
-            Progreso("ACTUALIZACION DEL LISTADO CON TODOS LOS REGISTROS DE MCBR:", "70");
-            herramienta.setEventoProcesado("ACTUALIZACION DEL LISTADO CON TODOS LOS REGISTROS DE MCBR: 70%");
-
-            controladorMcbr.UpdateList_Masivo(Lista_ModeloMcbr_Upd, con, "70");
-            System.out.println("FINALIZA ACTUALIZACION DEL LISTADO CON TODOS LOS REGISTROS DE MCBR: " + new Date());
-            con.close();
-
-            Progreso("--", "100");
-            herramienta.setEventoProcesado("--");
-
-            Realizado = "true";
         }
 
         return Realizado;

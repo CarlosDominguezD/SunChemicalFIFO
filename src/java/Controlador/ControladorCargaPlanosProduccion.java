@@ -11,6 +11,7 @@ import Modelos.ModeloArchivos;
 import Modelos.ModeloAuditoria;
 import Modelos.ModeloConversiones;
 import Modelos.ModeloEstadoPlanos;
+import Modelos.ModeloFechas;
 import Modelos.ModeloInforme_Produccion;
 import Modelos.ModeloInventarioInicial;
 import Modelos.ModeloKob1;
@@ -137,11 +138,11 @@ public class ControladorCargaPlanosProduccion {
             String fileName = Paths.get(arch.getSubmittedFileName()).getFileName().toString();
             System.out.println(fileName);
             InputStream is = arch.getInputStream();
-            File detino = new File("C:\\Zred\\SunChemical\\" + formato + "\\");
+            File detino = new File("C:\\Zred\\SunChemical\\Upload\\");
             if (detino.exists() != true) {
                 detino.mkdirs();
             }
-            File file = new File(detino, formato + "_" + ObtenerFecha() + ".csv");
+            File file = new File(detino, fileName + "_" + ObtenerFecha() + ".csv");
             try (InputStream input = arch.getInputStream()) {
                 file.delete();
                 Files.copy(input, file.toPath());
@@ -248,34 +249,48 @@ public class ControladorCargaPlanosProduccion {
         String ano = request.getParameter("Ano");
         String Realizado = "false";
 
-        String Sqlborrar = "delete from kob1_planos where fecha = '" + mes + "-" + ano + "'";
+        ControladorFechas controladorFechas = new ControladorFechas();
+        ModeloFechas modeloFechas = controladorFechas.GetModeloFechas(ano, mes, "Produccion");
 
-        if (controladorMrpdata.Insert(Sqlborrar)) {
-            //Realizado = "true";
+        boolean mes_abierto = false;
+
+        if (modeloFechas != null) {
+            if (modeloFechas.getEstadoCompras().contentEquals("Abierto")) {
+                mes_abierto = true;
+            }
         }
-        Ruta = Ruta.replace("\\", "/");
-        String SqlInsertMasivo
-                = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE kob1_planos CHARACTER SET LATIN1"
-                + " FIELDS TERMINATED BY ','"
-                + " ENCLOSED BY '\"'"
-                + " LINES TERMINATED BY '\\r\\n'"
-                + " IGNORE 1 LINES"
-                + " (Functional_Area,Company_Code,Order_,CO_object_name,Cost_Element,Cost_element_name,Material,Material_Description,Plant,Period,Fiscal_Year,Dr_Cr_indicator,Total_Quantity,Unit_of_Measure,Value_TranCurr,Transaction_Currency,Value_in_Obj_Crcy,Object_Currency,Document_Number)";
 
-        System.out.println("Consulta: " + SqlInsertMasivo);
+        if (mes_abierto) {
 
-        //System.out.println("Consulta: " + SqlInsertMasivo);
-        String SqlUpdateFecha = "Update kob1_planos set fecha = '" + mes + "-" + ano + "' where fecha is null";
+            String Sqlborrar = "delete from kob1_planos where fecha = '" + mes + "-" + ano + "'";
 
-        MesKob1 = validarMesMb51(ano);
+            if (controladorMrpdata.Insert(Sqlborrar)) {
+                //Realizado = "true";
+            }
+            Ruta = Ruta.replace("\\", "/");
+            String SqlInsertMasivo
+                    = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE kob1_planos CHARACTER SET LATIN1"
+                    + " FIELDS TERMINATED BY ','"
+                    + " ENCLOSED BY '\"'"
+                    + " LINES TERMINATED BY '\\r\\n'"
+                    + " IGNORE 1 LINES"
+                    + " (Functional_Area,Company_Code,Order_,CO_object_name,Cost_Element,Cost_element_name,Material,Material_Description,Plant,Period,Fiscal_Year,Dr_Cr_indicator,Total_Quantity,Unit_of_Measure,Value_TranCurr,Transaction_Currency,Value_in_Obj_Crcy,Object_Currency,Document_Number)";
 
-        herramienta.setEventoProcesado("Inicia Carga de Archivo 1%");
-        if (controladorMrpdata.Insert(SqlInsertMasivo)) {
-            controladorMrpdata.Insert(SqlUpdateFecha);
-            Recorrido(Ruta, request);
+            System.out.println("Consulta: " + SqlInsertMasivo);
 
+            //System.out.println("Consulta: " + SqlInsertMasivo);
+            String SqlUpdateFecha = "Update kob1_planos set fecha = '" + mes + "-" + ano + "' where fecha is null";
+
+            MesKob1 = validarMesMb51(ano);
+
+            herramienta.setEventoProcesado("Inicia Carga de Archivo 1%");
+            if (controladorMrpdata.Insert(SqlInsertMasivo)) {
+                controladorMrpdata.Insert(SqlUpdateFecha);
+                Recorrido(Ruta, request);
+
+            }
+            Realizado = "true";
         }
-        Realizado = "true";
         return Realizado;
 
     }

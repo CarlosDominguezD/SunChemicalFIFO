@@ -41,9 +41,9 @@ public class ControladorFechas {
             SQL = con.prepareStatement("SELECT "
                     + "`Id`,"
                     + "`mes`,"
-                    + "`ano` "
-                    + "`estadoCompras` "
-                    + "`estadoProduccion` "
+                    + "`ano`, "
+                    + "`estadoCompras`, "
+                    + "`estadoProduccion`, "
                     + "`estadoInventario` "
                     + "FROM `fechas` "
                     + "WHERE "
@@ -150,6 +150,91 @@ public class ControladorFechas {
         Resultado = new Gson().toJson(modeloFechas);
         return Resultado;
     }
+    
+    
+    public ModeloFechas GetModeloFechas (String mes, String ano, String fase)
+    {
+        ModeloFechas modeloFechas = null;
+        String sql = null;
+        if ("Compras".equals(fase)) {
+            sql = "SELECT "
+                    + "`Id`,"
+                    + "`mes`,"
+                    + "`ano`,"
+                    + "`estadoCompras`,"
+                    + "`estadoProduccion`,"
+                    + "`estadoInventario` "
+                    + "FROM `fechas` "
+                    + "WHERE "
+                    + "`mes` = ? "
+                    + "AND "
+                    + "`ano` = ? "
+                    + "AND "
+                    + "`estadoCompras` = ? ;";
+        }
+        if ("Produccion".equals(fase)) {
+            sql = "SELECT "
+                    + "`Id`,"
+                    + "`mes`,"
+                    + "`ano`,"
+                    + "`estadoCompras`,"
+                    + "`estadoProduccion`,"
+                    + "`estadoInventario` "
+                    + "FROM `fechas` "
+                    + "WHERE "
+                    + "`mes` = ? "
+                    + "AND "
+                    + "`ano` = ? "
+                    + "AND "
+                    + "`estadoProduccion` = ? ;";
+        }
+        if ("Inventario".equals(fase)) {
+            sql = "SELECT "
+                    + "`Id`,"
+                    + "`mes`,"
+                    + "`ano`,"
+                    + "`estadoCompras`,"
+                    + "`estadoProduccion`,"
+                    + "`estadoInventario` "
+                    + "FROM `fechas` "
+                    + "WHERE "
+                    + "`mes` = ? "
+                    + "AND "
+                    + "`ano` = ? "
+                    + "AND "
+                    + "`estadoInventario` = ? ;";
+        }
+
+        try {
+            ConexionBDMySql conexion = new ConexionBDMySql();
+            Connection con;
+            con = conexion.abrirConexion();
+            PreparedStatement SQL;
+
+            SQL = con.prepareStatement(sql);
+            SQL.setString(1, ano);
+            SQL.setString(2, mes);
+            SQL.setString(3, "Abierto");
+            ResultSet res = SQL.executeQuery();
+            if (res.next()) {
+                modeloFechas = new ModeloFechas();
+                modeloFechas.setId(res.getInt("id"));
+                modeloFechas.setMes(res.getString("mes"));
+                modeloFechas.setAno(res.getInt("ano"));
+                modeloFechas.setEstadoCompras(res.getString("estadoCompras"));
+                modeloFechas.setEstadoProduccion(res.getString("estadoProduccion"));
+                modeloFechas.setEstadoInventario(res.getString("estadoInventario"));
+            }
+            res.close();
+            SQL.close();
+            con.close();
+        } catch (SQLException e) {
+            System.out.println("Error en la consulta SQL Select " + e);
+        }
+        return modeloFechas;
+    }
+    
+    
 
     public String GetAbrirFecha(HttpServletRequest request, HttpServletResponse response) {
 
