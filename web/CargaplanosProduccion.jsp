@@ -109,12 +109,21 @@
                                     <label for="ListaEventos">Lista de Eventos</label>
                                     <textarea class="form-control" id="IdlistaEventos" name="listaEventos" rows="10"></textarea>
                                 </div>
+                                <div class="col-lg-12" style="text-align: center">                                        
+                                    <button type="button" class="btn btn-dark" id="IdConsultarEstado" name="Accion" value="Consultar" >Consultar proceso</button>                                        
+                                </div>  
                             </form>                            
                             <script type="text/javascript">
                                 var dato = 'Ininciando';
                                 function GetEventos() {
-                                        setInterval(StartSolicitudEvento, 100);
+                                    setInterval(StartSolicitudEvento, 100);
                                 }
+                                
+                                $('#IdConsultarEstado').click(function (e)
+                                {
+                                    StartSolicitudEvento();
+                                });
+
 
                                 function Validaciones()
                                 {
