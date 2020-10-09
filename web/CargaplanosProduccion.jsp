@@ -113,13 +113,7 @@
                             <script type="text/javascript">
                                 var dato = 'Ininciando';
                                 function GetEventos() {
-                                    if (Validaciones() === true)
-                                    {
                                         setInterval(StartSolicitudEvento, 100);
-                                    } else
-                                    {
-                                        alert("Favor de compleatar todos los campos")
-                                    }
                                 }
 
                                 function Validaciones()

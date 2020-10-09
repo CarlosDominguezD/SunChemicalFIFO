@@ -290,6 +290,7 @@ public class ServletSunchemical extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        System.err.println("Ingresa en doPost");
         response.setContentType("text/html;charset=UTF-8");
         String Accion = request.getParameter("Accion");
         String res = "";
@@ -325,7 +326,7 @@ public class ServletSunchemical extends HttpServlet {
                         System.err.println("Ingresa en Servlet");
                         res = controladorCargaPlanosProduccion.Upload(request, response);
                     } catch (SQLException ex) {
-                        Logger.getLogger(ServletSunchemical.class.getName()).log(Level.SEVERE, null, ex);
+                        System.err.println("Error en el Servlet Produccion");
                     }
                 }
                 respuesta = res;
