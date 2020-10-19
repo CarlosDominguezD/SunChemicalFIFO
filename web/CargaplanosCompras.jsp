@@ -14,7 +14,7 @@
         <%
             Modelos.ModeloUsuario modeloUsuarios = (ModeloUsuario) request.getSession().getAttribute("user");
             if (modeloUsuarios != null) {
-                %>        
+        %>        
         <%@include file="Principal/Body.jsp" %>
         <script type="text/javascript" src="Principal/js/jquery.min.js" ></script>
         <script type="text/javascript" src="Principal/js/jsfifo/ValidacionesPlano.js" ></script> 
@@ -36,7 +36,8 @@
                         </div>
                         <div class="x_content">
                             <br />
-                            <form action="ServletSunchemical" method="POST" enctype="multipart/form-data" id="IdCargarPlanoServlet" name="cargaplanoscompres">
+                            <form action="ServletSunchemical" method="POST" enctype="multipart/form-data" 
+                                  id="IdCargarPlanoServlet" name="cargaplanoscompres" onsubmit="return checkSubmit();">
                                 <input type="hidden" id="IdAccion">     
                                 <input type="hidden" id="IdNombrePlano" name="NombrePlano" value=""> 
                                 <div class="row">
@@ -100,6 +101,56 @@
                                 </div>                                                            
                             </form>
                             <script type="text/javascript">
+
+                                $(document).ready(function () {
+                                    //Consultamos si el sistema esta cargand algo 
+                                    var Accion = "GetSolicitudEvento";
+                                    var data = {
+                                        Accion: Accion
+                                    };
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "ServletSunchemical",
+                                        data: data,
+                                        success: function (resul, textStatus, jqXHR) {
+                                            if (dato !== resul)
+                                            {
+                                                if (resul !== "--") {
+                                                    GetEventos()
+                                                }                                                
+                                            }
+                                        },
+                                        error: function (jqXHR, textStatus, errorThrown) {
+                                            if (jqXHR.status === 0) {
+                                                alert('Not connect: Verify Network.');
+                                            } else if (jqXHR.status === 404) {
+                                                alert('Requested page not found [404]');
+                                            } else if (jqXHR.status === 500) {
+                                                alert('Internal Server Error [500].');
+                                            } else if (textStatus === 'parsererror') {
+                                                alert('Requested JSON parse failed.');
+                                            } else if (textStatus === 'timeout') {
+                                                alert('Time out error.');
+                                            } else if (textStatus === 'abort') {
+                                                alert('Ajax request aborted.');
+                                            } else {
+                                                alert('Uncaught Error: ' + jqXHR.responseText);
+                                            }
+                                        }
+                                    });
+                                });
+
+                                var statSend = false;
+                                function checkSubmit() {
+                                    if (!statSend) {
+                                        statSend = true;
+                                        return true;
+                                    } else {
+                                        alert("El archivo ya se está procesando...");
+                                        return false;
+                                    }
+                                }
+
                                 var dato = 'Ininciando';
                                 function GetEventos() {
                                     //alert("Inicia");
@@ -108,7 +159,7 @@
 
                                 $('#IdConsultarEstado').click(function (e)
                                 {
-                                    StartSolicitudEvento();
+                                    GetEventos();
                                 });
 
                                 function StartSolicitudEvento()

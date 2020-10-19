@@ -14,7 +14,7 @@
         <%
             Modelos.ModeloUsuario modeloUsuarios = (ModeloUsuario) request.getSession().getAttribute("user");
             if (modeloUsuarios != null) {
-        %>
+                %>
         <%@include file="Principal/Body.jsp" %>
         <script type="text/javascript" src="Principal/js/jquery.min.js" ></script>
         <script type="text/javascript" src="Principal/js/ValidacionesPlano.js" ></script> 
@@ -36,7 +36,8 @@
                         </div>
                         <div class="x_content">
                             <br />
-                            <form action="ServletSunchemical" method="POST" enctype="multipart/form-data" id="IdCargarPlanoServlet" name="CargarPlanoServlet">
+                            <form action="ServletSunchemical" method="POST" enctype="multipart/form-data" 
+                                  id="IdCargarPlanoServlet" name="CargarPlanoServlet" onsubmit="return checkSubmit();">
                                 <input type="hidden" id="IdAccion" >     
                                 <input type="hidden" id="IdNombrePlano" name="NombrePlano" value=""> 
                                 <div class="row">
@@ -91,7 +92,7 @@
                                 </div>
                                 <br></br>
                                 <div  class="col-md-12 col-sm-12 col-xs-12 form-group has-feedback" align = "center">
-                                    <input type="file" name="archivo" id="Idarchivo" accept="aplication/txt" autofocus class="btn btn-lg btn-primary" onchange="nombre(this.value)" required>
+                                    <input type="file" name="archivo" id="Idarchivo" accept="aplication/txt" autofocus class="btn btn-lg btn-primary" onchange="nombre(this.value)">
                                 </div>
                                 <br>
                                 <br>
@@ -100,7 +101,8 @@
                                 <br>
                                 <br>
                                 <div align="center" id="botonCargar">
-                                    <input type="submit" class="btn btn-lg btn-primary" onclick = "GetEventos()"  name="Accion" value="CargarPlanosProduccion">                                    
+                                    <input type="submit" class="btn btn-lg btn-primary" onclick = "GetEventos()" 
+                                           id="btsubmit" name="Accion" value="CargarPlanosProduccion">                                    
                                 </div>
                                 <div align="center" id="espera" style="display: none">
                                     <img src="Principal/images/loading.gif">
@@ -114,35 +116,65 @@
                                 </div>  
                             </form>                            
                             <script type="text/javascript">
+
+$(document).ready(function () {
+                                    //Consultamos si el sistema esta cargand algo 
+                                    var Accion = "GetSolicitudEvento";
+                                    var data = {
+                                        Accion: Accion
+                                    };
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "ServletSunchemical",
+                                        data: data,
+                                        success: function (resul, textStatus, jqXHR) {
+                                            if (dato !== resul)
+                                            {
+                                                if (resul !== "--") {
+                                                    GetEventos()
+                                                }                                                
+                                            }
+                                        },
+                                        error: function (jqXHR, textStatus, errorThrown) {
+                                            if (jqXHR.status === 0) {
+                                                alert('Not connect: Verify Network.');
+                                            } else if (jqXHR.status === 404) {
+                                                alert('Requested page not found [404]');
+                                            } else if (jqXHR.status === 500) {
+                                                alert('Internal Server Error [500].');
+                                            } else if (textStatus === 'parsererror') {
+                                                alert('Requested JSON parse failed.');
+                                            } else if (textStatus === 'timeout') {
+                                                alert('Time out error.');
+                                            } else if (textStatus === 'abort') {
+                                                alert('Ajax request aborted.');
+                                            } else {
+                                                alert('Uncaught Error: ' + jqXHR.responseText);
+                                            }
+                                        }
+                                    });
+                                });
+
+                                var statSend = false;
+                                function checkSubmit() {
+                                    if (!statSend) {
+                                     statSend = true;
+                                     return true;
+                                     } else {
+                                     alert("El archivo ya se está procesando...");
+                                     return false;
+                                     }                                    
+                                }
+
                                 var dato = 'Ininciando';
                                 function GetEventos() {
                                     setInterval(StartSolicitudEvento, 100);
                                 }
-                                
+
                                 $('#IdConsultarEstado').click(function (e)
                                 {
-                                    StartSolicitudEvento();
+                                    GetEventos();
                                 });
-
-
-                                function Validaciones()
-                                {
-                                    var res = false;
-                                    if ($('#IdMes').val() !== "0")
-                                    {
-                                        if ($('#IdAno').val() !== "0")
-                                        {
-                                            if ($('#Idarchivo').val() !== "")
-                                            {
-                                                res = true;
-                                            }
-
-                                        }
-                                    }
-                                    return res;
-                                }
-
-
 
                                 function StartSolicitudEvento()
                                 {

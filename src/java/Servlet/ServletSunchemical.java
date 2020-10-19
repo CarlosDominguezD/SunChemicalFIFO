@@ -311,6 +311,7 @@ public class ServletSunchemical extends HttpServlet {
                     try {
                         res = controladorCargaPlanos.Upload(request, response);
                     } catch (SQLException ex) {
+                        System.err.println("Error en el Servlet Produccion ERROR ==> " + ex);
                         Logger.getLogger(ServletSunchemical.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
@@ -326,7 +327,7 @@ public class ServletSunchemical extends HttpServlet {
                         System.err.println("Ingresa en Servlet");
                         res = controladorCargaPlanosProduccion.Upload(request, response);
                     } catch (SQLException ex) {
-                        System.err.println("Error en el Servlet Produccion");
+                        System.err.println("Error en el Servlet Produccion ERROR ==> " + ex);
                     }
                 }
                 respuesta = res;
@@ -340,6 +341,7 @@ public class ServletSunchemical extends HttpServlet {
                     try {
                         res = controladorCargaPlanosInventario.Upload(request, response);
                     } catch (SQLException ex) {
+                        System.err.println("Error en el Servlet Produccion ERROR ==> " + ex);
                         Logger.getLogger(ServletSunchemical.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }

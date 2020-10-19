@@ -14,7 +14,7 @@
         <%
             Modelos.ModeloUsuario modeloUsuarios = (ModeloUsuario) request.getSession().getAttribute("user");
             if (modeloUsuarios != null) {
-        %>
+                %>
         <%@include file="Principal/Body.jsp" %>
         <script type="text/javascript" src="Principal/js/jquery.min.js" ></script>
         <script type="text/javascript" src="Principal/js/ValidacionesPlano.js" ></script> 
@@ -29,7 +29,7 @@
                         </div>
                         <div class="x_content">
                             <br />                            
-                            <form method="post" action="UploadServlet" enctype="multipart/form-data">
+                            <form method="post" action="UploadServlet" enctype="multipart/form-data" onsubmit="return checkSubmit();">
                                 <div class="row">                                    
                                     <div class="col-md-6 col-sm-12 col-xs-12 form-group">
                                         <select class="form-control" id="IdMes" name="Mes">                                                                                        
@@ -85,6 +85,18 @@
                                 </div>
                             </form>
                             <script type="text/javascript">
+
+                                var statSend = false;
+                                function checkSubmit() {
+                                    if (!statSend) {
+                                        statSend = true;
+                                        return true;
+                                    } else {
+                                        alert("El formulario ya se esta enviando...");
+                                        return false;
+                                    }
+                                }
+
                                 function enableGif()
                                 {
                                     window.onload = document.getElementById("espera").style = "display: block";
@@ -110,11 +122,11 @@
             </div>
         </div>
         <%@include file="Principal/Script.html" %>
-        <%}else{
+        <%} else {
         %>
         <script src="Principal/js/jsfifo/jquery.min.js"></script>  
         <script>
-            location.href = "index.jsp";
+                                location.href = "index.jsp";
         </script>  
         <%
             }
