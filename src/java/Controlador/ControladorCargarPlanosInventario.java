@@ -175,7 +175,6 @@ public class ControladorCargarPlanosInventario {
 
             ANO = ano + "-" + mes;
 
-            
             Ruta = Ruta.replace("\\", "/");
             String SqlInsertMasivo
                     = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE MCBR"
@@ -331,21 +330,18 @@ public class ControladorCargarPlanosInventario {
         //LLENAMOS COLUMNA Cost Unit Estándar
         modeloMcbr.setCost_Unit_Estandar(String.format("%.5f", Cost_Unit_Estandar).replace(",", "."));
 
-        LinkedList<ModeloInventarioInicial> Lista_ModeloInventarioInicial;// = new LinkedList<ModeloInventarioInicial>();
+        LinkedList<ModeloInventarioInicial> Lista_ModeloInventarioInicial;
 
-        //controladorInventarioInicial = new ControladorInventarioInicial();
-        Lista_ModeloInventarioInicial = controladorInventarioInicial.SelectListSql("SELECT * FROM inventarioinicial WHERE Link_Material_Batch = '" + modeloMcbr.getMaterial() + modeloMcbr.getBatch() + "'", con);
-
-        double InventarioInicial_FIFO = 0.0;
-
-        for (ModeloInventarioInicial modeloInventarioInicial : Lista_ModeloInventarioInicial) {
-            InventarioInicial_FIFO = Double.valueOf(modeloInventarioInicial.getFIFO_Cost_UNIT());
-        }
-        //LLENAMOS COLUMNA InventarioInicial_FIFO
-        modeloMcbr.setInventarioInicial_FIFO(String.format("%.5f", InventarioInicial_FIFO).replace(",", "."));
-
-        //controladorMb51 = new ControladorMb51();
-        LinkedList<ModeloMb51> Lista_modeloMb51s;// = new LinkedList<ModeloMb51>();
+        //        Lista_ModeloInventarioInicial = controladorInventarioInicial.SelectListSql("SELECT * FROM inventarioinicial WHERE Link_Material_Batch = '" + modeloMcbr.getMaterial() + modeloMcbr.getBatch() + "'", con);
+                //
+                //        double InventarioInicial_FIFO = 0.0;
+                //
+                //        for (ModeloInventarioInicial modeloInventarioInicial : Lista_ModeloInventarioInicial) {
+                //            InventarioInicial_FIFO = Double.valueOf(modeloInventarioInicial.getFIFO_Cost_UNIT());
+                //        }
+                //        //LLENAMOS COLUMNA InventarioInicial_FIFO
+                //        modeloMcbr.setInventarioInicial_FIFO(String.format("%.5f", InventarioInicial_FIFO).replace(",", "."));
+                LinkedList<ModeloMb51 > Lista_modeloMb51s;
 
         String Sql1 = "SELECT * FROM mb51 where Material = '" + modeloMcbr.getMaterial() + "' and Batch = '" + modeloMcbr.getBatch() + "' and fecha = '" + MesKob1 + "'";
 //        String Sql = "SELECT * FROM mb51 where link1_Material_Batch = '" + modeloKob1.getLink_Material_Batch() + "' AND fecha = '" + ANO + "' ORDER BY Month";
@@ -367,7 +363,18 @@ public class ControladorCargarPlanosInventario {
         //LLENAMOS COLUMNA Cost_Unit_KOB1_Final
         modeloMcbr = Produccion(modeloMcbr, con);
         Cost_Unit_KOB1_Final = Double.valueOf(modeloMcbr.getCost_Unit_KOB1_Final());
-        //modeloMcbr.setCost_Unit_KOB1_Final(String.format("%.5f", Cost_Unit_KOB1_Final).replace(",", "."));        
+
+        double InventarioInicial_FIFO = 0.0;
+        
+        if (Cost_Unit_Purchase == 0 && Cost_Unit_KOB1_Final == 0) {
+            Lista_ModeloInventarioInicial = controladorInventarioInicial.SelectListSql("SELECT * FROM inventarioinicial WHERE Link_Material_Batch = '" + modeloMcbr.getMaterial() + modeloMcbr.getBatch() + "'", con);
+
+            for (ModeloInventarioInicial modeloInventarioInicial : Lista_ModeloInventarioInicial) {
+                InventarioInicial_FIFO = Double.valueOf(modeloInventarioInicial.getFIFO_Cost_UNIT());
+            }
+            //LLENAMOS COLUMNA InventarioInicial_FIFO
+        }
+        modeloMcbr.setInventarioInicial_FIFO(String.format("%.5f", InventarioInicial_FIFO).replace(",", "."));
 
         double FIFO_Cost_Unit = InventarioInicial_FIFO + Cost_Unit_Purchase + Cost_Unit_KOB1_Final;
 

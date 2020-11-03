@@ -124,6 +124,8 @@
                                             if ("ItemCerrarFecha".equals(modelo.getNombre())) {
                                                 ItemCerrarFecha = "true";
                                             }
+
+
                                         }
                                         if ("true".equals(ItemAdministracion)) {
                             %>
@@ -188,7 +190,7 @@
                                         <%      }
                                             if ("true".equals(ItemVendorType)) {
                                         %>
-                                    <li><a href="Vendortype.jsp">Vendortype</a></li>
+                                    <li><a href="Vendortype.jsp">Sub-Contrating</a></li>
                                         <%      }
 
                                         %>
@@ -255,7 +257,11 @@
 
                                     }//if
 
-                                } catch (Exception e) {
+                                }
+                                catch (Exception e
+
+                                
+                                    ) {
                                     System.out.println("error className.methodName()" + e);
                                 }
 

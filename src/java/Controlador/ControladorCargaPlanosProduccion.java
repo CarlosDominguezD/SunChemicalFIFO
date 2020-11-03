@@ -238,6 +238,7 @@ public class ControladorCargaPlanosProduccion {
 
     public String CargarCSV_KOB1_INFILE(String Ruta, HttpServletRequest request) throws IOException, SQLException {
 
+        String Reprocesar = request.getParameter("Reprocesar");
         mes(request);
 
 //        CONVERSION_LABOR = Double.parseDouble(request.getParameter("ConversionLabor"));
@@ -262,32 +263,38 @@ public class ControladorCargaPlanosProduccion {
 
         if (mes_abierto) {
 
-            String Sqlborrar = "delete from kob1_planos where fecha = '" + mes + "-" + ano + "'";
+            if (Reprocesar.contentEquals("False")) {
 
-            if (controladorMrpdata.Insert(Sqlborrar)) {
-                //Realizado = "true";
-            }
-            Ruta = Ruta.replace("\\", "/");
-            String SqlInsertMasivo
-                    = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE kob1_planos CHARACTER SET LATIN1"
-                    + " FIELDS TERMINATED BY ','"
-                    + " ENCLOSED BY '\"'"
-                    + " LINES TERMINATED BY '\\r\\n'"
-                    + " IGNORE 1 LINES"
-                    + " (Functional_Area,Company_Code,Order_,CO_object_name,Cost_Element,Cost_element_name,Material,Material_Description,Plant,Period,Fiscal_Year,Dr_Cr_indicator,Total_Quantity,Unit_of_Measure,Value_TranCurr,Transaction_Currency,Value_in_Obj_Crcy,Object_Currency,Document_Number)";
+                String Sqlborrar = "delete from kob1_planos where fecha = '" + mes + "-" + ano + "'";
 
-            System.out.println("Consulta: " + SqlInsertMasivo);
+                if (controladorMrpdata.Insert(Sqlborrar)) {
+                    //Realizado = "true";
+                }
+                Ruta = Ruta.replace("\\", "/");
+                String SqlInsertMasivo
+                        = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE kob1_planos CHARACTER SET LATIN1"
+                        + " FIELDS TERMINATED BY ','"
+                        + " ENCLOSED BY '\"'"
+                        + " LINES TERMINATED BY '\\r\\n'"
+                        + " IGNORE 1 LINES"
+                        + " (Functional_Area,Company_Code,Order_,CO_object_name,Cost_Element,Cost_element_name,Material,Material_Description,Plant,Period,Fiscal_Year,Dr_Cr_indicator,Total_Quantity,Unit_of_Measure,Value_TranCurr,Transaction_Currency,Value_in_Obj_Crcy,Object_Currency,Document_Number)";
 
-            //System.out.println("Consulta: " + SqlInsertMasivo);
-            String SqlUpdateFecha = "Update kob1_planos set fecha = '" + mes + "-" + ano + "' where fecha is null";
+                System.out.println("Consulta: " + SqlInsertMasivo);
 
-            MesKob1 = validarMesMb51(ano);
+                //System.out.println("Consulta: " + SqlInsertMasivo);
+                String SqlUpdateFecha = "Update kob1_planos set fecha = '" + mes + "-" + ano + "' where fecha is null";
 
-            herramienta.setEventoProcesado("Inicia Carga de Archivo 1%");
-            if (controladorMrpdata.Insert(SqlInsertMasivo)) {
-                controladorMrpdata.Insert(SqlUpdateFecha);
+                MesKob1 = validarMesMb51(ano);
+
+                herramienta.setEventoProcesado("Inicia Carga de Archivo 1%");
+                if (controladorMrpdata.Insert(SqlInsertMasivo)) {
+                    controladorMrpdata.Insert(SqlUpdateFecha);
+                    Recorrido(Ruta, request);
+
+                }
+            } else {
+                MesKob1 = validarMesMb51(ano);
                 Recorrido(Ruta, request);
-
             }
             Realizado = "true";
         }
@@ -369,18 +376,21 @@ public class ControladorCargaPlanosProduccion {
                         if (!modeloKob1.getCost_Element().contentEquals("80005")) {
                             if (!modeloKob1.getCost_Element().contentEquals("80015")) {
 
-                                //BUSCO EN INVETNTARIO
-                                modeloKob1 = CostoInventario(modeloKob1, con);
+                                if (!modeloKob1.getMaterial().contentEquals("30000806")) {
 
-                                //BUSCO EN COMPRAS
-                                modeloKob1 = CostoCompras(modeloKob1, con);
-                                //CALCULO Total Raw Material
-                                modeloKob1 = TotalRawValue(modeloKob1, con);
-                                //CALCULO Packaging_Materials
-                                if (modeloKob1.getCost_Element().contentEquals("50430")) {
-                                    modeloKob1 = Packaging_Materials(modeloKob1, con);
+                                    //BUSCO EN INVETNTARIO
+                                    modeloKob1 = CostoInventario(modeloKob1, con);
+
+                                    //BUSCO EN COMPRAS
+                                    modeloKob1 = CostoCompras(modeloKob1, con);
+                                    //CALCULO Total Raw Material
+                                    modeloKob1 = TotalRawValue(modeloKob1, con);
+                                    //CALCULO Packaging_Materials
+                                    if (modeloKob1.getCost_Element().contentEquals("50430")) {
+                                        modeloKob1 = Packaging_Materials(modeloKob1, con);
+                                    }
+
                                 }
-
                             }
                         }
                     }
@@ -472,20 +482,23 @@ public class ControladorCargaPlanosProduccion {
                     if (!modeloKob1.getCost_Element().contentEquals("80004")) {
                         if (!modeloKob1.getCost_Element().contentEquals("80005")) {
                             if (!modeloKob1.getCost_Element().contentEquals("80015")) {
-                                //LLENAMOS COLUMNA Cost Unit Fifo R.Mat y Pack
 
-                                //BUSCO EN INVETNTARIO
-                                modeloKob1 = CostoInventario(modeloKob1, con);
+                                if (!modeloKob1.getMaterial().contentEquals("30000806")) {
 
-                                if (modeloKob1.getProcur_Type().contentEquals("F")) {
-                                    modeloKob1 = CostoCompras(modeloKob1, con);
-                                    modeloKob1 = TotalRawValue(modeloKob1, con);
-                                } else if (modeloKob1.getProcur_Type().contentEquals("E")) {
-                                    modeloKob1 = ProduccionPiso(modeloKob1, con);
-                                    modeloKob1 = ManufactMaterials(modeloKob1, con);
-                                }
-                                if (modeloKob1.getCost_Element().contentEquals("50430")) {
-                                    modeloKob1 = Packaging_Materials(modeloKob1, con);
+                                    //LLENAMOS COLUMNA Cost Unit Fifo R.Mat y Pack
+                                    //BUSCO EN INVETNTARIO
+                                    modeloKob1 = CostoInventario(modeloKob1, con);
+
+                                    if (modeloKob1.getProcur_Type().contentEquals("F")) {
+                                        modeloKob1 = CostoCompras(modeloKob1, con);
+                                        modeloKob1 = TotalRawValue(modeloKob1, con);
+                                    } else if (modeloKob1.getProcur_Type().contentEquals("E")) {
+                                        modeloKob1 = ProduccionPiso(modeloKob1, con);
+                                        modeloKob1 = ManufactMaterials(modeloKob1, con);
+                                    }
+                                    if (modeloKob1.getCost_Element().contentEquals("50430")) {
+                                        modeloKob1 = Packaging_Materials(modeloKob1, con);
+                                    }
                                 }
                             }
                         }
@@ -544,9 +557,9 @@ public class ControladorCargaPlanosProduccion {
         InformeProduccion_FinMes.execute();
 
         lstModeloKob1 = null;
-        lstModeloKob1 = controladorKob1.Select("Select * from kob1 where x = 'x' and Procur_type = 'E' and fecha = '" + mes + "-" + ano + "'", FechaAño, "90", "95");
+        lstModeloKob1 = controladorKob1.Select("Select * from kob1 where x = 'x' and Procur_type = 'E' and fecha = '" + mes + "-" + ano + "'", FechaAño, "90", "93");
         Porcentaje = 90;
-        VUeltas = lstModeloKob1.size() / 5;
+        VUeltas = lstModeloKob1.size() / 3;
         sumador = 1;
 
         for (ModeloKob1 modeloKob1 : lstModeloKob1) {
@@ -569,8 +582,12 @@ public class ControladorCargaPlanosProduccion {
                         if (!modeloKob1.getCost_Element().contentEquals("80005")) {
                             if (!modeloKob1.getCost_Element().contentEquals("80015")) {
 
-                                modeloKob1 = ProduccionPiso(modeloKob1, con);
-                                modeloKob1 = ManufactMaterials(modeloKob1, con);
+                                if (!modeloKob1.getMaterial().contentEquals("30000806")) {
+
+                                    modeloKob1 = ProduccionPiso(modeloKob1, con);
+                                    modeloKob1 = ManufactMaterials(modeloKob1, con);
+
+                                }
 
                             }
                         }
@@ -601,13 +618,41 @@ public class ControladorCargaPlanosProduccion {
 
         }
 
-        Progreso("Actualizacio registros Produccion Piso", "95");
-        herramienta.setEventoProcesado("Actualizacio registros Produccion Piso 95%");
-        controladorKob1.UpdateList_Carlos(lstModeloKob1Upd, con, "Actualizacio registros Produccion Piso", FechaAño, "95", "100");
+        Progreso("Actualizacio registros Produccion Piso", "93");
+        herramienta.setEventoProcesado("Actualizacio registros Produccion Piso 93%");
+        controladorKob1.UpdateList_Carlos(lstModeloKob1Upd, con, "Actualizacio registros Produccion Piso", FechaAño, "93", "95");
 
         //InformeProduccion_FinMes.execute();
         lstModeloKob1 = null;
         lstModeloKob1Upd = null;
+        lstModeloKob1Upd = new LinkedList<ModeloKob1>();
+
+        lstModeloKob1 = null;
+        lstModeloKob1 = controladorKob1.Select("select * from kob1 where Cost_Element <> '50400' and Cost_Element <> '50440' and Cost_Element <> '80004' and Cost_Element <> '80005' and Cost_Element <> '80015'and Nuevo_Valor_Orden like '0.000%'and Material <> '30000806'", mes + "-" + ano, "95", "96");
+
+        for (ModeloKob1 modeloKob1 : lstModeloKob1) {
+            modeloKob1 = ProduccionPiso(modeloKob1, con);
+            modeloKob1 = ManufactMaterials(modeloKob1, con);
+
+            double Nuevo_Valor_Orden = 0.0;
+
+            Nuevo_Valor_Orden = Double.valueOf(modeloKob1.getTotal_Raw_Material())
+                    + Double.valueOf(modeloKob1.getManufact_Materials())
+                    + Double.valueOf(modeloKob1.getPackaging_Materials())
+                    + Double.valueOf(modeloKob1.getConversion_Cost());
+
+            modeloKob1.setNuevo_Valor_Orden(String.format("%.5f", Nuevo_Valor_Orden).replace(",", "."));
+
+            lstModeloKob1Upd.add(modeloKob1);
+
+        }
+
+        Progreso("Finalizacion de registros Produccion Piso", "96");
+        herramienta.setEventoProcesado("Finalizacion de registros Produccion Piso 96%");
+        controladorKob1.UpdateList_Carlos(lstModeloKob1Upd, con, "Finalizacion de registros Produccion Piso", FechaAño, "96", "100");
+
+        lstModeloKob1Upd = null;
+        lstModeloKob1Upd = new LinkedList<ModeloKob1>();
 
         Progreso("--", "100");
         herramienta.setEventoProcesado("--");

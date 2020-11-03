@@ -10,6 +10,8 @@ import java.text.DateFormat;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -18,6 +20,11 @@ import java.util.Date;
 public class Herramienta {
 
     static String EventoProcesado;
+    
+    /**
+     *BD para el control de envios en formulario de produccion 
+     */
+    public static Map<String, String> bdFormularioProduccion = new HashMap<String, String>();
 
     public String getEventoProcesado() {
         if (EventoProcesado == null) {

@@ -84,12 +84,12 @@ public class ControladorExcel {
         }
         return genFileName;
     }
-    
-        public String GenerarCSV(String UrlArchivo, String newQuery) throws Exception {
+
+    public String GenerarCSV(String UrlArchivo, String newQuery) throws Exception {
         String genFileName = null;
         String Fecha = new Date().getYear() + "_" + new Date().getMonth() + "_" + new Date().getDay() + "_" + new Date().getHours() + "_" + new Date().getMinutes() + "_" + new Date().getSeconds();
         String NombreArchivo = "C:/Zred/SunChemical/Rpt_Generados/KOB1_" + Fecha + ".CSV";
-        
+
         //newQuery = "SELECT * FROM kob1 WHERE idarchivo is not null INTO OUTFILE '" + NombreArchivo +"' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\\r\\n';";
         newQuery = "SELECT "
                 + "ifNull(Id, ''), "
@@ -138,7 +138,7 @@ public class ControladorExcel {
                 + "ifNull(fecha, ''), "
                 + "ifNull(Produccion, ''), "
                 + "ifNull(Inventario, '')"
-                + " FROM kob1 INTO OUTFILE '" + NombreArchivo +"' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\\r\\n';";
+                + " FROM kob1 INTO OUTFILE '" + NombreArchivo + "' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\\r\\n';";
         try {
             System.out.println("Reporte : " + newQuery);
 
@@ -146,7 +146,7 @@ public class ControladorExcel {
             Connection con;
             con = conexion.abrirConexion();
             ResultSet rs = con.createStatement().executeQuery(newQuery);
-            
+
             rs.close();
             con.close();
 
@@ -596,8 +596,6 @@ public class ControladorExcel {
 //                        + "FROM kob1 "
 //                        + "LEFT OUTER join estadoplanos on (kob1.IdArchivo = estadoplanos.Id)"
 //                        + "LEFT OUTER join fechas on (estadoplanos.IdFechas = fechas.Id)";
-                
-                
 //                SQLReporte = "SELECT "
 //                        + "kob1.Id,"
 //                        + "kob1.Functional_Area,"
@@ -647,7 +645,6 @@ public class ControladorExcel {
 //                        + "LEFT OUTER join estadoplanos on (kob1.IdArchivo = estadoplanos.Id)"
 //                        + "LEFT OUTER join fechas on (estadoplanos.IdFechas = fechas.Id) "
 //                        + "WHERE IdArchivo = " + request.getParameter("IdPlano");
-                
                 try {
                     //String UrlArchivo = "C:\\Users\\Carlos A Dominguez D\\GlasFish\\glassfish\\domains\\GlassFish\\config\\SunChemical\\Informe.xls";//request.getParameter("PlantillaUrl");
                     String UrlArchivo = "C:\\Zred\\SunChemical\\Rpt_Generados\\MacroKOB1.xls";//request.getParameter("PlantillaUrl");                
@@ -670,6 +667,30 @@ public class ControladorExcel {
                 }
                 break;
             case "GenerarArchivoInventario":
+//                SQLReporte = "SELECT"
+//                        + " id,"
+//                        + " Material,"
+//                        + " Descripcion,"
+//                        + " Plant,"
+//                        + " Batch,"
+//                        + " Month,"
+//                        + " Profit_center,"
+//                        + " Material_Type,"
+//                        + " Status,"
+//                        + " REPLACE(Val_stock, '.', ',') as 'Val Stock',"
+//                        + " Val_stock_Med,"
+//                        + " REPLACE(ValStckVal, '.', ',') as 'Val Stck Val',"
+//                        + " ValStck_Val_Mon,"
+//                        + " REPLACE(Cost_Unit_Estandar, '.', ',') as 'Cost Unit Estandar',"
+//                        + " REPLACE(InventarioInicial_FIFO, '.', ',') as 'Inventario Inicial FIFO',"
+//                        + " REPLACE(Cost_Unit_Purchase, '.', ',') as 'Cost Unit Purchase',"
+//                        + " REPLACE(Cost_Unit_KOB1_Final, '.', ',') as 'Cost Unit KOB1',"
+//                        + " REPLACE(FIFO_Cost_Unit, '.', ',') as 'FIFO Cost Unit',"
+//                        + " REPLACE(Inventario_Valorado_a_FIFO, '.', ',') as 'Inventario Valorado a FIFO',"
+//                        + " REPLACE(Variacion_FIFO_vs_Estandar, '.', ',') as 'Variacion FIFO vs Estandar',"
+//                        + " IdArchivo"
+//                        + " FROM mcbr WHERE IdArchivo = " + request.getParameter("IdPlano");
+
                 SQLReporte = "SELECT"
                         + " id,"
                         + " Material,"
@@ -680,19 +701,20 @@ public class ControladorExcel {
                         + " Profit_center,"
                         + " Material_Type,"
                         + " Status,"
-                        + " REPLACE(Val_stock, '.', ',') as 'Val Stock',"
+                        + " Val_stock as 'Val Stock',"
                         + " Val_stock_Med,"
-                        + " REPLACE(ValStckVal, '.', ',') as 'Val Stck Val',"
+                        + " ValStckVal as 'Val Stck Val',"
                         + " ValStck_Val_Mon,"
-                        + " REPLACE(Cost_Unit_Estandar, '.', ',') as 'Cost Unit Estandar',"
-                        + " REPLACE(InventarioInicial_FIFO, '.', ',') as 'Inventario Inicial FIFO',"
-                        + " REPLACE(Cost_Unit_Purchase, '.', ',') as 'Cost Unit Purchase',"
-                        + " REPLACE(Cost_Unit_KOB1_Final, '.', ',') as 'Cost Unit KOB1',"
-                        + " REPLACE(FIFO_Cost_Unit, '.', ',') as 'FIFO Cost Unit',"
-                        + " REPLACE(Inventario_Valorado_a_FIFO, '.', ',') as 'Inventario Valorado a FIFO',"
-                        + " REPLACE(Variacion_FIFO_vs_Estandar, '.', ',') as 'Variacion FIFO vs Estandar',"
+                        + " Cost_Unit_Estandar as 'Cost Unit Estandar',"
+                        + " InventarioInicial_FIFO as 'Inventario Inicial FIFO',"
+                        + " Cost_Unit_Purchase as 'Cost Unit Purchase',"
+                        + " Cost_Unit_KOB1_Final as 'Cost Unit KOB1',"
+                        + " FIFO_Cost_Unit as 'FIFO Cost Unit',"
+                        + " Inventario_Valorado_a_FIFO as 'Inventario Valorado a FIFO',"
+                        + " Variacion_FIFO_vs_Estandar as 'Variacion FIFO vs Estandar',"
                         + " IdArchivo"
                         + " FROM mcbr WHERE IdArchivo = " + request.getParameter("IdPlano");
+
                 try {
                     //String UrlArchivo = "C:\\Users\\Carlos A Dominguez D\\GlasFish\\glassfish\\domains\\GlassFish\\config\\SunChemical\\Informe.xls";//request.getParameter("PlantillaUrl");
                     String UrlArchivo = "C:\\Zred\\SunChemical\\Rpt_Generados\\MacroMCBR.xls";//request.getParameter("PlantillaUrl");                

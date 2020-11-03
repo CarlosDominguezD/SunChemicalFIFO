@@ -10,14 +10,13 @@
     <head>        
         <%@include file="Principal/Head.html" %>        
     </head>
-    <body class="nav-md">        
+    <body class="nav-md">    
         <%
             Modelos.ModeloUsuario modeloUsuarios = (ModeloUsuario) request.getSession().getAttribute("user");
             if (modeloUsuarios != null) {
-                %>
+        %>        
         <%@include file="Principal/Body.jsp" %>
         <script type="text/javascript" src="Principal/js/jquery.min.js" ></script>
-        <script type="text/javascript" src="Principal/js/ValidacionesPlano.js" ></script> 
         <style>
             textarea {
                 overflow-y: scroll;
@@ -37,14 +36,15 @@
                         <div class="x_content">
                             <br />
                             <form action="ServletSunchemical" method="POST" enctype="multipart/form-data" 
-                                  id="IdCargarPlanoServlet" name="CargarPlanoServlet" onsubmit="return checkSubmit();">
-                                <input type="hidden" id="IdAccion" >     
+                                  id="IdCargarPlanoServlet" name="cargaplanosproduccion" onsubmit="return checkSubmit();">
+                                <input type="hidden" id="IdAccion">     
+                                <input type="hidden" id="IdFechaHoraEnvio" name="FechaHoraEnvio" value="">     
                                 <input type="hidden" id="IdNombrePlano" name="NombrePlano" value=""> 
                                 <div class="row">
                                     <input type="hidden" id="Id" name="Id">
                                     <div class="col-md-6 col-sm-12 col-xs-12 form-group">
-                                        <select class="form-control" id="IdMes" name="Mes" required>                                                                                        
-                                            <option value=""></option>
+                                        <select class="form-control" id="IdMes" name="Mes">                                                                                        
+                                            <option value=0></option>
                                             <option value="Enero">Enero</option>
                                             <option value="Febrero">Febrero</option>
                                             <option value="Marzo">Marzo</option>
@@ -60,8 +60,8 @@
                                         </select>
                                     </div>
                                     <div class="col-md-6 col-sm-12 col-xs-12 form-group">
-                                        <select class="form-control" id="IdAno" name="Ano" required>  
-                                            <option value=""></option>
+                                        <select class="form-control" id="IdAno" name="Ano">  
+                                            <option value=0></option>
                                             <option value="2020">2020</option>
                                             <option value="2021">2021</option>
                                             <option value="2022">2022</option>
@@ -74,21 +74,7 @@
                                             <option value="2029">2029</option>
                                             <option value="2030">2030</option>
                                         </select>
-                                    </div>                                    
-                                    <!--
-                                    <div class="col-md-4 col-sm-12 col-xs-12 form-group">
-                                        <label for="CONVERSION_LABOR">CONVERSION_LABOR</label>
-                                        <input type="text" class="form-control" id="IdConversionLabor" name="ConversionLabor">
                                     </div>
-                                    <div class="col-md-4 col-sm-12 col-xs-12 form-group">
-                                        <label for="CONVERSION_MACHINE">CONVERSION_MACHINE</label>
-                                        <input type="text" class="form-control" id="IdConversionMachine" name="ConversionMachine">                                                
-                                    </div>
-                                    <div class="col-md-4 col-sm-12 col-xs-12 form-group">
-                                        <label for="CONVERSION_OVHDS">CONVERSION_OVHDS</label>
-                                        <input type="text" class="form-control" id="IdConversionOvhds" name="ConversionOvhds">                                                
-                                    </div>    
-                                    -->
                                 </div>
                                 <br></br>
                                 <div  class="col-md-12 col-sm-12 col-xs-12 form-group has-feedback" align = "center">
@@ -102,7 +88,7 @@
                                 <br>
                                 <div align="center" id="botonCargar">
                                     <input type="submit" class="btn btn-lg btn-primary" onclick = "GetEventos()" 
-                                           id="btsubmit" name="Accion" value="CargarPlanosProduccion">                                    
+                                           name="Accion" value="CargarPlanosProduccion">       
                                 </div>
                                 <div align="center" id="espera" style="display: none">
                                     <img src="Principal/images/loading.gif">
@@ -113,11 +99,11 @@
                                 </div>
                                 <div class="col-lg-12" style="text-align: center">                                        
                                     <button type="button" class="btn btn-dark" id="IdConsultarEstado" name="Accion" value="Consultar" >Consultar proceso</button>                                        
-                                </div>  
-                            </form>                            
+                                </div>                                                            
+                            </form>
                             <script type="text/javascript">
 
-$(document).ready(function () {
+                                $(document).ready(function () {
                                     //Consultamos si el sistema esta cargand algo 
                                     var Accion = "GetSolicitudEvento";
                                     var data = {
@@ -158,16 +144,16 @@ $(document).ready(function () {
                                 var statSend = false;
                                 function checkSubmit() {
                                     if (!statSend) {
-                                     statSend = true;
-                                     return true;
-                                     } else {
-                                     alert("El archivo ya se está procesando...");
-                                     return false;
-                                     }                                    
+                                        statSend = true;
+                                        return true;
+                                    } else {
+                                        alert("El archivo ya se está procesando...");
+                                        return false;
+                                    }
                                 }
 
                                 var dato = 'Ininciando';
-                                function GetEventos() {
+                                function GetEventos() {                                    
                                     setInterval(StartSolicitudEvento, 100);
                                 }
 
@@ -178,7 +164,7 @@ $(document).ready(function () {
 
                                 function StartSolicitudEvento()
                                 {
-                                    document.CargarPlanoServlet.Accion.disabled = true;
+                                    document.cargaplanosproduccion.Accion.disabled = true;
                                     var Accion = "GetSolicitudEvento";
                                     var data = {
                                         Accion: Accion
@@ -190,7 +176,7 @@ $(document).ready(function () {
                                         success: function (resul, textStatus, jqXHR) {
                                             if (dato !== resul)
                                             {
-                                                document.CargarPlanoServlet.listaEventos.value += resul + '\n';
+                                                document.cargaplanosproduccion.listaEventos.value += resul + '\n';
                                                 dato = resul;
                                             }
                                         },
@@ -214,8 +200,6 @@ $(document).ready(function () {
                                     });
 
                                 }
-
-
                                 function enableGif()
                                 {
                                     window.onload = document.getElementById("espera").style = "display: block";
@@ -233,6 +217,10 @@ $(document).ready(function () {
                                     var fic = fic.split(separador, limite);
                                     //alert(fic[fic.length - 1].replace(".", ","));
                                     $('#IdNombrePlano').val(fic);
+                                    
+                                    var hoy = new Date();
+                                    var fechahora = hoy.getDate()+''+(hoy.getMonth()+1)+''+hoy.getFullYear()+''+hoy.getHours()+''+hoy.getMinutes()+''+hoy.getSeconds();
+                                    $('#IdFechaHoraEnvio').val(fechahora);
                                 }
                             </script>
                         </div>

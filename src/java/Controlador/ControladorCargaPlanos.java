@@ -333,6 +333,9 @@ public class ControladorCargaPlanos {
         /*
          * Variables de Año y Mes
          */
+
+        String Reprocesar = request.getParameter("Reprocesar");
+
         ControladorMrpdata controladorMrpdata = new ControladorMrpdata();
 
         String ano = request.getParameter("Mes");
@@ -352,26 +355,29 @@ public class ControladorCargaPlanos {
 
         if (mes_abierto) {
 
-            String Sqlborrar = "delete from MB51_planos where fecha = '" + ano + "-" + mes + "'";
+            if (Reprocesar.contentEquals("False")) {
+                String Sqlborrar = "delete from MB51_planos where fecha = '" + ano + "-" + mes + "'";
 
-            if (controladorMrpdata.Insert(Sqlborrar)) {
-                //Realizado = "true";
-            }
-            Ruta = Ruta.replace("\\", "/");
-            String SqlInsertMasivo
-                    = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE MB51_planos CHARACTER SET LATIN1"
-                    + " FIELDS TERMINATED BY ','"
-                    + " ENCLOSED BY '\"'"
-                    + " LINES TERMINATED BY '\\r\\n'"
-                    + " IGNORE 1 LINES"
-                    + " (Plant,Purchase_order,Material,Material_Description,Batch,Movement_type,Movement_Type_Text,Item,Quantity,Qty_in_unit_of_entry,Unit_of_Entry,Amt_in_loc_cur,Currency,Storage_Location,Posting_Date,Document_Date,Material_Document,User_Name,Vendor)";
+                if (controladorMrpdata.Insert(Sqlborrar)) {
+                    //Realizado = "true";
+                }
+                Ruta = Ruta.replace("\\", "/");
+                String SqlInsertMasivo
+                        = "LOAD DATA LOCAL INFILE '" + Ruta + "' INTO TABLE MB51_planos CHARACTER SET LATIN1"
+                        + " FIELDS TERMINATED BY ','"
+                        + " ENCLOSED BY '\"'"
+                        + " LINES TERMINATED BY '\\r\\n'"
+                        + " IGNORE 1 LINES"
+                        + " (Plant,Purchase_order,Material,Material_Description,Batch,Movement_type,Movement_Type_Text,Item,Quantity,Qty_in_unit_of_entry,Unit_of_Entry,Amt_in_loc_cur,Currency,Storage_Location,Posting_Date,Document_Date,Material_Document,User_Name,Vendor)";
 
-            //System.out.println("Consulta: " + SqlInsertMasivo);
-            String SqlUpdateFecha = "Update MB51_planos set fecha = '" + ano + "-" + mes + "' where fecha is null";
+                //System.out.println("Consulta: " + SqlInsertMasivo);
+                String SqlUpdateFecha = "Update MB51_planos set fecha = '" + ano + "-" + mes + "' where fecha is null";
 
-            herramienta.setEventoProcesado("Inicia Carga de Archivo 1%");
-            if (controladorMrpdata.Insert(SqlInsertMasivo)) {
+                herramienta.setEventoProcesado("Inicia Carga de Archivo 1%");
+                //if (controladorMrpdata.Insert(SqlInsertMasivo)) {
+                controladorMrpdata.Insert(SqlInsertMasivo);
                 controladorMrpdata.Insert(SqlUpdateFecha);
+
                 //Auditoria
                 ModeloAuditoria modeloAuditoria = new ModeloAuditoria();
                 modeloAuditoria.setModeloUsuario((ModeloUsuario) request.getSession().getAttribute("user"));
@@ -379,102 +385,104 @@ public class ControladorCargaPlanos {
                 ControladorAuditoria controladorAuditoria = new ControladorAuditoria();
                 controladorAuditoria.Insert(modeloAuditoria);
 
-                ControladorMb51 controladorMb51 = new ControladorMb51();
-                LinkedList<ModeloMb51> LinkModeloMb51s;
-                LinkModeloMb51s = controladorMb51.Select();
-                LinkedList<ModeloMb51> LinkModeloMb51 = new LinkedList<ModeloMb51>();
-                Integer Contador = 0;
-                //System.out.println("Inicio:" + new Date());
-                int Porcentaje = 10;
-                int VUeltas = LinkModeloMb51s.size() / 20;
-                int sumador = 1;
+            }
 
-                for (ModeloMb51 modeloMb51 : LinkModeloMb51s) {
+            ControladorMb51 controladorMb51 = new ControladorMb51();
+            LinkedList<ModeloMb51> LinkModeloMb51s;
+            LinkModeloMb51s = controladorMb51.Select();
+            LinkedList<ModeloMb51> LinkModeloMb51 = new LinkedList<ModeloMb51>();
+            Integer Contador = 0;
+            //System.out.println("Inicio:" + new Date());
+            int Porcentaje = 10;
+            int VUeltas = LinkModeloMb51s.size() / 20;
+            int sumador = 1;
 
-                    if (sumador == VUeltas) {
-                        herramienta.setEventoProcesado("Cambios en Batch " + Porcentaje + "%");
-                        System.err.println("Cambios en Batch " + Porcentaje + "%");
-                        Porcentaje++;
-                        sumador = 1;
-                    }
-                    sumador++;
+            for (ModeloMb51 modeloMb51 : LinkModeloMb51s) {
 
-                    //BUSCAMOS EN Z39 SI HAY ALGUN CAMBIO DE BATCH
-                    CambiosBatch(modeloMb51);
-                    //System.out.println("Registros Procesados: " + Contador++);
+                if (sumador == VUeltas) {
+                    herramienta.setEventoProcesado("Cambios en Batch " + Porcentaje + "%");
+                    System.err.println("Cambios en Batch " + Porcentaje + "%");
+                    Porcentaje++;
+                    sumador = 1;
+                }
+                sumador++;
+
+                //BUSCAMOS EN Z39 SI HAY ALGUN CAMBIO DE BATCH
+                CambiosBatch(modeloMb51);
+                //System.out.println("Registros Procesados: " + Contador++);
+            }
+
+            ModeloEstadoPlanos modeloEstadoPlanos = Archivo(request);
+            Contador = 0;
+            Porcentaje = 30;
+            VUeltas = LinkModeloMb51_New.size() / 40;
+            sumador = 1;
+
+            for (ModeloMb51 modeloMb51 : LinkModeloMb51_New) {
+
+                if (modeloMb51.getPurchase_order().contentEquals("4502175823")) {
+                    System.out.println("Controlador.ControladorCargaPlanos.CargarCSV_MB51_INFILE_new()");
                 }
 
-                ModeloEstadoPlanos modeloEstadoPlanos = Archivo(request);
-                Contador = 0;
-                Porcentaje = 30;
-                VUeltas = LinkModeloMb51_New.size() / 40;
-                sumador = 1;
-
-                for (ModeloMb51 modeloMb51 : LinkModeloMb51_New) {
-
-                    if (modeloMb51.getPurchase_order().contentEquals("4502175823")) {
-                        System.out.println("Controlador.ControladorCargaPlanos.CargarCSV_MB51_INFILE_new()");
-                    }
-
-                    if (sumador == VUeltas) {
-                        herramienta.setEventoProcesado("Consultas en Archivos Base " + Porcentaje + "%");
-                        System.err.println("Consultas en Archivos Base " + Porcentaje + "%");
-                        Porcentaje++;
-                        sumador = 1;
-                    }
-                    sumador++;
-                    //cambio 09-10-2020
-                    //modeloMb51 = FinalComprasMB51_CargaCSV_20(modeloMb51);
-
-                    modeloMb51.setIdArchivo(modeloEstadoPlanos.getId());
-                    LinkModeloMb51.add(modeloMb51);
-
+                if (sumador == VUeltas) {
+                    herramienta.setEventoProcesado("Consultas en Archivos Base " + Porcentaje + "%");
+                    System.err.println("Consultas en Archivos Base " + Porcentaje + "%");
+                    Porcentaje++;
+                    sumador = 1;
                 }
+                sumador++;
+                //cambio 09-10-2020
+                //modeloMb51 = FinalComprasMB51_CargaCSV_20(modeloMb51);
+
+                modeloMb51.setIdArchivo(modeloEstadoPlanos.getId());
+                LinkModeloMb51.add(modeloMb51);
+
+            }
 
 //Inicio cambio 09-10-2020*************************************************************************
-                //System.out.println("Termina:" + new Date());
-                String Sqlborrar0 = "delete from Mb51_tmp";
+            //System.out.println("Termina:" + new Date());
+            String Sqlborrar0 = "delete from Mb51_tmp";
 
-                if (controladorMrpdata.Insert(Sqlborrar0)) {
-                    //Realizado = "true";
+            if (controladorMrpdata.Insert(Sqlborrar0)) {
+                //Realizado = "true";
 
-                }
-                controladorMb51.InsertList_Tmp(LinkModeloMb51);
-                LinkModeloMb51 = null;
-                LinkModeloMb51 = new LinkedList<ModeloMb51>();
+            }
+            controladorMb51.InsertList_Tmp(LinkModeloMb51);
+            LinkModeloMb51 = null;
+            LinkModeloMb51 = new LinkedList<ModeloMb51>();
 
-                //modeloMb51 = FinalComprasMB51_CargaCSV_20(modeloMb51);
-                //hacer otro select a la tabla con el id del archivo y consolidarlo
-                LinkModeloMb51s = null;
-                LinkModeloMb51s = controladorMb51.Select_Todos_x_Archivo();
-                for (ModeloMb51 modeloMb51 : LinkModeloMb51s) {
+            //modeloMb51 = FinalComprasMB51_CargaCSV_20(modeloMb51);
+            //hacer otro select a la tabla con el id del archivo y consolidarlo
+            LinkModeloMb51s = null;
+            LinkModeloMb51s = controladorMb51.Select_Todos_x_Archivo();
+            for (ModeloMb51 modeloMb51 : LinkModeloMb51s) {
 
-                    modeloMb51 = FinalComprasMB51_CargaCSV_20(modeloMb51);
-                    modeloMb51.setIdArchivo(modeloEstadoPlanos.getId());
-                    LinkModeloMb51.add(modeloMb51);
+                modeloMb51 = FinalComprasMB51_CargaCSV_20(modeloMb51);
+                modeloMb51.setIdArchivo(modeloEstadoPlanos.getId());
+                LinkModeloMb51.add(modeloMb51);
 
-                }
+            }
 
 //Fin cambio 09-10-2020*************************************************************************                
-                //System.out.println("Termina:" + new Date());
-                String Sqlborrar1 = "delete from Mb51 WHERE IdArchivo is null";
+            //System.out.println("Termina:" + new Date());
+            String Sqlborrar1 = "delete from Mb51 WHERE IdArchivo is null";
 
-                if (controladorMrpdata.Insert(Sqlborrar1)) {
-                    //Realizado = "true";
+            if (controladorMrpdata.Insert(Sqlborrar1)) {
+                //Realizado = "true";
 
-                }
-                herramienta.setEventoProcesado("Actualizacion Final de Compras 70%");
-                System.err.println("Actualizacion de Final de Compras 70%");
-                controladorMb51.InsertList(LinkModeloMb51);
-                herramienta.setEventoProcesado("Actualizacion de Fecha Archivo de Compras 98%");
-                System.err.println("Actualizacion de Fecha Archivo de Compras 98%");
-                SqlUpdateFecha = "Update MB51 set fecha = '" + ano + "-" + mes + "' where fecha is null";
-                controladorMrpdata.Insert(SqlUpdateFecha);
-                System.err.println("--");
-                herramienta.setEventoProcesado("--");
-
-                Realizado = "true";
             }
+            herramienta.setEventoProcesado("Actualizacion Final de Compras 70%");
+            System.err.println("Actualizacion de Final de Compras 70%");
+            controladorMb51.InsertList(LinkModeloMb51);
+            herramienta.setEventoProcesado("Actualizacion de Fecha Archivo de Compras 98%");
+            System.err.println("Actualizacion de Fecha Archivo de Compras 98%");
+            String SqlUpdateFecha = "Update MB51 set fecha = '" + ano + "-" + mes + "' where fecha is null";
+            controladorMrpdata.Insert(SqlUpdateFecha);
+            System.err.println("--");
+            herramienta.setEventoProcesado("--");
+
+            Realizado = "true";
+            //}
         }
         return Realizado;
     }
@@ -943,7 +951,7 @@ public class ControladorCargaPlanos {
 
     public ModeloMb51 FinalComprasMB51_CargaCSV_20(ModeloMb51 modeloMb51) throws SQLException {
 
-        if (modeloMb51.getPurchase_order().contentEquals("4502124012")) {
+        if (modeloMb51.getPurchase_order().contentEquals("4502132460")) {
             System.out.println("Controlador.ControladorCargaPlanos.CargarCSV_MB51_INFILE_new()");
         }
 
@@ -994,7 +1002,7 @@ public class ControladorCargaPlanos {
         //BUSCAMOS EL MATERIAL
         ModeloMrpData modeloMrpData = modeloVarios.getModeloMrpData();
         modeloMb51.setMaterial_Description(modeloMrpData.getMaterial_Description());
-        
+
         //LLENAMOS COLUMNA Z
         modeloMb51.setMaterial_Type(modeloMrpData.getMaterial_Type());
         //LLENAMOS COLUMNA AA

@@ -290,7 +290,7 @@ public class ServletSunchemical extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        System.err.println("Ingresa en doPost");
+        //System.err.println("Ingresa en doPost");
         response.setContentType("text/html;charset=UTF-8");
         String Accion = request.getParameter("Accion");
         String res = "";
@@ -321,19 +321,40 @@ public class ServletSunchemical extends HttpServlet {
                 processRequest(request, response);
                 break;
             case "CargarPlanosProduccion":
-                ControladorCargaPlanosProduccion controladorCargaPlanosProduccion = new ControladorCargaPlanosProduccion();
-                 {
-                    try {
-                        System.err.println("Ingresa en Servlet");
-                        res = controladorCargaPlanosProduccion.Upload(request, response);
-                    } catch (SQLException ex) {
-                        System.err.println("Error en el Servlet Produccion ERROR ==> " + ex);
+                if (herramienta.bdFormularioProduccion.isEmpty()) {
+                    Herramienta.bdFormularioProduccion.put("FormularioProduccion", request.getParameter("FechaHoraEnvio"));
+                    ControladorCargaPlanosProduccion controladorCargaPlanosProduccion = new ControladorCargaPlanosProduccion();
+                    {
+                        try {
+                            System.err.println("Ingresa en Servlet");
+                            res = controladorCargaPlanosProduccion.Upload(request, response);
+                        } catch (SQLException ex) {
+                            System.err.println("Error en el Servlet Produccion ERROR ==> " + ex);
+                        }
+                    }
+                    respuesta = res;
+                    request.setAttribute("respuesta", res);
+                    request.setAttribute("jsp", "CargaplanosProduccion");
+                    processRequest(request, response);
+                } else {
+                    if (Herramienta.bdFormularioProduccion.get("FormularioProduccion") == null ? request.getParameter("FechaHoraEnvio") != null
+                            : !Herramienta.bdFormularioProduccion.get("FormularioProduccion").equals(request.getParameter("FechaHoraEnvio"))) {
+                        Herramienta.bdFormularioProduccion.put("FormularioProduccion", request.getParameter("FechaHoraEnvio"));
+                        ControladorCargaPlanosProduccion controladorCargaPlanosProduccion = new ControladorCargaPlanosProduccion();
+                        {
+                            try {
+                                System.err.println("Ingresa en Servlet");
+                                res = controladorCargaPlanosProduccion.Upload(request, response);
+                            } catch (SQLException ex) {
+                                System.err.println("Error en el Servlet Produccion ERROR ==> " + ex);
+                            }
+                        }
+                        respuesta = res;
+                        request.setAttribute("respuesta", res);
+                        request.setAttribute("jsp", "CargaplanosProduccion");
+                        processRequest(request, response);
                     }
                 }
-                respuesta = res;
-                request.setAttribute("respuesta", res);
-                request.setAttribute("jsp", "CargaplanosProduccion");
-                processRequest(request, response);
                 break;
             case "CargarPlanosInventario":
                 ControladorCargarPlanosInventario controladorCargaPlanosInventario = new ControladorCargarPlanosInventario();
