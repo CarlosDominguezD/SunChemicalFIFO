@@ -12,8 +12,10 @@ import Controlador.ControladorCargarPlanosInventario;
 import Controlador.ControladorConversiones;
 import Controlador.ControladorEstadoPlanos;
 import Controlador.ControladorExcel;
+import Controlador.ControladorFbl3m;
 import Controlador.ControladorFechas;
 import Controlador.ControladorMb51;
+import Controlador.ControladorMb51_Consumos;
 import Controlador.ControladorPermisosRol;
 import Controlador.ControladorRoles;
 import Controlador.ControladorUsuarios;
@@ -305,6 +307,26 @@ public class ServletSunchemical extends HttpServlet {
                 Resultado = herramienta.getEventoProcesado();
                 response.getWriter().write(Resultado);
                 break;
+            case "ReprocesarCompras":
+                try {
+                    ControladorCargaPlanos controladorCargaPlanos = new ControladorCargaPlanos();
+                    Resultado = controladorCargaPlanos.CargarCSV_MB51_INFILE_new("", request);
+                    response.getWriter().write(Resultado);
+                } catch (Exception e) {
+                    System.out.println("Servlet.ServletSunchemical.doPost() ERROR ==> " + e);
+                }
+
+                break;
+            case "ReprocesarProduccion":
+                try {
+                    ControladorCargaPlanosProduccion controladorCargaPlanosProduccion = new ControladorCargaPlanosProduccion();
+                    Resultado = controladorCargaPlanosProduccion.CargarCSV_KOB1_INFILE("", request);
+                    response.getWriter().write(Resultado);
+                } catch (Exception e) {
+                    System.out.println("Servlet.ServletSunchemical.doPost() ERROR ==> " + e);
+                }
+
+                break;
             case "CargarPlanosCompras":
                 ControladorCargaPlanos controladorCargaPlanos = new ControladorCargaPlanos();
                  {
@@ -512,6 +534,42 @@ public class ServletSunchemical extends HttpServlet {
                         break;
                     case "Read":
                         Resultado = controladorUsuarios.ReadRoles(request, response);
+                        PrintWriter pwr = response.getWriter();
+                        pwr.write(Resultado);
+                        System.out.println(pwr.checkError() ? "Error al cargar la lista" : "Tabla Cargada");
+                        break;
+                }
+                break;
+            case "MB51_ConsumosFormularioJSP":
+                ControladorMb51_Consumos controladorMb51_Consumos = new ControladorMb51_Consumos();
+                evento = request.getParameter("evento");
+                switch (evento) {
+                    case "Upload":
+                        Resultado = controladorMb51_Consumos.Insert(request, response);
+                        break;
+                    case "Delete":
+                        Resultado = controladorMb51_Consumos.Delete(request, response);
+                        break;
+                    case "Read":
+                        Resultado = controladorMb51_Consumos.ReadFormulario(request, response);
+                        PrintWriter pwr = response.getWriter();
+                        pwr.write(Resultado);
+                        System.out.println(pwr.checkError() ? "Error al cargar la lista" : "Tabla Cargada");
+                        break;
+                }
+                break;
+            case "Fbl3NFormularioJSP":
+                ControladorFbl3m controladorFbl3m = new ControladorFbl3m();
+                evento = request.getParameter("evento");
+                switch (evento) {
+                    case "Upload":
+                        Resultado = controladorFbl3m.Insert(request, response);
+                        break;
+                    case "Delete":
+                        Resultado = controladorFbl3m.Delete(request, response);
+                        break;
+                    case "Read":
+                        Resultado = controladorFbl3m.ReadFormulario(request, response);
                         PrintWriter pwr = response.getWriter();
                         pwr.write(Resultado);
                         System.out.println(pwr.checkError() ? "Error al cargar la lista" : "Tabla Cargada");

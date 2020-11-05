@@ -33,7 +33,7 @@ $(function ()
     $('#IdAgregar').click(function (e)
     {
         LimpiarCampos();
-    });
+    })
 
     $('#IdGuardar').click(function (e)
     {

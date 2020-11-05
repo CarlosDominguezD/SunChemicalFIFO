@@ -50,6 +50,9 @@
                                     String ItemConversiones = "false";
                                     String ItemAbrirFecha = "false";
                                     String ItemCerrarFecha = "false";
+                                    String ItemModificaciones = "false";
+                                    String ItemFBL3N = "false";
+                                    String ItemMB51_Consumos = "false";
                                     if (modeloUsuario != null) {
                                         for (ModeloItemMenu modelo : modeloUsuario.getListModeloItemMenu()) {
                                             if ("ItemAdministracion".equals(modelo.getNombre())) {
@@ -124,8 +127,15 @@
                                             if ("ItemCerrarFecha".equals(modelo.getNombre())) {
                                                 ItemCerrarFecha = "true";
                                             }
-
-
+                                            if ("ItemModificaciones".equals(modelo.getNombre())) {
+                                                ItemModificaciones = "true";
+                                            }
+                                            if ("ItemFBL3N".equals(modelo.getNombre())) {
+                                                ItemFBL3N = "true";
+                                            }
+                                            if ("ItemMB51_Consumos".equals(modelo.getNombre())) {
+                                                ItemMB51_Consumos = "true";
+                                            }
                                         }
                                         if ("true".equals(ItemAdministracion)) {
                             %>
@@ -233,6 +243,23 @@
                                 </ul>
                             </li>
                             <%      }
+                                if ("true".equals(ItemModificaciones)) {
+                            %>
+                            <li><a><i class="fa fa-edit"></i>Modificaciones<span class="fa fa-chevron-down"></span></a>
+                                <ul class="nav child_menu">
+                                    <%
+                                        if ("true".equals(ItemFBL3N)) {
+                                    %>
+                                    <li><a href="FBL3N.jsp">FBL3N</a></li>
+                                        <%      }
+                                            if ("true".equals(ItemMB51_Consumos)) {
+                                        %>
+                                    <li><a href="MB51_Consumos.jsp">MB51_Consumos</a></li>
+                                        <% }
+                                        %>                                                                            
+                                </ul>
+                            </li>
+                            <%      }
                                 if ("true".equals(ItemResultados)) {
                             %>
                             <li><a><i class="fa fa-download"></i>Resultados<span class="fa fa-chevron-down"></span></a>
@@ -257,11 +284,7 @@
 
                                     }//if
 
-                                }
-                                catch (Exception e
-
-                                
-                                    ) {
+                                } catch (Exception e) {
                                     System.out.println("error className.methodName()" + e);
                                 }
 

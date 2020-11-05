@@ -14,7 +14,7 @@
         <%
             Modelos.ModeloUsuario modeloUsuarios = (ModeloUsuario) request.getSession().getAttribute("user");
             if (modeloUsuarios != null) {
-        %>        
+                %>        
         <%@include file="Principal/Body.jsp" %>
         <script type="text/javascript" src="Principal/js/jquery.min.js" ></script>
         <script type="text/javascript" src="Principal/js/jsfifo/ValidacionesPlano.js" ></script> 
@@ -42,6 +42,7 @@
                                 <input type="hidden" id="IdNombrePlano" name="NombrePlano" value=""> 
                                 <div class="row">
                                     <input type="hidden" id="Id" name="Id">
+                                    <input type="hidden" id="Reprocesar" name="Reprocesar" value="false">
                                     <div class="col-md-6 col-sm-12 col-xs-12 form-group">
                                         <select class="form-control" id="IdMes" name="Mes">                                                                                        
                                             <option value=0></option>
@@ -96,8 +97,11 @@
                                     <label for="ListaEventos">Lista de Eventos</label>
                                     <textarea class="form-control" id="IdlistaEventos" name="listaEventos" rows="10"></textarea>
                                 </div>
-                                <div class="col-lg-12" style="text-align: center">                                        
+                                <div class="col-lg-7" style="text-align: right">                                        
                                     <button type="button" class="btn btn-dark" id="IdConsultarEstado" name="Accion" value="Consultar" >Consultar proceso</button>                                        
+                                </div>                                                            
+                                <div class="col-lg-5" style="text-align: right">                                        
+                                    <button type="button" class="btn btn-danger" id="IdReprocesarCompras" name="Accion" value="ReprocesarCompras" >Reprocesar Mes</button>                                        
                                 </div>                                                            
                             </form>
                             <script type="text/javascript">
@@ -117,7 +121,52 @@
                                             {
                                                 if (resul !== "--") {
                                                     GetEventos()
-                                                }                                                
+                                                }
+                                            }
+                                        },
+                                        error: function (jqXHR, textStatus, errorThrown) {
+                                            if (jqXHR.status === 0) {
+                                                alert('Not connect: Verify Network.');
+                                            } else if (jqXHR.status === 404) {
+                                                alert('Requested page not found [404]');
+                                            } else if (jqXHR.status === 500) {
+                                                alert('Internal Server Error [500].');
+                                            } else if (textStatus === 'parsererror') {
+                                                alert('Requested JSON parse failed.');
+                                            } else if (textStatus === 'timeout') {
+                                                alert('Time out error.');
+                                            } else if (textStatus === 'abort') {
+                                                alert('Ajax request aborted.');
+                                            } else {
+                                                alert('Uncaught Error: ' + jqXHR.responseText);
+                                            }
+                                        }
+                                    });
+                                });
+
+
+                                $('#IdReprocesarCompras').click(function (e) {
+                                    var Accion = "ReprocesarCompras";
+                                    var Mes = $('#IdMes').val();
+                                    var Ano = $('#IdAno').val();
+                                    var Reprocesar = true;
+                                            
+                                    var data = {
+                                        Accion: Accion,
+                                        Mes: Mes,
+                                        Ano: Ano,
+                                        Reprocesar:Reprocesar
+                                    };
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "ServletSunchemical",
+                                        data: data,
+                                        success: function (resul, textStatus, jqXHR) {
+                                            if (dato !== resul)
+                                            {
+                                                if (resul !== "--") {
+                                                    GetEventos()
+                                                }
                                             }
                                         },
                                         error: function (jqXHR, textStatus, errorThrown) {

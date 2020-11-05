@@ -14,7 +14,7 @@
         <%
             Modelos.ModeloUsuario modeloUsuarios = (ModeloUsuario) request.getSession().getAttribute("user");
             if (modeloUsuarios != null) {
-        %>        
+                %>        
         <%@include file="Principal/Body.jsp" %>
         <script type="text/javascript" src="Principal/js/jquery.min.js" ></script>
         <style>
@@ -40,6 +40,7 @@
                                 <input type="hidden" id="IdAccion">     
                                 <input type="hidden" id="IdFechaHoraEnvio" name="FechaHoraEnvio" value="">     
                                 <input type="hidden" id="IdNombrePlano" name="NombrePlano" value=""> 
+                                <input type="hidden" id="Reprocesar" name="Reprocesar" value="false">
                                 <div class="row">
                                     <input type="hidden" id="Id" name="Id">
                                     <div class="col-md-6 col-sm-12 col-xs-12 form-group">
@@ -97,9 +98,12 @@
                                     <label for="ListaEventos">Lista de Eventos</label>
                                     <textarea class="form-control" id="IdlistaEventos" name="listaEventos" rows="10"></textarea>
                                 </div>
-                                <div class="col-lg-12" style="text-align: center">                                        
+                                <div class="col-lg-7" style="text-align: right">                                        
                                     <button type="button" class="btn btn-dark" id="IdConsultarEstado" name="Accion" value="Consultar" >Consultar proceso</button>                                        
-                                </div>                                                            
+                                </div>
+                                <div class="col-lg-5" style="text-align: right">                                        
+                                    <button type="button" class="btn btn-danger" id="IdReprocesarProduccion" name="Accion" value="ReprocesarProduccion" >Reprocesar Mes</button>                                        
+                                </div>
                             </form>
                             <script type="text/javascript">
 
@@ -118,7 +122,51 @@
                                             {
                                                 if (resul !== "--") {
                                                     GetEventos()
-                                                }                                                
+                                                }
+                                            }
+                                        },
+                                        error: function (jqXHR, textStatus, errorThrown) {
+                                            if (jqXHR.status === 0) {
+                                                alert('Not connect: Verify Network.');
+                                            } else if (jqXHR.status === 404) {
+                                                alert('Requested page not found [404]');
+                                            } else if (jqXHR.status === 500) {
+                                                alert('Internal Server Error [500].');
+                                            } else if (textStatus === 'parsererror') {
+                                                alert('Requested JSON parse failed.');
+                                            } else if (textStatus === 'timeout') {
+                                                alert('Time out error.');
+                                            } else if (textStatus === 'abort') {
+                                                alert('Ajax request aborted.');
+                                            } else {
+                                                alert('Uncaught Error: ' + jqXHR.responseText);
+                                            }
+                                        }
+                                    });
+                                });
+
+                                $('#IdReprocesarProduccion').click(function (e) {
+                                    var Accion = "ReprocesarProduccion";
+                                    var Mes = $('#IdMes').val();
+                                    var Ano = $('#IdAno').val();
+                                    var Reprocesar = true;
+
+                                    var data = {
+                                        Accion: Accion,
+                                        Mes: Mes,
+                                        Ano: Ano,
+                                        Reprocesar: Reprocesar
+                                    };
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "ServletSunchemical",
+                                        data: data,
+                                        success: function (resul, textStatus, jqXHR) {
+                                            if (dato !== resul)
+                                            {
+                                                if (resul !== "--") {
+                                                    GetEventos()
+                                                }
                                             }
                                         },
                                         error: function (jqXHR, textStatus, errorThrown) {
@@ -153,7 +201,7 @@
                                 }
 
                                 var dato = 'Ininciando';
-                                function GetEventos() {                                    
+                                function GetEventos() {
                                     setInterval(StartSolicitudEvento, 100);
                                 }
 
@@ -217,9 +265,9 @@
                                     var fic = fic.split(separador, limite);
                                     //alert(fic[fic.length - 1].replace(".", ","));
                                     $('#IdNombrePlano').val(fic);
-                                    
+
                                     var hoy = new Date();
-                                    var fechahora = hoy.getDate()+''+(hoy.getMonth()+1)+''+hoy.getFullYear()+''+hoy.getHours()+''+hoy.getMinutes()+''+hoy.getSeconds();
+                                    var fechahora = hoy.getDate() + '' + (hoy.getMonth() + 1) + '' + hoy.getFullYear() + '' + hoy.getHours() + '' + hoy.getMinutes() + '' + hoy.getSeconds();
                                     $('#IdFechaHoraEnvio').val(fechahora);
                                 }
                             </script>
