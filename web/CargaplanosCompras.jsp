@@ -14,7 +14,7 @@
         <%
             Modelos.ModeloUsuario modeloUsuarios = (ModeloUsuario) request.getSession().getAttribute("user");
             if (modeloUsuarios != null) {
-                %>        
+        %>        
         <%@include file="Principal/Body.jsp" %>
         <script type="text/javascript" src="Principal/js/jquery.min.js" ></script>
         <script type="text/javascript" src="Principal/js/jsfifo/ValidacionesPlano.js" ></script> 
@@ -150,43 +150,54 @@
                                     var Mes = $('#IdMes').val();
                                     var Ano = $('#IdAno').val();
                                     var Reprocesar = true;
-                                            
-                                    var data = {
-                                        Accion: Accion,
-                                        Mes: Mes,
-                                        Ano: Ano,
-                                        Reprocesar:Reprocesar
-                                    };
-                                    $.ajax({
-                                        type: "POST",
-                                        url: "ServletSunchemical",
-                                        data: data,
-                                        success: function (resul, textStatus, jqXHR) {
-                                            if (dato !== resul)
-                                            {
-                                                if (resul !== "--") {
-                                                    GetEventos()
+                                    
+                                    //alert("mes " + Mes);
+                                    //alert("Ano " + Ano);
+                                    
+                                    
+                                    if (Mes === "0" || Ano === "0")
+                                    {
+                                        alert("Debe seleccionar Mes y Año");
+                                    } else
+                                    {
+                                        GetEventos();
+                                        var data = {
+                                            Accion: Accion,
+                                            Mes: Mes,
+                                            Ano: Ano,
+                                            Reprocesar: Reprocesar
+                                        };
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "ServletSunchemical",
+                                            data: data,
+                                            success: function (resul, textStatus, jqXHR) {
+                                                if (dato !== resul)
+                                                {
+                                                    if (resul !== "--") {
+                                                        GetEventos();
+                                                    }
+                                                }
+                                            },
+                                            error: function (jqXHR, textStatus, errorThrown) {
+                                                if (jqXHR.status === 0) {
+                                                    alert('Not connect: Verify Network.');
+                                                } else if (jqXHR.status === 404) {
+                                                    alert('Requested page not found [404]');
+                                                } else if (jqXHR.status === 500) {
+                                                    alert('Internal Server Error [500].');
+                                                } else if (textStatus === 'parsererror') {
+                                                    alert('Requested JSON parse failed.');
+                                                } else if (textStatus === 'timeout') {
+                                                    alert('Time out error.');
+                                                } else if (textStatus === 'abort') {
+                                                    alert('Ajax request aborted.');
+                                                } else {
+                                                    alert('Uncaught Error: ' + jqXHR.responseText);
                                                 }
                                             }
-                                        },
-                                        error: function (jqXHR, textStatus, errorThrown) {
-                                            if (jqXHR.status === 0) {
-                                                alert('Not connect: Verify Network.');
-                                            } else if (jqXHR.status === 404) {
-                                                alert('Requested page not found [404]');
-                                            } else if (jqXHR.status === 500) {
-                                                alert('Internal Server Error [500].');
-                                            } else if (textStatus === 'parsererror') {
-                                                alert('Requested JSON parse failed.');
-                                            } else if (textStatus === 'timeout') {
-                                                alert('Time out error.');
-                                            } else if (textStatus === 'abort') {
-                                                alert('Ajax request aborted.');
-                                            } else {
-                                                alert('Uncaught Error: ' + jqXHR.responseText);
-                                            }
-                                        }
-                                    });
+                                        });
+                                    }
                                 });
 
                                 var statSend = false;

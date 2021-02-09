@@ -6,6 +6,7 @@
 package Controlador;
 
 import Conexiones.ConexionBDMySql;
+import Modelos.ModeloAdicionales;
 import Modelos.ModeloEine;
 import Modelos.ModeloFbl3m;
 import Modelos.ModeloKob1;
@@ -30,16 +31,17 @@ import java.util.LinkedList;
  */
 public class ControladorVarios {
 
-    public ModeloVarios LLenarModelos(ModeloMb51 modeloMb51) {
+    public ModeloVarios LLenarModelos(ModeloMb51 modeloMb51, Connection con) {
         ModeloVarios modeloVarios = new ModeloVarios();
         ModeloProveedor modeloProveedor = null;
         ModeloMrpData modeloMrpData = null;
         ModeloEine modeloEine = null;
         ModeloVendorType modeloVendorType = null;
+        ModeloAdicionales modeloAdicionales = null;
 
-        ConexionBDMySql conexion = new ConexionBDMySql();
-        Connection con;
-        con = conexion.abrirConexion();
+        //ConexionBDMySql conexion = new ConexionBDMySql();
+        //Connection con;
+        //con = conexion.abrirConexion();
         PreparedStatement SQL = null;
         ResultSet res = null;
         try {
@@ -459,8 +461,8 @@ public class ControladorVarios {
                     modeloVarios.setModeloEine(modeloEine);
                 }
             }
-            
-            if(modeloMb51.getMaterial().contentEquals("91482534")){
+
+            if (modeloMb51.getMaterial().contentEquals("91482534")) {
                 System.out.println("Controlador.ControladorVarios.LLenarModelos()");
             }
 
@@ -476,7 +478,7 @@ public class ControladorVarios {
 
             res.close();
             SQL.close();
-            con.close();
+            //con.close();
         } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Select " + e);
 
@@ -751,6 +753,466 @@ public class ControladorVarios {
 
         }
         return null;
+    }
+
+    public ModeloVarios LLenarModelos_2(ModeloMb51 modeloMb51, Connection con, String Freight, String Duttys, String Arancel) {
+        ModeloVarios modeloVarios = new ModeloVarios();
+        ModeloProveedor modeloProveedor = null;
+        ModeloMrpData modeloMrpData = null;
+        ModeloEine modeloEine = null;
+        ModeloVendorType modeloVendorType = null;
+
+        //ConexionBDMySql conexion = new ConexionBDMySql();
+        //Connection con;
+        //con = conexion.abrirConexion();
+        PreparedStatement SQL = null;
+        ResultSet res = null;
+        try {
+            SQL = con.prepareStatement("SELECT Id, Vendors, Name, Vendor_Type, Moneda FROM proveedor WHERE Vendors = '" + modeloMb51.getVendor() + "'");
+            res = SQL.executeQuery();
+            if (res.next()) {
+                modeloProveedor = new ModeloProveedor();
+                modeloProveedor.setId(res.getInt("id"));
+                modeloProveedor.setVendors(res.getString("Vendors"));
+                modeloProveedor.setName(res.getString("Name"));
+                modeloProveedor.setVendor_Type(res.getString("Vendor_Type"));
+                modeloProveedor.setMoneda(res.getString("Moneda"));
+                modeloVarios.setModeloProveedor(modeloProveedor);
+            }
+
+            SQL = con.prepareStatement("SELECT id, Material_Description, Material_Type, Profit_Center FROM mrpdata WHERE Material = '" + modeloMb51.getMaterial() + "'");
+            res = SQL.executeQuery();
+            if (res.next()) {
+                modeloMrpData = new ModeloMrpData();
+                modeloMrpData.setId(res.getInt("id"));
+                //modeloMrpData.setMaterial(res.getString("Material"));
+                modeloMrpData.setMaterial_Description(res.getString("Material_Description"));
+//                modeloMrpData.setMaterial_Group(res.getString("Material_Group"));
+                modeloMrpData.setProfit_Center(res.getString("Profit_Center"));
+//                modeloMrpData.setProduct_Hierarchy(res.getString("Product_Hierarchy"));
+//                modeloMrpData.setProduct_Hierarchy_Description(res.getString("Product_Hierarchy_Description"));
+                modeloMrpData.setMaterial_Type(res.getString("Material_Type"));
+//                modeloMrpData.setMaterial_type_descr(res.getString("Material_type_descr"));
+//                modeloMrpData.setPlant(res.getString("Plant"));
+//                modeloMrpData.setPlant_Name(res.getString("Plant_Name"));
+//                modeloMrpData.setExt_Material_Group(res.getString("Ext_Material_Group"));
+//                modeloMrpData.setMatl_Grp_Pack_Matls(res.getString("Matl_Grp_Pack_Matls"));
+//                modeloMrpData.setMGPM_Description(res.getString("MGPM_Description"));
+//                modeloMrpData.setMRP_profile(res.getString("MRP_profile"));
+//                modeloMrpData.setMRP_Profile_Description(res.getString("MRP_Profile_Description"));
+//                modeloMrpData.setLot_size(res.getString("Lot_size"));
+//                modeloMrpData.setProcurement_type(res.getString("Procurement_type"));
+//                modeloMrpData.setMRP_Controller(res.getString("MRP_Controller"));
+//                modeloMrpData.setMRP_Type(res.getString("MRP_Type"));
+//                modeloMrpData.setPurchasing_Group(res.getString("Purchasing_Group"));
+//                modeloMrpData.setPlant_sp_matl_status(res.getString("Plant_sp_matl_status"));
+//                modeloMrpData.setMat_Status_Description(res.getString("Mat_Status_Description"));
+//                modeloMrpData.setDo_Not_Cost(res.getString("Do_Not_Cost"));
+//                modeloMrpData.setStorage_loc_for_EP(res.getString("Storage_loc_for_EP"));
+//                modeloMrpData.setProd_stor_location(res.getString("Prod_stor_location"));
+//                modeloMrpData.setProduction_unit(res.getString("Production_unit"));
+//                modeloMrpData.setCreated_On(res.getString("Created_On"));
+//                modeloMrpData.setAvailability_check(res.getString("Availability_check"));
+//                modeloMrpData.setLoading_Group(res.getString("Loading_Group"));
+//                modeloMrpData.setTot_repl_lead_time(res.getString("Tot_repl_lead_time"));
+//                modeloMrpData.setUnderdely_tolerance(res.getString("Underdely_tolerance"));
+//                modeloMrpData.setUnltd_Overdelivery(res.getString("Unltd_Overdelivery"));
+//                modeloMrpData.setOverdely_tolerance(res.getString("Overdely_tolerance"));
+//                modeloMrpData.setIn_house_production(res.getString("In_house_production"));
+//                modeloMrpData.setProdn_Supervisor(res.getString("Prodn_Supervisor"));
+//                modeloMrpData.setBackflush(res.getString("Backflush"));
+//                modeloMrpData.setIndividual_coll(res.getString("Individual_coll"));
+//                modeloMrpData.setRounding_value(res.getString("Rounding_value"));
+//                modeloMrpData.setBase_Unit_of_Measure_1(res.getString("Base_Unit_of_Measure_1"));
+//                modeloMrpData.setReorder_Point(res.getString("Reorder_Point"));
+//                modeloMrpData.setBase_Unit_of_Measure_2(res.getString("Base_Unit_of_Measure_2"));
+//                modeloMrpData.setAssembly_scrap_porcentaje(res.getString("Assembly_scrap"));
+//                modeloMrpData.setGR_processing_time(res.getString("GR_processing_time"));
+//                modeloMrpData.setUnit_of_issue(res.getString("Unit_of_issue"));
+//                modeloMrpData.setValid_from(res.getString("Valid_from"));
+//                modeloMrpData.setBatch_management_1(res.getString("Batch_management_1"));
+//                modeloMrpData.setValuation_Category(res.getString("Valuation_Category"));
+//                modeloMrpData.setDF_at_plant_level(res.getString("DF_at_plant_level"));
+//                modeloMrpData.setDF_at_client_level(res.getString("DF_at_client_level"));
+//                modeloMrpData.setOld_material_number(res.getString("Old_material_number"));
+//                modeloMrpData.setOrder_Unit(res.getString("Order_Unit"));
+//                modeloMrpData.setLab_Office(res.getString("Lab_Office"));
+//                modeloMrpData.setLab_description(res.getString("Lab_description"));
+//                modeloMrpData.setGross_Weight(res.getString("Gross_Weight"));
+//                modeloMrpData.setWeight_Unit_1(res.getString("Weight_Unit_1"));
+//                modeloMrpData.setNet_Weight(res.getString("Net_Weight"));
+//                modeloMrpData.setWeight_Unit_2(res.getString("Weight_Unit_2"));
+//                modeloMrpData.setContainer_reqmts(res.getString("Container_reqmts"));
+//                modeloMrpData.setStorage_conditions(res.getString("Storage_conditions"));
+//                modeloMrpData.setTemp_conditions(res.getString("Temp_conditions"));
+//                modeloMrpData.setTransportation_Group(res.getString("Transportation_Group"));
+//                modeloMrpData.setBatch_management_2(res.getString("Batch_management_2"));
+//                modeloMrpData.setPackaging_mat_type(res.getString("Packaging_mat_type"));
+//                modeloMrpData.setX_plant_matl_status(res.getString("X_plant_matl_status"));
+//                modeloMrpData.setMin_Rem_Shelf_Life(res.getString("Min_Rem_Shelf_Life"));
+//                modeloMrpData.setTotal_shelf_life(res.getString("Total_shelf_life"));
+//                modeloMrpData.setLanguage_Key(res.getString("Language_Key"));
+//                modeloMrpData.setCreated_By(res.getString("Created_By"));
+//                modeloMrpData.setSafety_stock(res.getString("Safety_stock"));
+//                modeloMrpData.setBase_Unit_of_Measure_3(res.getString("Base_Unit_of_Measure_3"));
+//                modeloMrpData.setFixed_lot_size(res.getString("Fixed_lot_size"));
+//                modeloMrpData.setBase_Unit_of_Measure_4(res.getString("Base_Unit_of_Measure_4"));
+//                modeloMrpData.setMaximum_Lot_Size_1(res.getString("Maximum_Lot_Size_1"));
+//                modeloMrpData.setBase_Unit_of_Measure_5(res.getString("Base_Unit_of_Measure_5"));
+//                modeloMrpData.setMinimum_Lot_Size_2(res.getString("Minimum_Lot_Size_2"));
+//                modeloMrpData.setBase_Unit_of_Measure_6(res.getString("Base_Unit_of_Measure_6"));
+//                modeloMrpData.setCosting_Lot_Size(res.getString("Costing_Lot_Size"));
+//                modeloMrpData.setBase_Unit_of_Measure_7(res.getString("Base_Unit_of_Measure_7"));
+//                modeloMrpData.setProd_Sched_Profile(res.getString("Prod_Sched_Profile"));
+//                modeloMrpData.setProd_Sched_Profile_Desc(res.getString("Prod_Sched_Profile_Desc"));
+//                modeloMrpData.setPlanned_Deliv_Time(res.getString("Planned_Deliv_Time"));
+//                modeloMrpData.setSpecial_procurement(res.getString("Special_procurement"));
+//                modeloMrpData.setSP_Key_Description(res.getString("SP_Key_Description"));
+//                modeloMrpData.setABC_Indicator(res.getString("ABC_Indicator"));
+//                modeloMrpData.setSTime_period_profile(res.getString("STime_period_profile"));
+//                modeloMrpData.setComm_imp_code_no(res.getString("Comm_imp_code_no"));
+//                modeloMrpData.setCountry_of_origin(res.getString("Country_of_origin"));
+//                modeloMrpData.setSpecProcurem_Costing(res.getString("SpecProcurem_Costing"));
+//                modeloMrpData.setOverhead_Group(res.getString("Overhead_Group"));
+//                modeloMrpData.setTDS(res.getString("TDS"));
+//                modeloMrpData.setPeriod_Indicator(res.getString("Period_Indicator"));
+                modeloVarios.setModeloMrpData(modeloMrpData);
+            }
+
+            LinkedList<ModeloMe80fn> modeloMe80fns = new LinkedList<ModeloMe80fn>();
+            SQL = con.prepareStatement("SELECT id, Amt_in_loc_cur, Amount, Quantity, Order_Unit, Currency FROM me80fn WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Item = '" + modeloMb51.getItem() + "' AND Material <> '' AND Movement_type = ''");
+            res = SQL.executeQuery();
+            while (res.next()) {
+                ModeloMe80fn modeloMe80fn = new ModeloMe80fn();
+                modeloMe80fn.setId(res.getInt("id"));
+//                modeloMe80fn.setIndex(res.getString("Index"));
+//                modeloMe80fn.setIndex2(res.getString("Index2"));
+//                modeloMe80fn.setPurchasing_Document(res.getString("Purchasing_Document"));
+//                modeloMe80fn.setMaterial_Doc_Year(res.getString("Material_Doc_Year"));
+//                modeloMe80fn.setMaterial_Document(res.getString("Material_Document"));
+//                modeloMe80fn.setDocument_Date(res.getString("Document_Date"));
+//                modeloMe80fn.setMaterial(res.getString("Material"));
+//                modeloMe80fn.setShort_Text(res.getString("Short_Text"));
+//                modeloMe80fn.setBatch(res.getString("Batch"));
+//                modeloMe80fn.setItem(res.getString("Item"));
+//                modeloMe80fn.setMovement_type(res.getString("Movement_type"));
+//                modeloMe80fn.setPosting_Date(res.getString("Posting_Date"));
+//                modeloMe80fn.setDelivery_Completed(res.getString("Delivery_Completed"));
+//                modeloMe80fn.setPlant(res.getString("Plant"));
+                modeloMe80fn.setQuantity(res.getString("Quantity"));
+                modeloMe80fn.setOrder_Unit(res.getString("Order_Unit"));
+                modeloMe80fn.setAmt_in_loc_cur(res.getString("Amt_in_loc_cur"));
+                modeloMe80fn.setAmount(res.getString("Amount"));
+                modeloMe80fn.setCurrency(res.getString("Currency"));
+//                modeloMe80fn.setValuation_Type(res.getString("Valuation_Type"));
+//                modeloMe80fn.setEntry_Date(res.getString("Entry_Date"));
+//                modeloMe80fn.setLocal_currency(res.getString("Local_currency"));
+//                modeloMe80fn.setReference_Doc_Item(res.getString("Reference_Doc_Item"));
+//                modeloMe80fn.setInvoice_Value(res.getString("Invoice_Value"));
+//                modeloMe80fn.setInvoice_Value_in_FC(res.getString("Invoice_Value_in_FC"));
+                modeloMe80fns.add(modeloMe80fn);
+            }
+            modeloVarios.setLstmodeloMe80fn(modeloMe80fns);
+
+            if (modeloMb51.getBatch().contentEquals("B19121512")) {
+                System.err.println("");
+            }
+
+            if (modeloProveedor.getVendor_Type().contains("ICO")) {
+
+                //SQL = con.prepareStatement("SELECT id, Amount_in_local_currency FROM Fbl3m WHERE Text = '" + modeloMb51.getPurchase_order() + modeloMb51.getItem() + "' AND (Offsetting_acct_no = '20011' OR Offsetting_acct_no = '50320' OR Offsetting_acct_no = '3062482' OR Offsetting_acct_no = '3072634' OR Offsetting_acct_no = '3905355' OR Offsetting_acct_no = '3905370' OR Offsetting_acct_no = '3905371')");
+                SQL = con.prepareStatement("SELECT id, Amount_in_local_currency FROM Fbl3m WHERE Text = '" + modeloMb51.getPurchase_order() + modeloMb51.getItem() + "' AND (" + Freight + ")");
+                res = SQL.executeQuery();
+                LinkedList<ModeloFbl3m> modeloFbl3ms_Freight = new LinkedList<ModeloFbl3m>();
+                while (res.next()) {
+                    ModeloFbl3m modeloFbl3m = new ModeloFbl3m();
+                    modeloFbl3m.setId(res.getInt("id"));
+//                    modeloFbl3m.setDocument_Number(res.getString("Document_Number"));
+//                    modeloFbl3m.setDocument_type(res.getString("Document_type"));
+//                    modeloFbl3m.setDocument_Date(res.getString("Document_Date"));
+//                    modeloFbl3m.setPosting_Date(res.getString("Posting_Date"));
+//                    modeloFbl3m.setCost_Center(res.getString("Cost_Center"));
+//                    modeloFbl3m.setProfit_Center(res.getString("Profit_Center"));
+//                    modeloFbl3m.setYearMonth(res.getString("YearMonth"));
+//                    modeloFbl3m.setAccount(res.getString("Account"));
+//                    modeloFbl3m.setPlant(res.getString("Plant"));
+//                    modeloFbl3m.setMaterial(res.getString("Material"));
+//                    modeloFbl3m.setQuantity(res.getString("Quantity"));
+                    modeloFbl3m.setAmount_in_local_currency(res.getString("Amount_in_local_currency"));
+//                    modeloFbl3m.setLocal_Currency(res.getString("Local_Currency"));
+//                    modeloFbl3m.setPurchasing_Document(res.getString("Purchasing_Document"));
+//                    modeloFbl3m.setReference(res.getString("Reference"));
+//                    modeloFbl3m.setDocument_currency(res.getString("Document_currency"));
+//                    modeloFbl3m.setOffsetting_acct_no(res.getString("Offsetting_acct_no"));
+//                    modeloFbl3m.setBase_Unit_of_Measure(res.getString("Base_Unit_of_Measure"));
+//                    modeloFbl3m.setAlternative_Account_No(res.getString("Alternative_Account_No"));
+//                    modeloFbl3m.setTransaction_Code(res.getString("Transaction_Code"));
+//                    modeloFbl3m.setText(res.getString("Text"));
+//                    modeloFbl3m.setAssignment(res.getString("Assignment"));
+//                    modeloFbl3m.setClasificacion(res.getString("Clasificacion"));
+                    modeloFbl3ms_Freight.add(modeloFbl3m);
+                }
+                modeloVarios.setListmodeloFbl3m_Freight(modeloFbl3ms_Freight);
+
+                //SQL = con.prepareStatement("SELECT id, Amount_in_local_currency FROM Fbl3m WHERE Text = '" + modeloMb51.getPurchase_order() + modeloMb51.getItem() + "' AND (Offsetting_acct_no = '20014' OR Offsetting_acct_no = '3905312')");
+                SQL = con.prepareStatement("SELECT id, Amount_in_local_currency FROM Fbl3m WHERE Text = '" + modeloMb51.getPurchase_order() + modeloMb51.getItem() + "' AND (" + Duttys + ")");
+                res = SQL.executeQuery();
+                LinkedList<ModeloFbl3m> modeloFbl3ms_DUTYS = new LinkedList<ModeloFbl3m>();
+                while (res.next()) {
+                    ModeloFbl3m modeloFbl3m = new ModeloFbl3m();
+                    modeloFbl3m.setId(res.getInt("id"));
+//                    modeloFbl3m.setDocument_Number(res.getString("Document_Number"));
+//                    modeloFbl3m.setDocument_type(res.getString("Document_type"));
+//                    modeloFbl3m.setDocument_Date(res.getString("Document_Date"));
+//                    modeloFbl3m.setPosting_Date(res.getString("Posting_Date"));
+//                    modeloFbl3m.setCost_Center(res.getString("Cost_Center"));
+//                    modeloFbl3m.setProfit_Center(res.getString("Profit_Center"));
+//                    modeloFbl3m.setYearMonth(res.getString("YearMonth"));
+//                    modeloFbl3m.setAccount(res.getString("Account"));
+//                    modeloFbl3m.setPlant(res.getString("Plant"));
+//                    modeloFbl3m.setMaterial(res.getString("Material"));
+//                    modeloFbl3m.setQuantity(res.getString("Quantity"));
+                    modeloFbl3m.setAmount_in_local_currency(res.getString("Amount_in_local_currency"));
+//                    modeloFbl3m.setLocal_Currency(res.getString("Local_Currency"));
+//                    modeloFbl3m.setPurchasing_Document(res.getString("Purchasing_Document"));
+//                    modeloFbl3m.setReference(res.getString("Reference"));
+//                    modeloFbl3m.setDocument_currency(res.getString("Document_currency"));
+//                    modeloFbl3m.setOffsetting_acct_no(res.getString("Offsetting_acct_no"));
+//                    modeloFbl3m.setBase_Unit_of_Measure(res.getString("Base_Unit_of_Measure"));
+//                    modeloFbl3m.setAlternative_Account_No(res.getString("Alternative_Account_No"));
+//                    modeloFbl3m.setTransaction_Code(res.getString("Transaction_Code"));
+//                    modeloFbl3m.setText(res.getString("Text"));
+//                    modeloFbl3m.setAssignment(res.getString("Assignment"));
+//                    modeloFbl3m.setClasificacion(res.getString("Clasificacion"));
+                    modeloFbl3ms_DUTYS.add(modeloFbl3m);
+                }
+                modeloVarios.setListmodeloFbl3m_DUTYS(modeloFbl3ms_DUTYS);
+
+                //SQL = con.prepareStatement("SELECT id, Amount_in_local_currency FROM Fbl3m WHERE Text = '" + modeloMb51.getPurchase_order() + modeloMb51.getItem() + "' AND (Offsetting_acct_no = '3062623')");
+                SQL = con.prepareStatement("SELECT id, Amount_in_local_currency FROM Fbl3m WHERE Text = '" + modeloMb51.getPurchase_order() + modeloMb51.getItem() + "' AND (" + Arancel + ")");
+                res = SQL.executeQuery();
+                LinkedList<ModeloFbl3m> modeloFbl3ms_ARANCEL = new LinkedList<ModeloFbl3m>();
+                while (res.next()) {
+                    ModeloFbl3m modeloFbl3m = new ModeloFbl3m();
+                    modeloFbl3m.setId(res.getInt("id"));
+//                    modeloFbl3m.setDocument_Number(res.getString("Document_Number"));
+//                    modeloFbl3m.setDocument_type(res.getString("Document_type"));
+//                    modeloFbl3m.setDocument_Date(res.getString("Document_Date"));
+//                    modeloFbl3m.setPosting_Date(res.getString("Posting_Date"));
+//                    modeloFbl3m.setCost_Center(res.getString("Cost_Center"));
+//                    modeloFbl3m.setProfit_Center(res.getString("Profit_Center"));
+//                    modeloFbl3m.setYearMonth(res.getString("YearMonth"));
+//                    modeloFbl3m.setAccount(res.getString("Account"));
+//                    modeloFbl3m.setPlant(res.getString("Plant"));
+//                    modeloFbl3m.setMaterial(res.getString("Material"));
+//                    modeloFbl3m.setQuantity(res.getString("Quantity"));
+                    modeloFbl3m.setAmount_in_local_currency(res.getString("Amount_in_local_currency"));
+//                    modeloFbl3m.setLocal_Currency(res.getString("Local_Currency"));
+//                    modeloFbl3m.setPurchasing_Document(res.getString("Purchasing_Document"));
+//                    modeloFbl3m.setReference(res.getString("Reference"));
+//                    modeloFbl3m.setDocument_currency(res.getString("Document_currency"));
+//                    modeloFbl3m.setOffsetting_acct_no(res.getString("Offsetting_acct_no"));
+//                    modeloFbl3m.setBase_Unit_of_Measure(res.getString("Base_Unit_of_Measure"));
+//                    modeloFbl3m.setAlternative_Account_No(res.getString("Alternative_Account_No"));
+//                    modeloFbl3m.setTransaction_Code(res.getString("Transaction_Code"));
+//                    modeloFbl3m.setText(res.getString("Text"));
+//                    modeloFbl3m.setAssignment(res.getString("Assignment"));
+//                    modeloFbl3m.setClasificacion(res.getString("Clasificacion"));
+                    modeloFbl3ms_ARANCEL.add(modeloFbl3m);
+                }
+                modeloVarios.setListmodeloFbl3m_ARANCEL(modeloFbl3ms_ARANCEL);
+
+            } else {
+                //SQL = con.prepareStatement("SELECT id, Amount_in_local_currency FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND (Offsetting_acct_no = '20011' OR Offsetting_acct_no = '50320' OR Offsetting_acct_no = '3062482' OR Offsetting_acct_no = '3072634' OR Offsetting_acct_no = '3905355' OR Offsetting_acct_no = '3905370' OR Offsetting_acct_no = '3905371')");
+                SQL = con.prepareStatement("SELECT id, Amount_in_local_currency FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND (" + Freight + ")");
+                res = SQL.executeQuery();
+                LinkedList<ModeloFbl3m> modeloFbl3ms_Freight = new LinkedList<ModeloFbl3m>();
+                while (res.next()) {
+                    ModeloFbl3m modeloFbl3m = new ModeloFbl3m();
+                    modeloFbl3m.setId(res.getInt("id"));
+//                    modeloFbl3m.setDocument_Number(res.getString("Document_Number"));
+//                    modeloFbl3m.setDocument_type(res.getString("Document_type"));
+//                    modeloFbl3m.setDocument_Date(res.getString("Document_Date"));
+//                    modeloFbl3m.setPosting_Date(res.getString("Posting_Date"));
+//                    modeloFbl3m.setCost_Center(res.getString("Cost_Center"));
+//                    modeloFbl3m.setProfit_Center(res.getString("Profit_Center"));
+//                    modeloFbl3m.setYearMonth(res.getString("YearMonth"));
+//                    modeloFbl3m.setAccount(res.getString("Account"));
+//                    modeloFbl3m.setPlant(res.getString("Plant"));
+//                    modeloFbl3m.setMaterial(res.getString("Material"));
+//                    modeloFbl3m.setQuantity(res.getString("Quantity"));
+                    modeloFbl3m.setAmount_in_local_currency(res.getString("Amount_in_local_currency"));
+//                    modeloFbl3m.setLocal_Currency(res.getString("Local_Currency"));
+//                    modeloFbl3m.setPurchasing_Document(res.getString("Purchasing_Document"));
+//                    modeloFbl3m.setReference(res.getString("Reference"));
+//                    modeloFbl3m.setDocument_currency(res.getString("Document_currency"));
+//                    modeloFbl3m.setOffsetting_acct_no(res.getString("Offsetting_acct_no"));
+//                    modeloFbl3m.setBase_Unit_of_Measure(res.getString("Base_Unit_of_Measure"));
+//                    modeloFbl3m.setAlternative_Account_No(res.getString("Alternative_Account_No"));
+//                    modeloFbl3m.setTransaction_Code(res.getString("Transaction_Code"));
+//                    modeloFbl3m.setText(res.getString("Text"));
+//                    modeloFbl3m.setAssignment(res.getString("Assignment"));
+//                    modeloFbl3m.setClasificacion(res.getString("Clasificacion"));
+                    modeloFbl3ms_Freight.add(modeloFbl3m);
+                }
+                modeloVarios.setListmodeloFbl3m_Freight(modeloFbl3ms_Freight);
+
+                //SQL = con.prepareStatement("SELECT id, Amount_in_local_currency FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND (Offsetting_acct_no = '20014' OR Offsetting_acct_no = '3905312')");
+                SQL = con.prepareStatement("SELECT id, Amount_in_local_currency FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND (" + Duttys + ")");
+                res = SQL.executeQuery();
+                LinkedList<ModeloFbl3m> modeloFbl3ms_DUTYS = new LinkedList<ModeloFbl3m>();
+                while (res.next()) {
+                    ModeloFbl3m modeloFbl3m = new ModeloFbl3m();
+                    modeloFbl3m.setId(res.getInt("id"));
+//                    modeloFbl3m.setDocument_Number(res.getString("Document_Number"));
+//                    modeloFbl3m.setDocument_type(res.getString("Document_type"));
+//                    modeloFbl3m.setDocument_Date(res.getString("Document_Date"));
+//                    modeloFbl3m.setPosting_Date(res.getString("Posting_Date"));
+//                    modeloFbl3m.setCost_Center(res.getString("Cost_Center"));
+//                    modeloFbl3m.setProfit_Center(res.getString("Profit_Center"));
+//                    modeloFbl3m.setYearMonth(res.getString("YearMonth"));
+//                    modeloFbl3m.setAccount(res.getString("Account"));
+//                    modeloFbl3m.setPlant(res.getString("Plant"));
+//                    modeloFbl3m.setMaterial(res.getString("Material"));
+//                    modeloFbl3m.setQuantity(res.getString("Quantity"));
+                    modeloFbl3m.setAmount_in_local_currency(res.getString("Amount_in_local_currency"));
+//                    modeloFbl3m.setLocal_Currency(res.getString("Local_Currency"));
+//                    modeloFbl3m.setPurchasing_Document(res.getString("Purchasing_Document"));
+//                    modeloFbl3m.setReference(res.getString("Reference"));
+//                    modeloFbl3m.setDocument_currency(res.getString("Document_currency"));
+//                    modeloFbl3m.setOffsetting_acct_no(res.getString("Offsetting_acct_no"));
+//                    modeloFbl3m.setBase_Unit_of_Measure(res.getString("Base_Unit_of_Measure"));
+//                    modeloFbl3m.setAlternative_Account_No(res.getString("Alternative_Account_No"));
+//                    modeloFbl3m.setTransaction_Code(res.getString("Transaction_Code"));
+//                    modeloFbl3m.setText(res.getString("Text"));
+//                    modeloFbl3m.setAssignment(res.getString("Assignment"));
+//                    modeloFbl3m.setClasificacion(res.getString("Clasificacion"));
+                    modeloFbl3ms_DUTYS.add(modeloFbl3m);
+                }
+                modeloVarios.setListmodeloFbl3m_DUTYS(modeloFbl3ms_DUTYS);
+
+                //SQL = con.prepareStatement("SELECT id, Amount_in_local_currency FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND (Offsetting_acct_no = '3062623')");
+                SQL = con.prepareStatement("SELECT id, Amount_in_local_currency FROM Fbl3m WHERE Purchasing_Document = '" + modeloMb51.getPurchase_order() + "' AND Material = '" + modeloMb51.getMaterial() + "' AND (" + Arancel + ")");
+                res = SQL.executeQuery();
+                LinkedList<ModeloFbl3m> modeloFbl3ms_ARANCEL = new LinkedList<ModeloFbl3m>();
+                while (res.next()) {
+                    ModeloFbl3m modeloFbl3m = new ModeloFbl3m();
+                    modeloFbl3m.setId(res.getInt("id"));
+//                    modeloFbl3m.setDocument_Number(res.getString("Document_Number"));
+//                    modeloFbl3m.setDocument_type(res.getString("Document_type"));
+//                    modeloFbl3m.setDocument_Date(res.getString("Document_Date"));
+//                    modeloFbl3m.setPosting_Date(res.getString("Posting_Date"));
+//                    modeloFbl3m.setCost_Center(res.getString("Cost_Center"));
+//                    modeloFbl3m.setProfit_Center(res.getString("Profit_Center"));
+//                    modeloFbl3m.setYearMonth(res.getString("YearMonth"));
+//                    modeloFbl3m.setAccount(res.getString("Account"));
+//                    modeloFbl3m.setPlant(res.getString("Plant"));
+//                    modeloFbl3m.setMaterial(res.getString("Material"));
+//                    modeloFbl3m.setQuantity(res.getString("Quantity"));
+                    modeloFbl3m.setAmount_in_local_currency(res.getString("Amount_in_local_currency"));
+//                    modeloFbl3m.setLocal_Currency(res.getString("Local_Currency"));
+//                    modeloFbl3m.setPurchasing_Document(res.getString("Purchasing_Document"));
+//                    modeloFbl3m.setReference(res.getString("Reference"));
+//                    modeloFbl3m.setDocument_currency(res.getString("Document_currency"));
+//                    modeloFbl3m.setOffsetting_acct_no(res.getString("Offsetting_acct_no"));
+//                    modeloFbl3m.setBase_Unit_of_Measure(res.getString("Base_Unit_of_Measure"));
+//                    modeloFbl3m.setAlternative_Account_No(res.getString("Alternative_Account_No"));
+//                    modeloFbl3m.setTransaction_Code(res.getString("Transaction_Code"));
+//                    modeloFbl3m.setText(res.getString("Text"));
+//                    modeloFbl3m.setAssignment(res.getString("Assignment"));
+//                    modeloFbl3m.setClasificacion(res.getString("Clasificacion"));
+                    modeloFbl3ms_ARANCEL.add(modeloFbl3m);
+                }
+                modeloVarios.setListmodeloFbl3m_ARANCEL(modeloFbl3ms_ARANCEL);
+            }
+
+            if (modeloProveedor.getVendor_Type().contains("ICO")) {
+
+                SQL = con.prepareStatement("SELECT id, Porcentaje_Additional FROM EINE WHERE vendor = '" + modeloMb51.getVendor() + "'");
+                res = SQL.executeQuery();
+                while (res.next()) {
+
+                    modeloEine = new ModeloEine();
+                    modeloEine.setId(res.getInt("id"));
+//                    modeloEine.setPurchasing_info_rec(res.getString("Purchasing_info_rec"));
+//                    modeloEine.setPlant(res.getString("Plant"));
+//                    modeloEine.setCreated_On(res.getString("Created_On"));
+//                    modeloEine.setPurchasing_Group(res.getString("Purchasing_Group"));
+//                    modeloEine.setCurrency(res.getString("Currency"));
+//                    modeloEine.setStandard_PO_Quantity(res.getString("Standard_PO_Quantity"));
+//                    modeloEine.setPlanned_Deliv_Time(res.getString("Planned_Deliv_Time"));
+//                    modeloEine.setNet_Price(res.getString("Net_Price"));
+//                    modeloEine.setPrice_unit(res.getString("Price_unit"));
+//                    modeloEine.setOrder_Price_Unit(res.getString("Order_Price_Unit"));
+//                    modeloEine.setValid_to(res.getString("Valid_to"));
+//                    modeloEine.setQuantity_Conversion_1(res.getString("Quantity_Conversion_1"));
+//                    modeloEine.setQuantity_Conversion_2(res.getString("Quantity_Conversion_2"));
+//                    modeloEine.setEffective_Price(res.getString("Effective_Price"));
+//                    modeloEine.setAcknowledgment_Reqd(res.getString("Acknowledgment_Reqd"));
+//                    modeloEine.setConfirmation_Control(res.getString("Confirmation_Control"));
+//                    modeloEine.setIncoterms_1(res.getString("Incoterms_1"));
+//                    modeloEine.setIncoterms_2(res.getString("Incoterms_2"));
+//                    modeloEine.setMaterial(res.getString("Material"));
+//                    modeloEine.setVendor(res.getString("Vendor"));
+//                    modeloEine.setLink_Material_vendor(res.getString("Link_Material_vendor"));
+                    modeloEine.setPorcentaje_Additional(res.getString("Porcentaje_Additional"));
+                    modeloVarios.setModeloEine(modeloEine);
+                }
+            } else {
+                SQL = con.prepareStatement("SELECT id, Porcentaje_Additional FROM EINE WHERE Link_Material_vendor = '" + modeloMb51.getMaterial() + modeloMb51.getVendor() + "'");
+                res = SQL.executeQuery();
+                while (res.next()) {
+
+                    modeloEine = new ModeloEine();
+                    modeloEine.setId(res.getInt("id"));
+//                    modeloEine.setPurchasing_info_rec(res.getString("Purchasing_info_rec"));
+//                    modeloEine.setPlant(res.getString("Plant"));
+//                    modeloEine.setCreated_On(res.getString("Created_On"));
+//                    modeloEine.setPurchasing_Group(res.getString("Purchasing_Group"));
+//                    modeloEine.setCurrency(res.getString("Currency"));
+//                    modeloEine.setStandard_PO_Quantity(res.getString("Standard_PO_Quantity"));
+//                    modeloEine.setPlanned_Deliv_Time(res.getString("Planned_Deliv_Time"));
+//                    modeloEine.setNet_Price(res.getString("Net_Price"));
+//                    modeloEine.setPrice_unit(res.getString("Price_unit"));
+//                    modeloEine.setOrder_Price_Unit(res.getString("Order_Price_Unit"));
+//                    modeloEine.setValid_to(res.getString("Valid_to"));
+//                    modeloEine.setQuantity_Conversion_1(res.getString("Quantity_Conversion_1"));
+//                    modeloEine.setQuantity_Conversion_2(res.getString("Quantity_Conversion_2"));
+//                    modeloEine.setEffective_Price(res.getString("Effective_Price"));
+//                    modeloEine.setAcknowledgment_Reqd(res.getString("Acknowledgment_Reqd"));
+//                    modeloEine.setConfirmation_Control(res.getString("Confirmation_Control"));
+//                    modeloEine.setIncoterms_1(res.getString("Incoterms_1"));
+//                    modeloEine.setIncoterms_2(res.getString("Incoterms_2"));
+//                    modeloEine.setMaterial(res.getString("Material"));
+//                    modeloEine.setVendor(res.getString("Vendor"));
+//                    modeloEine.setLink_Material_vendor(res.getString("Link_Material_vendor"));
+                    modeloEine.setPorcentaje_Additional(res.getString("Porcentaje_Additional"));
+                    modeloVarios.setModeloEine(modeloEine);
+                }
+            }
+
+//            if(modeloMb51.getMaterial().contentEquals("91482534")){
+//                System.out.println("Controlador.ControladorVarios.LLenarModelos()");
+//            }
+            SQL = con.prepareStatement("SELECT * FROM VendorType WHERE Material = '" + modeloMb51.getMaterial() + "'");
+            res = SQL.executeQuery();
+            if (res.next()) {
+                modeloVendorType = new ModeloVendorType();
+                modeloVendorType.setId(res.getInt("id"));
+                modeloVendorType.setMaterial(res.getString("Material"));
+                modeloVendorType.setVendor_Type(res.getString("Vendor_Type"));
+                modeloVarios.setModeloVendorType(modeloVendorType);
+            }
+
+            res.close();
+            SQL.close();
+            //con.close();
+        } catch (SQLException e) {
+            System.out.println("Error en la consulta SQL Select " + e);
+
+        }
+
+        return modeloVarios;
     }
 
 }

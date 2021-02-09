@@ -5,6 +5,7 @@
  */
 package Servlet;
 
+import Controlador.ControladorAdicionales;
 import Controlador.ControladorAuditoria;
 import Controlador.ControladorCargaPlanos;
 import Controlador.ControladorCargaPlanosProduccion;
@@ -292,7 +293,7 @@ public class ServletSunchemical extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        //System.err.println("Ingresa en doPost");
+        System.err.println("Ingresa en doPost");
         response.setContentType("text/html;charset=UTF-8");
         String Accion = request.getParameter("Accion");
         String res = "";
@@ -323,7 +324,7 @@ public class ServletSunchemical extends HttpServlet {
                     Resultado = controladorCargaPlanosProduccion.CargarCSV_KOB1_INFILE("", request);
                     response.getWriter().write(Resultado);
                 } catch (Exception e) {
-                    System.out.println("Servlet.ServletSunchemical.doPost() ERROR ==> " + e);
+                    System.err.println("Servlet.ServletSunchemical.doPost() ERROR ==> " + e);
                 }
 
                 break;
@@ -343,6 +344,9 @@ public class ServletSunchemical extends HttpServlet {
                 processRequest(request, response);
                 break;
             case "CargarPlanosProduccion":
+                
+                System.err.println(request.getParameter("FechaHoraEnvio"));
+                
                 if (herramienta.bdFormularioProduccion.isEmpty()) {
                     Herramienta.bdFormularioProduccion.put("FormularioProduccion", request.getParameter("FechaHoraEnvio"));
                     ControladorCargaPlanosProduccion controladorCargaPlanosProduccion = new ControladorCargaPlanosProduccion();
@@ -355,9 +359,9 @@ public class ServletSunchemical extends HttpServlet {
                         }
                     }
                     respuesta = res;
-                    request.setAttribute("respuesta", res);
-                    request.setAttribute("jsp", "CargaplanosProduccion");
-                    processRequest(request, response);
+                    //request.setAttribute("respuesta", res);
+                    //request.setAttribute("jsp", "CargaplanosProduccion");
+                    //processRequest(request, response);
                 } else {
                     if (Herramienta.bdFormularioProduccion.get("FormularioProduccion") == null ? request.getParameter("FechaHoraEnvio") != null
                             : !Herramienta.bdFormularioProduccion.get("FormularioProduccion").equals(request.getParameter("FechaHoraEnvio"))) {
@@ -372,9 +376,9 @@ public class ServletSunchemical extends HttpServlet {
                             }
                         }
                         respuesta = res;
-                        request.setAttribute("respuesta", res);
-                        request.setAttribute("jsp", "CargaplanosProduccion");
-                        processRequest(request, response);
+                        //request.setAttribute("respuesta", res);
+                        //request.setAttribute("jsp", "CargaplanosProduccion");
+                        //processRequest(request, response);
                     }
                 }
                 break;
@@ -498,6 +502,24 @@ public class ServletSunchemical extends HttpServlet {
 //                        break;
                     case "Read":
                         Resultado = controladorConversiones.Read(request, response);
+                        PrintWriter pwr = response.getWriter();
+                        pwr.write(Resultado);
+                        System.out.println(pwr.checkError() ? "Error al cargar la lista" : "Tabla Cargada");
+                        break;
+                }
+                break;
+            case "AdicionalesJSP":
+                ControladorAdicionales controladorAdicionales = new ControladorAdicionales();
+                evento = request.getParameter("evento");
+                switch (evento) {
+                    case "Upload":
+                        Resultado = controladorAdicionales.Insert(request);
+                        break;
+//                    case "Delete":
+//                        Resultado = controladorConversiones.Delete(request);
+//                        break;
+                    case "Read":
+                        Resultado = controladorAdicionales.Read(request, response);
                         PrintWriter pwr = response.getWriter();
                         pwr.write(Resultado);
                         System.out.println(pwr.checkError() ? "Error al cargar la lista" : "Tabla Cargada");

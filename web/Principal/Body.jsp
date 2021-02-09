@@ -53,6 +53,7 @@
                                     String ItemModificaciones = "false";
                                     String ItemFBL3N = "false";
                                     String ItemMB51_Consumos = "false";
+                                    String ItemAdicionales = "false";
                                     if (modeloUsuario != null) {
                                         for (ModeloItemMenu modelo : modeloUsuario.getListModeloItemMenu()) {
                                             if ("ItemAdministracion".equals(modelo.getNombre())) {
@@ -136,6 +137,10 @@
                                             if ("ItemMB51_Consumos".equals(modelo.getNombre())) {
                                                 ItemMB51_Consumos = "true";
                                             }
+                                            if ("ItemAdicionales".equals(modelo.getNombre())) {
+                                                ItemAdicionales = "true";
+                                            }
+
                                         }
                                         if ("true".equals(ItemAdministracion)) {
                             %>
@@ -255,6 +260,10 @@
                                             if ("true".equals(ItemMB51_Consumos)) {
                                         %>
                                     <li><a href="MB51_Consumos.jsp">MB51_Consumos</a></li>
+                                        <%      }
+                                            if ("true".equals(ItemAdicionales)) {
+                                        %>
+                                    <li><a href="Adicionales.jsp">Adicionales</a></li>
                                         <% }
                                         %>                                                                            
                                 </ul>

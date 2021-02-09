@@ -14,7 +14,7 @@
         <%
             Modelos.ModeloUsuario modeloUsuarios = (ModeloUsuario) request.getSession().getAttribute("user");
             if (modeloUsuarios != null) {
-                %>        
+        %>        
         <%@include file="Principal/Body.jsp" %>
         <script type="text/javascript" src="Principal/js/jquery.min.js" ></script>
         <style>
@@ -86,10 +86,12 @@
                                 <br>
                                 <br>
                                 <br>
-                                <br>
+                                <br>                                
+                                <!--input type="checkbox" class="form-check-input" id="exampleCheck1" name="exampleCheck1"-->
                                 <div align="center" id="botonCargar">
-                                    <input type="submit" class="btn btn-lg btn-primary" onclick = "GetEventos()" 
-                                           name="Accion" value="CargarPlanosProduccion">       
+                                    <input type="submit" class="btn btn-lg btn-primary" onclick = "GetEventos()" name="Accion" value="CargarPlanosProduccion">
+                                <!--button type="button" class="btn btn-danger" id="IdCargarProduccion" name="Accion" value="CargarProduccion" >Cargar Plano</button-->
+                                    
                                 </div>
                                 <div align="center" id="espera" style="display: none">
                                     <img src="Principal/images/loading.gif">
@@ -144,6 +146,74 @@
                                         }
                                     });
                                 });
+                                
+                                
+                                
+                                
+                                
+                                $('#IdCargarProduccion').click(function (e) {
+                                    
+                                    //IdFechaHoraEnvio
+                                    //IdNombrePlano
+                                    //Reprocesar
+                                    //Idarchivo
+                                    
+                                    var Accion = "CargarPlanosProduccion";
+                                    var Mes = $('#IdMes').val();
+                                    var Ano = $('#IdAno').val();
+                                    var isChecked = document.getElementById('exampleCheck1').checked;
+                                    //alert(isChecked);                                                                        
+                                    $('#exampleCheck1').prop('checked', false);
+                                    //isChecked = document.getElementById('exampleCheck1').checked;
+                                    //alert(isChecked);
+
+                                    if (Mes === "0" || Ano === "0")
+                                    {
+                                        alert("Debe seleccionar Mes y Año");
+                                    } else
+                                    {
+                                        GetEventos();
+                                        var data = {
+                                            Accion: Accion,
+                                            Mes: Mes,
+                                            Ano: Ano,
+                                            Check : isChecked
+                                        };
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "ServletSunchemical",
+                                            data: data,
+                                            success: function (resul, textStatus, jqXHR) {
+                                                if (dato !== resul)
+                                                {
+                                                    if (resul !== "--") {
+                                                        GetEventos();
+                                                    }
+                                                }
+                                            },
+                                            error: function (jqXHR, textStatus, errorThrown) {
+                                                if (jqXHR.status === 0) {
+                                                    alert('Not connect: Verify Network.');
+                                                } else if (jqXHR.status === 404) {
+                                                    alert('Requested page not found [404]');
+                                                } else if (jqXHR.status === 500) {
+                                                    alert('Internal Server Error [500].');
+                                                } else if (textStatus === 'parsererror') {
+                                                    alert('Requested JSON parse failed.');
+                                                } else if (textStatus === 'timeout') {
+                                                    alert('Time out error.');
+                                                } else if (textStatus === 'abort') {
+                                                    alert('Ajax request aborted.');
+                                                } else {
+                                                    alert('Uncaught Error: ' + jqXHR.responseText);
+                                                }
+                                            }
+                                        });
+                                    }
+                                });
+                                
+                                
+                                
 
                                 $('#IdReprocesarProduccion').click(function (e) {
                                     var Accion = "ReprocesarProduccion";
@@ -151,42 +221,49 @@
                                     var Ano = $('#IdAno').val();
                                     var Reprocesar = true;
 
-                                    var data = {
-                                        Accion: Accion,
-                                        Mes: Mes,
-                                        Ano: Ano,
-                                        Reprocesar: Reprocesar
-                                    };
-                                    $.ajax({
-                                        type: "POST",
-                                        url: "ServletSunchemical",
-                                        data: data,
-                                        success: function (resul, textStatus, jqXHR) {
-                                            if (dato !== resul)
-                                            {
-                                                if (resul !== "--") {
-                                                    GetEventos()
+                                    if (Mes === "0" || Ano === "0")
+                                    {
+                                        alert("Debe seleccionar Mes y Año");
+                                    } else
+                                    {
+                                        GetEventos();
+                                        var data = {
+                                            Accion: Accion,
+                                            Mes: Mes,
+                                            Ano: Ano,
+                                            Reprocesar: Reprocesar
+                                        };
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "ServletSunchemical",
+                                            data: data,
+                                            success: function (resul, textStatus, jqXHR) {
+                                                if (dato !== resul)
+                                                {
+                                                    if (resul !== "--") {
+                                                        GetEventos();
+                                                    }
+                                                }
+                                            },
+                                            error: function (jqXHR, textStatus, errorThrown) {
+                                                if (jqXHR.status === 0) {
+                                                    alert('Not connect: Verify Network.');
+                                                } else if (jqXHR.status === 404) {
+                                                    alert('Requested page not found [404]');
+                                                } else if (jqXHR.status === 500) {
+                                                    alert('Internal Server Error [500].');
+                                                } else if (textStatus === 'parsererror') {
+                                                    alert('Requested JSON parse failed.');
+                                                } else if (textStatus === 'timeout') {
+                                                    alert('Time out error.');
+                                                } else if (textStatus === 'abort') {
+                                                    alert('Ajax request aborted.');
+                                                } else {
+                                                    alert('Uncaught Error: ' + jqXHR.responseText);
                                                 }
                                             }
-                                        },
-                                        error: function (jqXHR, textStatus, errorThrown) {
-                                            if (jqXHR.status === 0) {
-                                                alert('Not connect: Verify Network.');
-                                            } else if (jqXHR.status === 404) {
-                                                alert('Requested page not found [404]');
-                                            } else if (jqXHR.status === 500) {
-                                                alert('Internal Server Error [500].');
-                                            } else if (textStatus === 'parsererror') {
-                                                alert('Requested JSON parse failed.');
-                                            } else if (textStatus === 'timeout') {
-                                                alert('Time out error.');
-                                            } else if (textStatus === 'abort') {
-                                                alert('Ajax request aborted.');
-                                            } else {
-                                                alert('Uncaught Error: ' + jqXHR.responseText);
-                                            }
-                                        }
-                                    });
+                                        });
+                                    }
                                 });
 
                                 var statSend = false;

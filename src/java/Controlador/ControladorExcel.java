@@ -61,7 +61,7 @@ public class ControladorExcel {
 
     private boolean hideSheet = true;
 
-    public String GenerarExcel(String UrlArchivo, String newQuery) throws Exception {
+    public String GenerarExcel(String UrlArchivo, String newQuery, String Acumulado) throws Exception {
         String genFileName = null;
         try {
             System.out.println("Reporte : " + newQuery);
@@ -76,7 +76,7 @@ public class ControladorExcel {
             rs.close();
             con.close();
 
-            genFileName = generateReport(UrlArchivo, UrlArchivo, records);
+            genFileName = generateReport(UrlArchivo, UrlArchivo + "_" + Acumulado, records);
             System.out.println(genFileName);
 
         } catch (SQLException e) {
@@ -355,6 +355,10 @@ public class ControladorExcel {
     }
 
     public void Select(String Archivo, HttpServletRequest request, HttpServletResponse response) {
+
+        String Acumulado = request.getParameter("Mes") + "_" + request.getParameter("Ano"); 
+
+
         String SQLReporte;
         switch (Archivo) {
             case "GenerarArchivoCompras":
@@ -487,7 +491,7 @@ public class ControladorExcel {
                     //String UrlArchivo = "D:\\Zred\\SunChemical\\MacroMB51.xls";//request.getParameter("PlantillaUrl");                
                     String newQuery = SQLReporte;
                     //ControladorExcel controladorExcel = new ControladorExcel();
-                    String archivo = GenerarExcel(UrlArchivo, newQuery);
+                    String archivo = GenerarExcel(UrlArchivo, newQuery, Acumulado);
                     downloadFile(response, archivo);
                     //Auditoria
                     ModeloAuditoria modeloAuditoria = new ModeloAuditoria();
@@ -714,6 +718,8 @@ public class ControladorExcel {
                         + " Variacion_FIFO_vs_Estandar as 'Variacion FIFO vs Estandar',"
                         + " IdArchivo"
                         + " FROM mcbr WHERE IdArchivo = " + request.getParameter("IdPlano");
+                
+                
 
                 try {
                     //String UrlArchivo = "C:\\Users\\Carlos A Dominguez D\\GlasFish\\glassfish\\domains\\GlassFish\\config\\SunChemical\\Informe.xls";//request.getParameter("PlantillaUrl");
@@ -721,7 +727,8 @@ public class ControladorExcel {
                     //String UrlArchivo = "D:\\Zred\\SunChemical\\MacroMB51.xls";//request.getParameter("PlantillaUrl");                
                     String newQuery = SQLReporte;
                     //ControladorExcel controladorExcel = new ControladorExcel();
-                    String archivo = GenerarExcel(UrlArchivo, newQuery);
+                    
+                    String archivo = GenerarExcel(UrlArchivo, newQuery, Acumulado);
                     downloadFile(response, archivo);
                     //Auditoria
                     ModeloAuditoria modeloAuditoria = new ModeloAuditoria();

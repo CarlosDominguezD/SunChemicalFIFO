@@ -18,11 +18,11 @@ import java.util.LinkedList;
  * @author Diego Fdo Guzman B
  */
 public class ControladorZ39 {
-        public LinkedList<ModeloZ39> Select(String Sql) {
+        public LinkedList<ModeloZ39> Select(String Sql, Connection con) {
         LinkedList<ModeloZ39> modeloZ39s = new LinkedList<ModeloZ39>();
-        ConexionBDMySql conexion = new ConexionBDMySql();
-        Connection con;
-        con = conexion.abrirConexion();
+        //ConexionBDMySql conexion = new ConexionBDMySql();
+        //Connection con;
+        //con = conexion.abrirConexion();
         PreparedStatement SQL;
         try {
             SQL = con.prepareStatement(Sql);
@@ -54,7 +54,7 @@ public class ControladorZ39 {
             }
             res.close();
             SQL.close();
-            con.close();
+            //con.close();
         } catch (SQLException e) {
             System.out.println("Error en la consulta SQL Select " + e);
         }
